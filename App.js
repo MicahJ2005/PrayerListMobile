@@ -1,20 +1,29 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+// import React from 'react';
+// import { StatusBar } from 'expo-status-bar';
+import {View, Text, Image, ScrollView, TextInput, Pressable, StyleSheet} from 'react-native';
+import PrayerList from './components/prayerList';
+import HeaderComp from './components/headerComp';
+import NewPrayerRequest from './components/newPrayerRequest';
+import { useCallback } from 'react';
+import React, {useState, useEffect} from 'react';
+import axios from 'axios';
+
 
 export default function App() {
+  const [onLoadText, setText] = useState("");
+  // const onScreenLoad = () => {
+  //       // setText(getText());
+  //   }
+    
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ScrollView>
+      <HeaderComp></HeaderComp>
+      
+      <NewPrayerRequest></NewPrayerRequest>
+    
+    </ScrollView>
+
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
