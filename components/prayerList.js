@@ -29,6 +29,9 @@ const FlatListBasics = (newdata) => {
       <FlatList
         data={newdata.newdata}
         renderItem={({item}) => <Text style={styles.item} key={item.id}>{item.nama} 
+          {/* <Pressable onPress={onPressFunction}>
+            <Text>X</Text>
+          </Pressable> */}
           {/* <Pressable >
             <Text>X</Text>
           </Pressable>
