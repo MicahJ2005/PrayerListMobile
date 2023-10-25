@@ -148,38 +148,11 @@ const newPrayerRequest = () => {
             <Text>
               {details.nama}
             </Text>
+            <Text>
+              {details.details}
+            </Text>
             <View style={styles.detailButtonGroup}>
-              {/* <Button 
-                title="close"
-                onPress={() => closeDetails()}
-              /> */}
-              {/* <Pressable
-                style={[styles.closeButton]}
-                onPress={() => closeDetails()}>
-                <Text style={styles.textStylePrayerRequest}>x</Text>
-              </Pressable> */}
-              {/* <Button style={styles.editButton}
-                title="Edit"
-                onPress={() => editDetails()}
-              /> */}
-              {/* <Pressable
-                style={[styles.editButton]}
-                onPress={() => editDetails()}>
-                <Text style={styles.textStylePrayerRequest}>Edit</Text>
-              </Pressable> */}
-              {/* <Button style={styles.deleteButton}
-                title="Delete"
-                onPress={() => deleteDetails()}
-              /> */}
-              {/* <Pressable
-                style={[styles.deleteButton]}
-                onPress={() => deleteDetails()}>
-                <Text style={styles.textStylePrayerRequest}>Delete</Text>
-              </Pressable> */}
-              {/* <Button style={styles.deleteButton}
-                title="Answered"
-                onPress={() => answeredPrayer()}
-              /> */}
+              
               <Pressable
                 style={[styles.answeredPrayer]}
                 onPress={() => answeredPrayer()}>
@@ -191,13 +164,6 @@ const newPrayerRequest = () => {
         </View>
       </Modal>
       {/* end prayer request details Modal */}
-
-      {/* <Text style={[styles.myPrayerClosetText]}>My Prayer Closet</Text> */}
-      {/* <Pressable
-        style={[styles.buttonNewPrayerRequest]}
-        onPress={() => setModalVisible(true)}>
-        <Text style={styles.textStylePrayerRequest}>New Prayer Request</Text>
-      </Pressable> */}
       
       <Text style={styles.helpText}>click each prayer request to view details</Text>
       
@@ -274,6 +240,7 @@ const styles = StyleSheet.create({
   helpText:{
     textAlign: 'center',
     color: '#C56E33',
+    fontStyle: 'italic',
   },
   buttonNewPrayerRequest:{
     backgroundColor: '#113946',

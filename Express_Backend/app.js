@@ -4,12 +4,24 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 app.use(bodyParser.json());
 app.use(cors());
-const { Sequelize } = require('sequelize');
+const {Client} = require('pg')
+// const { Sequelize } = require('sequelize');
 // const sequelize = new Sequelize('postgres://postgres:JjMj2011@localhost:5432/dojo');
-const sequelize = new Sequelize('dojo', 'postgres', 'JjMj2011', {
-  host: 'localhost',
-  dialect: 'postgres'
+// const sequelize = new Sequelize('dojo', 'postgres', 'JjMj2011', {
+//   host: 'localhost',
+//   dialect: 'postgres'
+// })
+
+
+const client = new Client({
+  host: "localhost",
+  user: "postgres",
+  port: 5432,
+  password: "JjMj2011",
+  database: "dojo"
 })
+client.connect();
+
 // const sequelize = new Sequelize({
 //   username: 'postgres',
 //   host: 'localhost',
@@ -37,10 +49,24 @@ const sequelize = new Sequelize('dojo', 'postgres', 'JjMj2011', {
 //   console.error('Unable to connect to the database:', error);
 // }
 
-const Ninja = sequelize.define('ninja', {
-    nama: {type: Sequelize.STRING},
-    usia: {type: Sequelize.INTEGER}
+app.get('/data', (req, res)=>{
+  console.log('req.body',req.body);
+  client.query(`Select * from ninjas`, (err, result)=>{
+      if(!err){
+        console.log('result.rows', result.rows);
+          res.send(result.rows);
+      }
+      if(err){
+        console.log('err', err);
+    }
   });
+  client.end;
+})
+
+// const Ninja = sequelize.define('ninja', {
+//     nama: {type: Sequelize.STRING},
+//     usia: {type: Sequelize.INTEGER}
+//   });
 
 // Ninja.sync({force: false}).then(() => {
 //     console.log('Tabel dibuat!')
@@ -54,28 +80,30 @@ app.get('/data', function(req,res){
   })
 })
 
-app.post('/data', function(req,res){
-    console.log('POST req', req);
-Ninja.create({
-    nama: req.body.nama,
-    usia: req.body.usia
-}).then(data => {
-  console.log('Data masuk!');
-  res.send({
-		status: 'Data sukses diinput!',
-		nama: req.body.nama,
-		usia: req.body.usia
-  })
-});
-})
 
-sequelize.authenticate()
-  .then(() => {
-    console.log('Successfully authenticated to PostgreSQL');
-  })
-  .catch(err => {
-    console.error('Issue authenticating SPostgreSQL:', err);
-  });
+
+// app.post('/data', function(req,res){
+//     console.log('POST req', req);
+// Ninja.create({
+//     nama: req.body.nama,
+//     usia: req.body.usia
+// }).then(data => {
+//   console.log('Data masuk!');
+//   res.send({
+// 		status: 'Data sukses diinput!',
+// 		nama: req.body.nama,
+// 		usia: req.body.usia
+//   })
+// });
+// })
+
+// sequelize.authenticate()
+//   .then(() => {
+//     console.log('Successfully authenticated to PostgreSQL');
+//   })
+//   .catch(err => {
+//     console.error('Issue authenticating SPostgreSQL:', err);
+//   });
 
 app.listen(3210, ()=>{
   console.log('Server @port 3210 gan!')

@@ -4,6 +4,7 @@ import {View, Text, Image, ScrollView, TextInput, Pressable, StyleSheet} from 'r
 import PrayerList from './components/prayerList';
 import HeaderComp from './components/headerComp';
 import NewPrayerRequest from './components/newPrayerRequest';
+import PersonalDevotionPage from './components/personalDevotionPage';
 import { useCallback } from 'react';
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
@@ -106,7 +107,8 @@ export default function App() {
           </Pressable>
           <Text style={[styles.myPrayerClosetText]}>My Daily Bread</Text>
         </View>
-        <Text>Devotion Page</Text>
+        {/* <Text>Devotion Page</Text> */}
+        <PersonalDevotionPage></PersonalDevotionPage>
       </View>
     );
   }
