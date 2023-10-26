@@ -63,6 +63,62 @@ app.get('/data', (req, res)=>{
   client.end;
 })
 
+app.post('/data', (req, res)=>{
+  console.log('POST req.body',req.body);
+  let objectDate = new Date();
+
+
+  let day = objectDate.getDate();
+  console.log(day); // 23
+
+  let month = objectDate.getMonth();
+  console.log(month + 1); // 8
+
+  let year = objectDate.getFullYear();
+  console.log(year); // 2022
+  // var UTCseconds = (x.getTime() + x.getTimezoneOffset()*60*1000)/1000;
+  let DateToSend = year+'-'+month+'-'+day;
+  console.log("DateToSend", DateToSend);
+  let insertQuery = `insert into ninjas(nama, details, createdat, updatedat) 
+                     values('${req.body.nama}', '${req.body.details}', '${DateToSend}', '${DateToSend}' )`
+    client.query(insertQuery, (err, result)=>{
+        if(!err){
+          console.log('POST SUCCESS', result)
+            res.send('Insertion was successful')
+        }
+        else{ console.log('ERROR', err.message) }
+    })
+    client.end;
+})
+
+app.delete('/data', (req, res)=>{
+  console.log('DELETE req.body',req.body);
+  client.query(`delete from ninjas where id=${req.body.id}`, (err, result)=>{
+      if(!err){
+        console.log('DELETE result.rows', result);
+          res.send(result);
+      }
+      if(err){
+        console.log('err', err);
+    }
+  });
+  client.end;
+})
+
+app.put('/data', (req, res)=>{
+  console.log('req.body',req.body);
+  // client.query(`Select * from ninjas`, (err, result)=>{
+  //     if(!err){
+  //       console.log('result.rows', result.rows);
+  //         res.send(result.rows);
+  //     }
+  //     if(err){
+  //       console.log('err', err);
+  //   }
+  // });
+  // client.end;
+})
+
 // const Ninja = sequelize.define('ninja', {
 //     nama: {type: Sequelize.STRING},
 //     usia: {type: Sequelize.INTEGER}
@@ -72,13 +128,13 @@ app.get('/data', (req, res)=>{
 //     console.log('Tabel dibuat!')
 //   });
 
-app.get('/data', function(req,res){
-  Ninja.findAll().then(data => {
-    console.log(data);
-    res.send(data);
-    // res.json({ message: "Welcome to bezkoder application." });
-  })
-})
+// app.get('/data', function(req,res){
+//   Ninja.findAll().then(data => {
+//     console.log(data);
+//     res.send(data);
+//     // res.json({ message: "Welcome to bezkoder application." });
+//   })
+// })
 
 
 

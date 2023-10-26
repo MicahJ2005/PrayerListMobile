@@ -14,6 +14,7 @@ let initialData = [];
 const newPrayerRequest = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [text, setText] = useState('');
+  // const [details, setDetails] = useState('');
   const [count, setCount] = useState(-1);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +28,15 @@ const newPrayerRequest = () => {
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, []);
+
+  // getDataRefresh(() => {
+  //   console.log('IN getDataRefresh');
+  //   axios.get('http://10.0.0.13:3210/data')
+  //     .then((resp) => resp.json())
+  //     .then((json) => setData(json))
+  //     .catch((error) => console.error(error))
+  //     .finally(() => setLoading(false));
+  // });
 
   const addName = (addText) => {
     // console.log('Pushed Button to add', text);
@@ -42,27 +52,64 @@ const newPrayerRequest = () => {
       },
       body: JSON.stringify({
         // userId: 55,
-        id: '101',
+        // id: '101',
         nama: text,
+        details: details,
         // body: "Post body",
       }),
     })
-      .then((response) => response.json())
-      .then((responseData) => {
-        console.log(JSON.stringify(responseData));
+      .then((response) =>{
+      // .then((responseData) => {
+        console.log('response', response);
         Alert.alert('Prayer Request Submitted!');
         setModalVisible(false);
-        // useEffect();
+        // getDataRefresh();
       })
       // .done();
   }
 
   const deleteFunction = (item) => {
     console.log('deleteFunction item', item);
+    fetch("http://10.0.0.13:3210/data", {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: item.id,
+        nama: text,
+        details: details,
+      }),
+    })
+      .then((response) =>{
+      // .then((responseData) => {
+        console.log('response', response);
+        // Alert.alert('Prayer Request Submitted!');
+        // setModalVisible(false);
+        // getDataRefresh();
+      })
   }
 
-  const editDetails = () => {
+  const editDetails = (details) => {
     console.log('editDetails item', details);
+    fetch("http://10.0.0.13:3210/data", {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: details.id,
+      }),
+    })
+      .then((response) =>{
+      // .then((responseData) => {
+        console.log('response', response);
+        // Alert.alert('Prayer Request Submitted!');
+        // setModalVisible(false);
+        // getDataRefresh();
+      })
   }
 
   const showDetails = (item) => {
@@ -83,6 +130,10 @@ const newPrayerRequest = () => {
     setDetailsModalVisible(false)
   }
 
+  const closeNewRequest = () => {
+    setModalVisible(false);
+  }
+
   return (
     <View style={styles.centeredViewPrayerList}>
       {/* start new prayer request Modal */}
@@ -96,20 +147,46 @@ const newPrayerRequest = () => {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+          <Pressable style={styles.circleButtonDetailCloseModal} onPress={() => closeNewRequest()}>
+            <MaterialIcons name="close" size={25} color="white" />
+          </Pressable>
+            <Text style={styles.nameInputText}>Who am I praying for?</Text>
             <TextInput
                 style={{
-                    height: 100,
-                    borderColor: 'gray',
-                    borderWidth: 1,
+                    // height: 100,
+                    borderColor: '#113946',
+                    borderWidth: 4,
+                    borderRadius: 30,
+                    width:'95%',
+                    height: '15%',
+                    marginBottom: 40,
                 }}
                 onChangeText={newText => setText(newText)}
-                placeholder="Request Here"
+                placeholder="    Name"
+            />
+            <Text style={styles.requestInputText}>What is the request?</Text>
+            <TextInput
+                style={{
+                    // height: 100,
+                    borderColor: '#113946',
+                    borderWidth: 4,
+                    borderRadius: 30,
+                    width:'95%',
+                    height: '64%',
+                    marginBottom: 40,
+                    
+                }}
+                onChangeText={newDetailText => setDetails(newDetailText)}
+                placeholder="    Prayer Request"
             />
             {/* <Text></Text> */}
-          <Button
+          {/* <Button
             title="close"
             onPress={() => addName(this.text)}
-          />
+          /> */}
+          <Pressable style={styles.circleSubmitNewRequest} onPress={() => addName(this.text)}>
+            <MaterialIcons name="send" size={30} color="#EAD7BB" />
+          </Pressable>
           </View>
         </View>
       </Modal>
@@ -194,10 +271,11 @@ const styles = StyleSheet.create({
     alignItems: 'left',
     marginTop: 22,
     backgroundColor: '#BCA37F',
+    
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: '#FFF2D8',
     borderRadius: 20,
     padding: 35,
     alignItems: 'center',
@@ -262,11 +340,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   item: {
-    // padding: 10,
-    fontSize: 50,
+    padding: 15,
+    borderRadius: 50,
+    marginBottom: 10,
+    marginTop: 10,
+    marginRight: 30,
+    marginLeft: 30,
+    fontSize: 30,
     height: 80,
     textAlign: 'center',
-    color: '#113946',
+    color: '#FFF2D8',
+    backgroundColor: '#113946',
   },
   buttonDelete: {
     borderRadius: 60,
@@ -396,6 +480,37 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
   },
+  nameInputText:{
+    textAlign: 'left',
+    color: '#C56E33'
+  },
+  requestInputText:{
+    textAlign: 'left',
+    color: '#C56E33'
+  },
+  circleSubmitNewRequest: {
+    // flex: 4,
+    width:50,
+    height: 50,
+    margin:10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 42,
+    backgroundColor: '#113946',
+    position: 'absolute',
+    right:10,
+    bottom: 10,
+    // backgroundColor:'white',
+    // color: 'white',
+    elevation: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 2,
+      height: 4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  }
 });
 
 export default newPrayerRequest;

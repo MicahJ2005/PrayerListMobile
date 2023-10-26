@@ -1,15 +1,15 @@
 // import React from 'react';
 // import { StatusBar } from 'expo-status-bar';
 import {View, Text, Image, ScrollView, TextInput, Pressable, StyleSheet} from 'react-native';
-import PrayerList from './components/prayerList';
-import HeaderComp from './components/headerComp';
+// import PrayerList from './components/prayerList';
+// import HeaderComp from './components/headerComp';
 import NewPrayerRequest from './components/newPrayerRequest';
 import PersonalDevotionPage from './components/personalDevotionPage';
-import { useCallback } from 'react';
+// import { useCallback } from 'react';
 import React, {useState, useEffect} from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import logo from './assets/logo-no-background.png';
-import { useFonts } from 'expo-font';
+// import { useFonts } from 'expo-font';
 // import anticSlabRegular from './assets/fonts/anticSlabRegular.ttf';
 
 
