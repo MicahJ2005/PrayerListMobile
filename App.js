@@ -1,6 +1,6 @@
 // import React from 'react';
 // import { StatusBar } from 'expo-status-bar';
-import {View, Text, Image, ScrollView, TextInput, Pressable, StyleSheet} from 'react-native';
+import {View, Text, Image, ScrollView, Modal, Pressable, StyleSheet} from 'react-native';
 // import PrayerList from './components/prayerList';
 // import HeaderComp from './components/headerComp';
 import NewPrayerRequest from './components/newPrayerRequest';
@@ -9,13 +9,12 @@ import PersonalDevotionPage from './components/personalDevotionPage';
 import React, {useState, useEffect} from 'react';
 // import axios from 'axios';
 import logo from './assets/logo-no-background.png';
-// import { useFonts } from 'expo-font';
-// import anticSlabRegular from './assets/fonts/anticSlabRegular.ttf';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 
 export default function App() {
   const [page, setPage] = useState('home');
-
+  const [menuModalVisible, setMenuModalVisible] = useState(false);
   useEffect(() => {
     console.log('page: ', page);
   })
@@ -33,6 +32,20 @@ export default function App() {
   const navigateHome = () => {
     console.log('navigateHome click', );
     setPage('home');
+  }
+
+  const openMenu = () => {
+    console.log('openMenu click', );
+    setPage('navigation');
+    setMenuModalVisible(true);
+  }
+
+  const navigateHistory = () => {
+    console.log('navigateHistory click', );
+  }
+
+  const navigateAbout = () => {
+    console.log('navigateAbout click', );
   }
 
   
@@ -106,7 +119,11 @@ export default function App() {
             />
           </Pressable>
           <Text style={[styles.myPrayerClosetText]}>My Daily Bread</Text>
+          <Pressable onPress={() => openMenu()}>
+              <MaterialIcons style={[styles.myDailyBreadMenu]} name="menu" size={0} color="black" />
+          </Pressable>
         </View>
+        
         {/* <Text>Devotion Page</Text> */}
         <PersonalDevotionPage></PersonalDevotionPage>
       </View>
@@ -122,25 +139,142 @@ export default function App() {
               source={logo}
             />
           </Pressable>
-          <Text style={[styles.myPrayerClosetText]}>My Prayer Closet</Text>
+          <Text style={[styles.myPrayerClosetText]}>My Prayer Closet
+            
+          </Text>
+          <Pressable onPress={() => openMenu()}>
+              <MaterialIcons style={[styles.myPrayerClosetMenu]} name="menu" size={0} color="black" />
+          </Pressable>
+          
         </View>
         
         <NewPrayerRequest></NewPrayerRequest> 
       </View>
     )
   }
-  
+  else if(page === 'navigation'){
+    return (
+      // <Modal
+      //   animationType="slide"
+      //   transparent={true}
+      //   visible={menuModalVisible}
+      //   onRequestClose={() => {
+      //     Alert.alert('Modal has been closed.');
+      //     setMenuModalVisible(!menuModalVisible);
+      //   }}>
+          // <View style={styles.scrollViewNavigation}>
+          <View style={styles.scrollView}>
+            <View style={styles.prayerListHeader}>
+              <Pressable onPress={() => navigateHome()}>
+                <Image
+                  style={styles.tinyLogoPrayerList}
+                  source={logo}
+                />
+              </Pressable>
+              <Text style={[styles.myNavigationMenuText]}>Navigation Menu
+                
+              </Text>
+              <Pressable onPress={() => navigateHome()}>
+                  <MaterialIcons style={[styles.myPrayerClosetMenu]} name="home" size={0} color="black" />
+              </Pressable>
+            
+            </View>
+          
+          
+          <Pressable style={styles.myDailyDevotionPressableNavigation} onPress={() => navigateHome()}>
+            <Text style={styles.myDailyDevotionPressableTextNavigation}>Home</Text>
+          </Pressable>
+          <Pressable style={styles.myDailyDevotionPressableNavigation} onPress={() => navigateToDevotions()}>
+            <Text style={styles.myDailyDevotionPressableTextNavigation}>My Daily Devotion</Text>
+          </Pressable>
+          <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateToPrayerList()}>
+            <Text style={styles.myPrayerListPressableTextNavigation}>My Prayer List</Text>
+          </Pressable>
+          <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateHistory()}>
+            <Text style={styles.myPrayerListPressableTextNavigation}>My Prayer History</Text>
+          </Pressable>
+          <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateAbout()}>
+            <Text style={styles.myPrayerListPressableTextNavigation}>About</Text>
+          </Pressable>
+          
+          {/* <Pressable onPress={() => navigateHistory()}>
+              <MaterialIcons style={[styles.myHistoryMenuNavigation]} name="home" size={40} color="black" />
+          </Pressable> */}
+        </View>
+        
+      
+    )
+  }
   
   
 }
 
 const styles = StyleSheet.create({
+  myDailyDevotionPressableNavigation:{
+    width: '100%',
+    // borderRadius: 10,
+    backgroundColor: '#113946',
+    padding: 20,
+    elevation: 2,
+    // width:'45%',
+    // marginEnd: '10%',
+    marginBottom:10,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+  },
+  myDailyDevotionPressableTextNavigation:{
+    color: '#EAD7BB',
+    backgroundColor: '#113946',
+    textAlign: 'center',
+    fontSize: 30,
+  },
+  myPrayerListPressableNavigation:{
+    width: '100%',
+    // borderRadius: 10,
+    backgroundColor: '#113946',
+    padding: 20,
+    elevation: 2,
+    marginBottom:10,
+    // width:'45%',
+    // marginEnd: '10%',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    
+  },
+  myPrayerListPressableTextNavigation:{
+    color: '#EAD7BB',
+    backgroundColor: '#113946',
+    textAlign: 'center',
+    fontSize: 30,
+  },
   scrollView: {
     flex: 2,
     // justifyContent: 'center',
     // alignItems: 'center',
     marginTop: 22,
     backgroundColor: '#BCA37F',
+  },
+  scrollViewNavigation:{
+    margin: 0,
+    height:'100%',
+    width: '100%',
+    // marginLeft: '50%',
+    backgroundColor: '#BCA37F',
+    // borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
   container: {
     paddingTop: 50,
@@ -283,9 +417,37 @@ const styles = StyleSheet.create({
   myPrayerClosetText:{
     fontSize:30,
     textAlign:'right',
-    marginLeft:20,
+    marginLeft:10,
+    marginRight:10,
     color: '#C56E33',
     paddingTop: 20,
+  },
+  myNavigationMenuText:{
+    fontSize:30,
+    textAlign:'right',
+    marginLeft:10,
+    marginRight:10,
+    color: '#C56E33',
+    paddingTop: 20,
+    marginBottom: 40
+  },
+  myPrayerClosetMenu:{
+    fontSize:35,
+    // textAlign:'right',
+    // marginLeft:20,
+    color: '#113946',
+    position: 'absolute',
+    top:25,
+    right: -30
+  },
+  myDailyBreadMenu:{
+    fontSize:35,
+    // textAlign:'right',
+    // marginLeft:20,
+    color: '#113946',
+    position: 'absolute',
+    top:25,
+    right: -50,
   },
   prayerListHeader:{
     // flex: 1,
