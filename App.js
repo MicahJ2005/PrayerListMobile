@@ -72,7 +72,7 @@ export default function App() {
             {'\n'}
             {'\n'}
             <Text style={styles.homeText2}>
-                Devos4Me is designed with you in mind. God desires to "know you" personally. May each day's devotional be a time where God meets you where you are, as you walk this life together
+                Devos4Me is designed with you in mind. God desires you to know Him personally. May each day's devotional be a time where God meets you where you are, as you walk this life together
             </Text>
           
           </Text>
