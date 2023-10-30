@@ -291,17 +291,19 @@ const newPrayerRequest = () => {
                                   onPress={() => showDetails(item)}>
             {/* <View style={[styles.nameView]}> */}
                 <View>
-                    <Text style={[styles.timesPrayedBubble]}>{item.timesprayed}</Text>
+                    <Text style={[styles.timesPrayedBubble]}>{item.timesprayed}
+                    <View>
+                      <Text style={[styles.timesPrayedBubbleText]}>Prayed</Text>
+                    </View>
+                    </Text>
                     
                 </View>
-                {/* <View>
-                    <Text style={[styles.timesPrayedBubbleText]}>Prayed</Text>
-                </View> */}
+                
                 
                 <Text style={styles.item} key={item.id}>{item.nama}
                 
-                
                 </Text>
+                
                 
             {/* </View> */}
             
@@ -317,21 +319,28 @@ const newPrayerRequest = () => {
 };
 
 const styles = StyleSheet.create({
-  // timesPrayedBubbleText:{
-  //   fontSize: 20,
-  //   width:30,
-  //   height: 30,
-  //   marginRight:10,
-  //   // marginTop:5,
-  //   marginBottom: -80,
-  //   zIndex:2,
-  //   // position: 'relative',
-  //   left:'85%',
-  //   // justifyContent: 'center',
-  //   // alignItems: 'center',
-  //   // borderRadius: 60,
-  //   // textAlign:'center'
-  // },
+  timesPrayedBubbleText:{
+    fontSize: 12,
+    color: '#C56E33',
+    marginTop: 5,
+    marginLeft:-15,
+    // padding:10,
+    // position: 'absolute',
+    // right:5,
+    // top:10,
+    // width:30,
+    // height: 30,
+    // marginRight:10,
+    // marginTop:25,
+    // marginBottom: -80,
+    zIndex:1,
+    // position: 'relative',
+    // left:'85%',
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // borderRadius: 60,
+    textAlign:'left'
+  },
   timesPrayedBubble: {
     backgroundColor: 'grey',
     // margin:3,
@@ -490,6 +499,7 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     fontSize: 30,
     height: 80,
+    zIndex:-1,
     textAlign: 'center',
     color: '#FFF2D8',
     backgroundColor: '#113946',

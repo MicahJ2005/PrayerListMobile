@@ -1,26 +1,52 @@
 // import React from 'react';
 // import { StatusBar } from 'expo-status-bar';
-import {View, Text, Image, ScrollView, Modal, Pressable, StyleSheet} from 'react-native';
+import {View, Text, Image, ScrollView, Modal, Pressable, StyleSheet, SafeAreaView, SectionList, StatusBar} from 'react-native';
 // import PrayerList from './components/prayerList';
 // import HeaderComp from './components/headerComp';
 import NewPrayerRequest from './components/newPrayerRequest';
 import PersonalDevotionPage from './components/personalDevotionPage';
+import PrayerHistoryPage from './components/prayerHistoryPage';
+import AboutPage from './components/aboutPage';
 // import { useCallback } from 'react';
 import React, {useState, useEffect} from 'react';
 // import axios from 'axios';
 import logo from './assets/logo-no-background.png';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { SelectList } from 'react-native-dropdown-select-list'
+
+const data = [
+  {key:'Depression', value:'Depression'},
+  {key:'Fear', value:'Fear'},
+  {key:'Strength', value:'Strength'},
+  {key:'Job Loss', value:'Job Loss'},
+  {key:'Loss', value:'Loss'},
+  {key:'Sickness', value:'Sickness'},
+  {key:'Parenting', value:'Parenting'},
+  {key:'Spiritual Growth', value:'Spiritual Growth'},
+]
 
 
 export default function App() {
   const [page, setPage] = useState('home');
   const [menuModalVisible, setMenuModalVisible] = useState(false);
+  const [devoSelectorVisible, setDevoSelectorVisible] = useState(false);
+  const [selected, setSelected] = React.useState("");
+  const [submitDevoButtonDisabled, setSubmitDevoButtonDisabled] = useState(true);
+  
   useEffect(() => {
     console.log('page: ', page);
   })
 
+  const openDevoTypeSelector = () => {
+    console.log('IN openDevoTypeSelector ');
+    setPage('home');
+    setDevoSelectorVisible(true);
+  }
+
   const navigateToDevotions = () => {
     console.log('navigateToDevotions Click');
+    setSelected('');
+    setSubmitDevoButtonDisabled(true);
     setPage('devotion');
   }
 
@@ -31,6 +57,10 @@ export default function App() {
 
   const navigateHome = () => {
     console.log('navigateHome click', );
+    setMenuModalVisible(false);
+    setSubmitDevoButtonDisabled(true);
+    setSelected('');
+    setDevoSelectorVisible(false);
     setPage('home');
   }
 
@@ -42,16 +72,49 @@ export default function App() {
 
   const navigateHistory = () => {
     console.log('navigateHistory click', );
+    setPage('navigateHistory');
   }
 
   const navigateAbout = () => {
     console.log('navigateAbout click', );
+    setPage('about');
+  }
+
+  const setDevoType = () => {
+    console.log('setDevoType click', selected);
+    setSubmitDevoButtonDisabled(false);
+  }
+
+  const getDevo = () => {
+    // this will initiate the callout to get a new devo based on the "selected" devot type
+    console.log('getDevo click', selected);
+    // setSubmitDevoButtonDisabled(true);
+    setPage('devotion');
+  }
+
+  const devoSelectorModalclose = () => {
+    console.log('devoSelectorModalclose click');
+    setSubmitDevoButtonDisabled(true);
+    setSelected('');
+    // setDevoType('');
+    setDevoSelectorVisible(false);
   }
 
   
+  
   if(page === 'home'){
     return (
+      
       <ScrollView style={styles.scrollView}>
+        <View style={[styles.homeHeaderIcons]}>
+          {/* <Pressable onPress={() => navigateHome()} >
+              <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
+          </Pressable> */}
+          <Pressable onPress={() => openMenu()} >
+              {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
+              <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
+          </Pressable>
+        </View>
         <Pressable onPress={() => navigateHome()}>
           <Image
             style={styles.tinyLogo}
@@ -62,6 +125,7 @@ export default function App() {
         {/* if(page === 'home'){
           <Text>home</Text>
         } */}
+        
         <View style={styles.homeContentView}>
           <Text >
             <Text style={styles.homeText}>
@@ -76,6 +140,7 @@ export default function App() {
             </Text>
           
           </Text>
+          
         </View>
         
         {/* <Text style={styles.homeText}>
@@ -90,7 +155,7 @@ export default function App() {
         
         </Text> */}
         <View style={styles.homeButtonContainer}>
-          <Pressable style={styles.myDailyDevotionPressable} onPress={() => navigateToDevotions()}>
+          <Pressable style={styles.myDailyDevotionPressable} onPress={() => openDevoTypeSelector()}>
             <Text style={styles.myDailyDevotionPressableText}>My Daily Devotion</Text>
           </Pressable>
           <Pressable style={styles.myPrayerListPressable} onPress={() => navigateToPrayerList()}>
@@ -98,7 +163,50 @@ export default function App() {
           </Pressable>
         </View>
         
-        
+        {/* <View style={styles.prayerTypeModalView}> */}
+            <View style={styles.centeredView}>
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={devoSelectorVisible}
+                onRequestClose={() => {
+                  Alert.alert('Modal has been closed.');
+                  setDevoSelectorVisible(!devoSelectorVisible);
+                }}>
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <Text style={styles.modalText}>How can you be encouraged today?</Text>
+                  <SafeAreaView style={styles.container}>
+                    <SelectList 
+                        setSelected={(val) => setSelected(val)} 
+                        onSelect={() => setDevoType()}
+                        boxStyles={{width:250}}
+                        data={data} 
+                        save="value"
+                    />
+                  </SafeAreaView>
+                  <Pressable
+                    style={[styles.circleButtonDetailCloseModal]}
+                    onPress={() => devoSelectorModalclose()}>
+                    <MaterialIcons name="close" size={25} color="white" />
+                  </Pressable>
+
+                    {submitDevoButtonDisabled ?
+                      ''
+                      : 
+                      <Pressable
+                        style={[styles.circleSubmitNewRequest]}
+                        onPress={() => getDevo()}
+                        disabled={submitDevoButtonDisabled}
+                      >
+                      <MaterialIcons name="send" size={30} color="#EAD7BB" />
+                    </Pressable>}
+                  
+                </View>
+              </View>
+            </Modal>
+          </View>
+          {/* </View> */}
         {/* <HeaderComp></HeaderComp> */}
         
         {/* <NewPrayerRequest></NewPrayerRequest> */}
@@ -111,6 +219,16 @@ export default function App() {
   else if(page === 'devotion'){
     return (
       <View style={styles.scrollView}>
+        <View style={[styles.homeHeaderIcons]}>
+          <Pressable onPress={() => navigateHome()} >
+              <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
+              {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
+          </Pressable>
+          <Pressable onPress={() => openMenu()} >
+              {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
+              <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
+          </Pressable>
+        </View>
         <View style={styles.prayerListHeader}>
           <Pressable onPress={() => navigateHome()}>
             <Image
@@ -119,19 +237,29 @@ export default function App() {
             />
           </Pressable>
           <Text style={[styles.myPrayerClosetText]}>My Daily Bread</Text>
-          <Pressable onPress={() => openMenu()}>
+          {/* <Pressable onPress={() => openMenu()}>
               <MaterialIcons style={[styles.myDailyBreadMenu]} name="menu" size={0} color="black" />
-          </Pressable>
+          </Pressable> */}
         </View>
         
         {/* <Text>Devotion Page</Text> */}
-        <PersonalDevotionPage></PersonalDevotionPage>
+        <PersonalDevotionPage selected={selected}></PersonalDevotionPage>
       </View>
     );
   }
   else if(page === 'prayerList'){
     return (
       <View style={styles.scrollView}>
+        <View style={[styles.homeHeaderIcons]}>
+          <Pressable onPress={() => navigateHome()} >
+              <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
+              {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
+          </Pressable>
+          <Pressable onPress={() => openMenu()} >
+              {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
+              <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
+          </Pressable>
+        </View>
         <View style={styles.prayerListHeader}>
           <Pressable onPress={() => navigateHome()}>
             <Image
@@ -142,9 +270,9 @@ export default function App() {
           <Text style={[styles.myPrayerClosetText]}>My Prayer Closet
             
           </Text>
-          <Pressable onPress={() => openMenu()}>
+          {/* <Pressable onPress={() => openMenu()}>
               <MaterialIcons style={[styles.myPrayerClosetMenu]} name="menu" size={0} color="black" />
-          </Pressable>
+          </Pressable> */}
           
         </View>
         
@@ -164,6 +292,15 @@ export default function App() {
       //   }}>
           // <View style={styles.scrollViewNavigation}>
           <View style={styles.scrollView}>
+            <View style={[styles.homeHeaderIcons]}>
+              <Pressable onPress={() => navigateHome()} >
+                  <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
+                  {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
+              </Pressable>
+              {/* <Pressable onPress={() => openMenu()} >
+                  <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
+              </Pressable> */}
+            </View>
             <View style={styles.prayerListHeader}>
               <Pressable onPress={() => navigateHome()}>
                 <Image
@@ -174,9 +311,9 @@ export default function App() {
               <Text style={[styles.myNavigationMenuText]}>Navigation Menu
                 
               </Text>
-              <Pressable onPress={() => navigateHome()}>
+              {/* <Pressable onPress={() => navigateHome()}>
                   <MaterialIcons style={[styles.myPrayerClosetMenu]} name="home" size={0} color="black" />
-              </Pressable>
+              </Pressable> */}
             
             </View>
           
@@ -184,7 +321,7 @@ export default function App() {
           <Pressable style={styles.myDailyDevotionPressableNavigation} onPress={() => navigateHome()}>
             <Text style={styles.myDailyDevotionPressableTextNavigation}>Home</Text>
           </Pressable>
-          <Pressable style={styles.myDailyDevotionPressableNavigation} onPress={() => navigateToDevotions()}>
+          <Pressable style={styles.myDailyDevotionPressableNavigation} onPress={() => openDevoTypeSelector()}>
             <Text style={styles.myDailyDevotionPressableTextNavigation}>My Daily Devotion</Text>
           </Pressable>
           <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateToPrayerList()}>
@@ -205,11 +342,167 @@ export default function App() {
       
     )
   }
-  
-  
+  else if(page === 'navigateHistory'){
+
+    return(
+      <View style={styles.scrollView}>
+        <View style={[styles.homeHeaderIcons]}>
+          <Pressable onPress={() => navigateHome()} >
+              <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
+              {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
+          </Pressable>
+          <Pressable onPress={() => openMenu()} >
+              {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
+              <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
+          </Pressable>
+        </View>
+        <View style={styles.prayerListHeader}>
+          <Pressable onPress={() => navigateHome()}>
+            <Image
+              style={styles.tinyLogoPrayerList}
+              source={logo}
+            />
+          </Pressable>
+          <Text style={[styles.myNavigationMenuText]}>Prayer History
+            
+          </Text>
+          {/* <Pressable onPress={() => navigateHome()}>
+              <MaterialIcons style={[styles.myPrayerClosetMenu]} name="home" size={0} color="black" />
+          </Pressable> */}
+        
+        </View>
+        <PrayerHistoryPage></PrayerHistoryPage>
+      </View>
+    )
+  }
+
+  else if(page === 'about'){
+
+    return(
+      <View style={styles.scrollView}>
+        <View style={[styles.homeHeaderIcons]}>
+          <Pressable onPress={() => navigateHome()} >
+              <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
+              {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
+          </Pressable>
+          <Pressable onPress={() => openMenu()} >
+              {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
+              <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
+          </Pressable>
+        </View>
+        
+        <View style={styles.prayerListHeader}>
+          <Pressable onPress={() => navigateHome()}>
+            <Image
+              style={styles.tinyLogoPrayerList}
+              source={logo}
+            />
+          </Pressable>
+          <Text style={[styles.myNavigationMenuText]}>About
+            
+          </Text>
+          {/* <Pressable onPress={() => navigateHome()}>
+              <MaterialIcons style={[styles.myPrayerClosetMenu]} name="home" size={0} color="black" />
+          </Pressable> */}
+        
+        </View>
+        <AboutPage></AboutPage>
+      </View>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
+  
+  circleSubmitNewRequest: {
+    width:50,
+    height: 50,
+    margin:10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 42,
+    backgroundColor: '#113946',
+    position: 'absolute',
+    right:10,
+    bottom: 10,
+    elevation: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 2,
+      height: 4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  circleButtonDetailCloseModal: {
+    width:40,
+    height: 40,
+    margin:10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 42,
+    backgroundColor: '#fff',
+    position: 'absolute',
+    right:-20,
+    top: -20,
+    backgroundColor:'grey',
+    color: 'white',
+    elevation: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    width: '80%',
+    height: '90%',
+    margin: 20,
+    backgroundColor: '#FFF2D8',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    marginTop: 15,
+    textAlign: 'center',
+    fontSize: 20,
+    color:'#113946'
+  },
+
   myDailyDevotionPressableNavigation:{
     width: '100%',
     // borderRadius: 10,
@@ -386,11 +679,11 @@ const styles = StyleSheet.create({
   },
   homeButtonContainer: {
     flex: 1,
-    paddingTop: 15,
+    paddingTop: 1,
     display: 'inline',
     flexDirection: 'row',
     alignItems: 'center',
-    margin: 20,
+    margin: 10,
   },
   homeContentView: {
     fontSize:25,
@@ -456,28 +749,58 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     // alignItems: 'center',
     // margin: 20,
+  },
+  container: {
+    flex: 1,
+    paddingTop: StatusBar.currentHeight,
+    marginHorizontal: 10,
+  },
+  item: {
+    backgroundColor: '#EAD7BB',
+    padding: 20,
+    marginVertical: 8,
+  },
+  header: {
+    fontSize: 32,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+  },
+  homeHeaderIcons:{
+    // display: 'inline',
+    backgroundColor: '#113946',
+    // flexDirection:'row',
+    height: 50,
+    padding:5,
+    width:'100%'
+  },
+  homeIcon: {
+    fontSize: 40,
+    backgroundColor: '#113946',
+    color: '#BCA37F',
+    textAlign:'right',
+    position: 'absolute',
+    left: 1,
+    top:1
+    // marginLeft:'50%',
+  },
+  homeMenuIcon:{
+    fontSize: 40,
+    backgroundColor: '#113946',
+    color: '#BCA37F',
+    position: 'absolute',
+    right: 1,
+    top:1
+    // float:'right'
+    // textAlign:'right',
+    // position: 'absolute',
+    // right: 5,
+    // top:5
+    // marginRight:'75%',
+    // padding:10
+    // marginBottom:-10
   }
-  // textStyle: {
-  //   color: 'white',
-  //   fontWeight: 'bold',
-  //   textAlign: 'center',
-  // },
-  // modalText: {
-  //   marginBottom: 15,
-  //   textAlign: 'center',
-  // },
-  // item: {
-  //   // padding: 10,
-  //   fontSize: 50,
-  //   height: 80,
-  //   textAlign: 'left',
-  // },
-  // buttonDelete: {
-  //   borderRadius: 60,
-  //   padding: 10,
-  //   elevation: 2,
-  //   backgroundColor: '#EAD7BB',
-  // },
 });
 
 
