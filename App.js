@@ -1,16 +1,12 @@
-// import React from 'react';
-// import { StatusBar } from 'expo-status-bar';
 import {View, Text, Image, ScrollView, Modal, Pressable, StyleSheet, SafeAreaView, SectionList, StatusBar} from 'react-native';
-// import PrayerList from './components/prayerList';
-// import HeaderComp from './components/headerComp';
 import NewPrayerRequest from './components/newPrayerRequest';
 import PersonalDevotionPage from './components/personalDevotionPage';
 import PrayerHistoryPage from './components/prayerHistoryPage';
 import AboutPage from './components/aboutPage';
-// import { useCallback } from 'react';
+import ResourcesPage from './components/resourcesPage';
 import React, {useState, useEffect} from 'react';
-// import axios from 'axios';
 import logo from './assets/logo-no-background.png';
+import blackAndWhiteLogo from './assets/devos4me-high-resolution-logo-white-transparent.png';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { SelectList } from 'react-native-dropdown-select-list'
 
@@ -98,6 +94,11 @@ export default function App() {
     setSelected('');
     // setDevoType('');
     setDevoSelectorVisible(false);
+  }
+
+  const navigateResources = () =>{
+    console.log('navigateResources click');
+    setPage('resources');
   }
 
   
@@ -317,22 +318,27 @@ export default function App() {
             
             </View>
           
+          <ScrollView>
+            <Pressable style={styles.myDailyDevotionPressableNavigation} onPress={() => navigateHome()}>
+              <Text style={styles.myDailyDevotionPressableTextNavigation}>Home</Text>
+            </Pressable>
+            <Pressable style={styles.myDailyDevotionPressableNavigation} onPress={() => openDevoTypeSelector()}>
+              <Text style={styles.myDailyDevotionPressableTextNavigation}>My Daily Devotion</Text>
+            </Pressable>
+            <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateToPrayerList()}>
+              <Text style={styles.myPrayerListPressableTextNavigation}>My Prayer List</Text>
+            </Pressable>
+            <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateHistory()}>
+              <Text style={styles.myPrayerListPressableTextNavigation}>My Prayer History</Text>
+            </Pressable>
+            <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateResources()}>
+              <Text style={styles.myPrayerListPressableTextNavigation}>Resources</Text>
+            </Pressable>
+            <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateAbout()}>
+              <Text style={styles.myPrayerListPressableTextNavigation}>About</Text>
+            </Pressable>
+          </ScrollView>
           
-          <Pressable style={styles.myDailyDevotionPressableNavigation} onPress={() => navigateHome()}>
-            <Text style={styles.myDailyDevotionPressableTextNavigation}>Home</Text>
-          </Pressable>
-          <Pressable style={styles.myDailyDevotionPressableNavigation} onPress={() => openDevoTypeSelector()}>
-            <Text style={styles.myDailyDevotionPressableTextNavigation}>My Daily Devotion</Text>
-          </Pressable>
-          <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateToPrayerList()}>
-            <Text style={styles.myPrayerListPressableTextNavigation}>My Prayer List</Text>
-          </Pressable>
-          <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateHistory()}>
-            <Text style={styles.myPrayerListPressableTextNavigation}>My Prayer History</Text>
-          </Pressable>
-          <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateAbout()}>
-            <Text style={styles.myPrayerListPressableTextNavigation}>About</Text>
-          </Pressable>
           
           {/* <Pressable onPress={() => navigateHistory()}>
               <MaterialIcons style={[styles.myHistoryMenuNavigation]} name="home" size={40} color="black" />
@@ -374,6 +380,45 @@ export default function App() {
         <PrayerHistoryPage></PrayerHistoryPage>
       </View>
     )
+  }
+  else if(page === 'resources'){
+    return(
+      <View style={styles.scrollView}>
+        <View style={[styles.homeHeaderIcons]}>
+          <Pressable onPress={() => navigateHome()} >
+              <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
+              {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
+          </Pressable>
+          {/* <Image
+            style={styles.tinyLogo2}
+            source={blackAndWhiteLogo}
+          /> */}
+          <Pressable onPress={() => openMenu()} >
+              {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
+              <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
+          </Pressable>
+        </View>
+        
+        <View style={styles.prayerListHeader}>
+          <Pressable onPress={() => navigateHome()}>
+            <Image
+              style={styles.tinyLogoPrayerList}
+              source={logo}
+            />
+          </Pressable>
+          <Text style={[styles.myNavigationMenuText]}>Resources
+            
+          </Text>
+          {/* <Pressable onPress={() => navigateHome()}>
+              <MaterialIcons style={[styles.myPrayerClosetMenu]} name="home" size={0} color="black" />
+          </Pressable> */}
+        
+        </View>
+        <ResourcesPage></ResourcesPage>
+      </View>
+    )
+    
+    
   }
 
   else if(page === 'about'){
@@ -578,6 +623,13 @@ const styles = StyleSheet.create({
     height: 170,
     marginTop: 15,
     marginLeft: 5,
+    // position: 'absolute'
+  },
+  tinyLogo2: {
+    width: 100,
+    height: 40,
+    marginTop: 2,
+    marginLeft: '35%',
     // position: 'absolute'
   },
   tinyLogoDevotions: {

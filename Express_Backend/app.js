@@ -63,6 +63,20 @@ app.get('/data', (req, res)=>{
   client.end;
 })
 
+app.get('/data/prayerhistory', (req, res)=>{
+  console.log('req.body',req.body);
+  client.query(`Select * from prayerrequests WHERE status = 'Answered' ORDER BY nama ASC `, (err, result)=>{
+      if(!err){
+        console.log('result.rows', result.rows);
+          res.send(result.rows);
+      }
+      if(err){
+        console.log('err', err);
+    }
+  });
+  client.end;
+})
+
 app.post('/data', (req, res)=>{
   console.log('POST req.body',req.body);
   let objectDate = new Date();
@@ -151,7 +165,7 @@ app.put('/data/timesprayed', (req, res)=>{
   let day = objectDate.getDate();
   console.log(day); // 23
 
-  let month = objectDate.getMonth();
+  let month = objectDate.getMonth() + 1;
   console.log(month + 1); // 8
 
   let year = objectDate.getFullYear();
@@ -164,6 +178,43 @@ app.put('/data/timesprayed', (req, res)=>{
                         set 
                         updatedat = '${DateToSend}',
                         timesprayed = '${req.body.timesprayed}'
+                        where id = '${req.body.id}'`
+
+    client.query(insertQuery, (err, result)=>{
+    if(!err){
+      console.log('PUT TIMESPRAYED SUCCESS', result)
+      res.send('Insertion was successful')
+    }
+      else{ console.log('ERROR', err.message) }
+    })
+    client.end;
+  }
+  else{ console.log('ERROR', err.message) }
+  
+})
+
+app.put('/data/answeredprayer', (req, res)=>{
+  console.log('PUT answeredprayer req.body',req.body);
+  let objectDate = new Date();
+
+
+  let day = objectDate.getDate();
+  console.log(day); // 23
+
+  let month = objectDate.getMonth() + 1;
+  console.log(month + 1); // 8
+
+  let year = objectDate.getFullYear();
+  console.log(year); // 2022
+  // var UTCseconds = (x.getTime() + x.getTimezoneOffset()*60*1000)/1000;
+  let DateToSend = year+'-'+month+'-'+day;
+  console.log("DateToSend", DateToSend);
+  if(req.body.id != null){
+    let insertQuery = `update prayerrequests 
+                        set 
+                        updatedat = '${DateToSend}',
+                        status = '${req.body.status}',
+                        answerednote = '${req.body.answerednote}'
                         where id = '${req.body.id}'`
 
     client.query(insertQuery, (err, result)=>{

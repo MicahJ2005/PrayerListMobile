@@ -21,6 +21,9 @@ const newPrayerRequest = () => {
   const [showEditButton, setShowEditButton] = useState(false);
   const [id, setId] = useState('');
   const [timesPrayed, setTimesPrayed] = useState('');
+  const [answeredPrayerInputModalOpen, setAnsweredPrayerInputModalOpen] = useState(false);
+  const [answeredPrayerText, setAnsweredPrayerText] = useState('');
+  
 
   useEffect(() => {
     loadData();
@@ -159,12 +162,47 @@ const newPrayerRequest = () => {
 
   const answeredPrayer = () => {
     console.log('answeredPrayer', details);
-    setDetails('');
-    setDetailsModalVisible(false)
+    setDetails(details);
+    // setDetailsModalVisible(false);
+    setAnsweredPrayerInputModalOpen(true);
   }
 
   const closeNewRequest = () => {
     setModalVisible(false);
+  }
+
+  const closeAnsweredPrayer = () => {
+    setAnsweredPrayerInputModalOpen(false)
+  }
+
+  const updateAnsweredPrayer = () => {
+    console.log('updateAnsweredPrayer details', details);
+    console.log('updateAnsweredPrayer answeredPrayerText', answeredPrayerText);
+    // setDetails(details);
+    // setDetailsModalVisible(false);
+    fetch("http://10.0.0.13:3210/data/answeredprayer", {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: details.id,
+        status: 'Answered',
+        answerednote: answeredPrayerText,
+      }),
+    })
+      .then((response) =>{
+        console.log('response', response);
+        setModalVisible(false);
+        setDetailsModalVisible(false);
+        setAnsweredPrayerInputModalOpen(false);
+        setDetails('');
+        loadData();
+        Alert.alert('Praise the Lord!');
+        
+      })
+    
   }
 
   return (
@@ -180,7 +218,7 @@ const newPrayerRequest = () => {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-          <Pressable style={styles.circleButtonDetailCloseModal} onPress={() => closeNewRequest()}>
+          <Pressable style={styles.circleButtonDetailCloseModal2} onPress={() => closeNewRequest()}>
             <MaterialIcons name="close" size={25} color="white" />
           </Pressable>
             <Text style={styles.nameInputText}>Who/What am I praying for?</Text>
@@ -228,6 +266,69 @@ const newPrayerRequest = () => {
         </View>
       </Modal>
       {/* end new prayer request Modal */}
+
+       {/* start Answered Prayer Input Modal */}
+       <Modal
+        animationType="slide"
+        transparent={true}
+        visible={answeredPrayerInputModalOpen}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setAnsweredPrayerInputModalOpen(!answeredPrayerInputModalOpen);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalAnsweredPrayerView}>
+          <Pressable style={styles.circleButtonAnsweredPrayerCloseModal} onPress={() => closeAnsweredPrayer()}>
+            <MaterialIcons name="close" size={25} color="white" />
+          </Pressable>
+            <Text style={styles.answeredPrayerText}>Prayer Request</Text>
+            <View style={styles.answeredPrayerBox}>
+              <Text style={styles.answeredPrayerDetailText}>Request: </Text>
+              <Text style={styles.answeredPrayerNameText}> {details.nama}</Text>
+              <Text style={styles.answeredPrayerDetailText}>Details: </Text>
+              <Text style={styles.answeredPrayerDetailText2}>{details.details}</Text>
+            </View>
+            
+            {/* <TextInput
+                style={{
+                    borderColor: '#113946',
+                    borderWidth: 4,
+                    borderRadius: 30,
+                    width:'95%',
+                    height: '15%',
+                    marginBottom: 40,
+                }}
+                onChangeText={newText => setText(newText)}
+                placeholder="    Subject"
+                value={text}
+            /> */}
+            <Text style={styles.requestInputText}>How has God answered your prayers?</Text>
+            <TextInput
+                style={{
+                    // height: 100,
+                    borderColor: '#113946',
+                    borderWidth: 4,
+                    borderRadius: 30,
+                    width:'95%',
+                    height: '30%',
+                    marginBottom: 40,
+                    
+                }}
+                onChangeText={newAnswerText => setAnsweredPrayerText(newAnswerText)}
+                placeholder="    Answer..."
+                // value={details}
+            />
+            
+              <Pressable style={styles.circleSubmitNewRequest} onPress={() => updateAnsweredPrayer()} >
+                <MaterialIcons name="send" size={30} color="#EAD7BB" />
+              </Pressable>
+              
+          
+          
+          </View>
+        </View>
+      </Modal>
+      {/* end Answered Prayer Input Modal */}
 
       {/* start prayer request details Modal */}
       <Modal
@@ -283,35 +384,40 @@ const newPrayerRequest = () => {
       {/* end prayer request details Modal */}
       
       <Text style={styles.helpText}>click each prayer request to view details</Text>
+      <SafeAreaView style={styles.flatListStyle}>
+        <FlatList
+          data={data}
+          renderItem={({item}) => 
+            <Pressable style={[styles.buttonShowDetail]} 
+                                    onPress={() => showDetails(item)}>
+              {/* <View style={[styles.nameView]}> */}
+                  <View>
+                      <Text style={[styles.timesPrayedBubble]}>{item.timesprayed}
+                      <View>
+                        <Text style={[styles.timesPrayedBubbleText]}>Prayed</Text>
+                      </View>
+                      </Text>
+                      
+                  </View>
+                  
+                  
+                  <Text style={styles.item} key={item.id}>{item.nama}
+                  
+                  </Text>
+                  
+                  
+              {/* </View> */}
+              
+            </Pressable>
+          }
+        />
+      </SafeAreaView>
       
-      <FlatList
-        data={data}
-        renderItem={({item}) => 
-          <Pressable style={[styles.buttonShowDetail]} 
-                                  onPress={() => showDetails(item)}>
-            {/* <View style={[styles.nameView]}> */}
-                <View>
-                    <Text style={[styles.timesPrayedBubble]}>{item.timesprayed}
-                    <View>
-                      <Text style={[styles.timesPrayedBubbleText]}>Prayed</Text>
-                    </View>
-                    </Text>
-                    
-                </View>
-                
-                
-                <Text style={styles.item} key={item.id}>{item.nama}
-                
-                </Text>
-                
-                
-            {/* </View> */}
-            
-          </Pressable>
-        }
-      />
-      <Pressable style={styles.circleButton} onPress={() => addNewPrayerRequest()}>
+      {/* <Pressable style={styles.circleButton} onPress={() => addNewPrayerRequest()}>
         <MaterialIcons name="add" size={38} color="#BCA37F" />
+      </Pressable> */}
+      <Pressable style={styles.bottomButton} onPress={() => addNewPrayerRequest()}>
+        <Text style={styles.bottomButtonText}>New Prayer Request</Text>
       </Pressable>
     </View>
     
@@ -319,6 +425,81 @@ const newPrayerRequest = () => {
 };
 
 const styles = StyleSheet.create({
+  bottomButtonText:{
+    color:"#BCA37F",
+    fontSize:20
+  },
+  bottomButton:{
+    width:'100%',
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 0,
+    backgroundColor:'#113946',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 10,
+      height: 20,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 10,
+  },
+  flatListStyle:{
+    height:'85%'
+  },
+  answeredPrayerBox:{
+    marginTop: 10,
+    width:'100%',
+    borderColor: '#113946',
+    borderWidth: 4,
+    marginBottom: 20
+  },
+  answeredPrayerDetailText:{
+    fontSize:15,
+    marginTop: 20,
+    marginLeft:5,
+    color: '#C56E33',
+    // marginBottom: 20,
+    textAlign: 'left'
+  },
+  answeredPrayerDetailText2:{
+    fontSize:20,
+    // color: '#C56E33',
+    marginLeft: 5,
+    marginBottom: 20,
+    textAlign: 'left',
+    fontStyle: 'italic',
+  },
+  answeredPrayerText:{
+    fontSize:30,
+    color: '#C56E33',
+    marginTop: -20
+  },
+  answeredPrayerNameText:{
+    fontSize:20,
+    // marginTop: 20,
+    marginLeft: 5,
+    textAlign: 'left'
+  },
+  answeredPrayerDetailText:{
+    fontSize:15,
+    marginTop: 20,
+    marginLeft:5,
+    color: '#C56E33',
+    // marginBottom: 20,
+    textAlign: 'left'
+  },
+  answeredPrayerDetailText2:{
+    fontSize:20,
+    // color: '#C56E33',
+    marginLeft: 5,
+    marginBottom: 20,
+    textAlign: 'left',
+    fontStyle: 'italic',
+  },
+
   timesPrayedBubbleText:{
     fontSize: 12,
     color: '#C56E33',
@@ -410,6 +591,21 @@ const styles = StyleSheet.create({
     marginTop: 22,
     backgroundColor: '#BCA37F',
   },
+  // modalView: {
+  //   margin: 20,
+  //   backgroundColor: '#FFF2D8',
+  //   borderRadius: 20,
+  //   padding: 35,
+  //   alignItems: 'center',
+  //   shadowColor: '#000',
+  //   shadowOffset: {
+  //     width: 0,
+  //     height: 2,
+  //   },
+  //   shadowOpacity: 0.25,
+  //   shadowRadius: 4,
+  //   elevation: 5,
+  // },
   modalView: {
     margin: 20,
     backgroundColor: '#FFF2D8',
@@ -425,7 +621,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  modalView: {
+  modalAnsweredPrayerView: {
+    height: '93%',
     margin: 20,
     backgroundColor: '#FFF2D8',
     borderRadius: 20,
@@ -501,7 +698,7 @@ const styles = StyleSheet.create({
     height: 80,
     zIndex:-1,
     textAlign: 'center',
-    color: '#FFF2D8',
+    color:"#BCA37F",
     backgroundColor: '#113946',
     elevation: 4,
       shadowColor: '#000',
@@ -597,6 +794,50 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left:10,
     top: 10,
+    backgroundColor:'grey',
+    color: 'white',
+    elevation: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  circleButtonDetailCloseModal2: {
+    width:40,
+    height: 40,
+    margin:10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 42,
+    backgroundColor: '#fff',
+    position: 'absolute',
+    left:-20,
+    top: -20,
+    backgroundColor:'grey',
+    color: 'white',
+    elevation: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  circleButtonAnsweredPrayerCloseModal: {
+    width:40,
+    height: 40,
+    margin:10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 42,
+    backgroundColor: '#fff',
+    position: 'absolute',
+    left:-15,
+    top: -15,
     backgroundColor:'grey',
     color: 'white',
     elevation: 15,
