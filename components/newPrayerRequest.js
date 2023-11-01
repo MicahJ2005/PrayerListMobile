@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 // import { StatusBar } from 'expo-status-bar';
-import {View, Text, Modal, SafeAreaView, ScrollView, TextInput, Button, StyleSheet, Pressable, Alert,FlatList} from 'react-native';
+import {View, Text, Modal, SafeAreaView, ScrollView, TextInput, Button, StyleSheet, Pressable, Alert,FlatList, KeyboardAvoidingView } from 'react-native';
 // import SubmitPrayer from './submitPrayerRequestButton';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { FontAwesome5 } from '@expo/vector-icons';

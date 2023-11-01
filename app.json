@@ -3,7 +3,7 @@
     "name": "prayerApp",
     "slug": "prayerApp",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "",
     "icon": "./assets/logo-color.png",
     "userInterfaceStyle": "light",
     "splash": {

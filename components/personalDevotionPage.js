@@ -62,6 +62,7 @@ const depression = [{
   };
 
 const personalDevotionPage = (devoTypeselected) => {
+    
     const [loading, setLoading] = useState(true);
     const [devotionBody, setDevotionBody] = useState('');
     const { width } = useWindowDimensions();

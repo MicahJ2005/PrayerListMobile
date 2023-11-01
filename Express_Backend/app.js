@@ -5,12 +5,15 @@ const cors = require('cors');
 app.use(bodyParser.json());
 app.use(cors());
 const {Client} = require('pg')
-// const { Sequelize } = require('sequelize');
-// const sequelize = new Sequelize('postgres://postgres:JjMj2011@localhost:5432/dojo');
-// const sequelize = new Sequelize('dojo', 'postgres', 'JjMj2011', {
-//   host: 'localhost',
-//   dialect: 'postgres'
-// })
+
+// import { Configuration, OpenAIApi } from "openai";
+// const configuration = new Configuration({
+//     organization: "org-hlM7EyHTWqKNPhsIcAIZpCzg",
+//     apiKey: process.env.OPENAI_API_KEY,
+// });
+// const openai = new OpenAIApi(configuration);
+// const response = await openai.listEngines();
+// console.log('AI Response: ', response);
 
 
 const client = new Client({
@@ -22,32 +25,6 @@ const client = new Client({
 })
 client.connect();
 
-// const sequelize = new Sequelize({
-//   username: 'postgres',
-//   host: 'localhost',
-//   database: 'dojo',
-//   password: 'JjMj2011',
-//   dialect: 'postgres',
-//   define: {
-//     timestamps: false,
-//   },
-//   // operatorsAliases: false,
-//   pool: {
-//     max: 5,
-//     min: 0,
-//     idle: 10000
-//   },
-
-// });
-
-// app.use(sequelize);
-
-// try {
-//   await sequelize.authenticate();
-//   console.log('Connection has been established successfully.');
-// } catch (error) {
-//   console.error('Unable to connect to the database:', error);
-// }
 
 app.get('/data', (req, res)=>{
   console.log('req.body',req.body);
@@ -77,6 +54,20 @@ app.get('/data/prayerhistory', (req, res)=>{
   client.end;
 })
 
+app.get('/data/aiDevo', (req, res)=>{
+  console.log('aiDevo req.body',req.body);
+  // client.query(`Select * from prayerrequests WHERE status = 'Answered' ORDER BY nama ASC `, (err, result)=>{
+  //     if(!err){
+  //       console.log('result.rows', result.rows);
+  //         res.send(result.rows);
+  //     }
+  //     if(err){
+  //       console.log('err', err);
+  //   }
+  // });
+  // client.end;
+})
+
 app.post('/data', (req, res)=>{
   console.log('POST req.body',req.body);
   let objectDate = new Date();
@@ -90,7 +81,7 @@ app.post('/data', (req, res)=>{
 
   let year = objectDate.getFullYear();
   console.log(year); // 2022
-  // var UTCseconds = (x.getTime() + x.getTimezoneOffset()*60*1000)/1000;
+
   let DateToSend = year+'-'+month+'-'+day;
   console.log("DateToSend", DateToSend);
   let insertQuery = `insert into prayerrequests(nama, details, createdat, updatedat, status, timesprayed) 
@@ -132,7 +123,7 @@ app.put('/data', (req, res)=>{
 
   let year = objectDate.getFullYear();
   console.log(year); // 2022
-  // var UTCseconds = (x.getTime() + x.getTimezoneOffset()*60*1000)/1000;
+
   let DateToSend = year+'-'+month+'-'+day;
   console.log("DateToSend", DateToSend);
   if(req.body.id != null){
@@ -170,7 +161,7 @@ app.put('/data/timesprayed', (req, res)=>{
 
   let year = objectDate.getFullYear();
   console.log(year); // 2022
-  // var UTCseconds = (x.getTime() + x.getTimezoneOffset()*60*1000)/1000;
+
   let DateToSend = year+'-'+month+'-'+day;
   console.log("DateToSend", DateToSend);
   if(req.body.id != null){
@@ -206,7 +197,7 @@ app.put('/data/answeredprayer', (req, res)=>{
 
   let year = objectDate.getFullYear();
   console.log(year); // 2022
-  // var UTCseconds = (x.getTime() + x.getTimezoneOffset()*60*1000)/1000;
+
   let DateToSend = year+'-'+month+'-'+day;
   console.log("DateToSend", DateToSend);
   if(req.body.id != null){
@@ -229,47 +220,6 @@ app.put('/data/answeredprayer', (req, res)=>{
   else{ console.log('ERROR', err.message) }
   
 })
-// const Ninja = sequelize.define('ninja', {
-//     nama: {type: Sequelize.STRING},
-//     usia: {type: Sequelize.INTEGER}
-//   });
-
-// Ninja.sync({force: false}).then(() => {
-//     console.log('Tabel dibuat!')
-//   });
-
-// app.get('/data', function(req,res){
-//   Ninja.findAll().then(data => {
-//     console.log(data);
-//     res.send(data);
-//     // res.json({ message: "Welcome to bezkoder application." });
-//   })
-// })
-
-
-
-// app.post('/data', function(req,res){
-//     console.log('POST req', req);
-// Ninja.create({
-//     nama: req.body.nama,
-//     usia: req.body.usia
-// }).then(data => {
-//   console.log('Data masuk!');
-//   res.send({
-// 		status: 'Data sukses diinput!',
-// 		nama: req.body.nama,
-// 		usia: req.body.usia
-//   })
-// });
-// })
-
-// sequelize.authenticate()
-//   .then(() => {
-//     console.log('Successfully authenticated to PostgreSQL');
-//   })
-//   .catch(err => {
-//     console.error('Issue authenticating SPostgreSQL:', err);
-//   });
 
 app.listen(3210, ()=>{
   console.log('Server @port 3210 gan!')
