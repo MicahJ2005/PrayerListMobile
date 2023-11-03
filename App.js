@@ -13,13 +13,13 @@ import axios from 'axios';
 // import OpenAI from 'openai';
 
 // const openai = new OpenAI({ apiKey: 'JjMjNjAjCj2023!!!!' });
-const instance = axios.create({
-  baseURL: 'https://api.openai.com/v1/engines/chat/completions',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer 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`
-  }
-});
+// const instance = axios.create({
+//   baseURL: 'https://api.openai.com/v1/engines/chat/completions',
+//   headers: {
+//     'Content-Type': 'application/json',
+//     'Authorization': ``
+//   }
+// });
 
 const data = [
   {key:'Depression', value:'Depression'},
@@ -126,42 +126,58 @@ export default function App() {
   //     return '';
   //   }
   // }
-  const getAIDevo = () => {
+ 
+  const getAIDevo = async () => {
     console.log('getAIDevo click');
     // fetch('http://10.0.0.13:3210/data/aiDevo')
     //       .then((resp) => resp.json())
     //       .then((json) => setData(json))
     //       .catch((error) => console.error(error))
     //       .finally(() => setLoading(false));
-    // axios.create({
-    //   baseURL: 'https://api.openai.com/v1/chat/completions',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': `Bearer ${OPENAI_KEY}`
-    //   }
-    // fetch("https://api.openai.com/v1/chat/completions", {
-    //   method: "POST",
-    //   body: '{'+
-    //     '"model": "gpt-3.5-turbo",'+
-    //     '"messages": [{"role": "user", "content": "Write a short Bible based devotional about spiritual growth and format it as a JSON object with HTML markdown"}],'+
-    //     '"temperature": 0.7 '+
-    //   '}',
-    //   headers: {
-    //     "Content-type": "application/json",
-    //     "Authorization": "Bearer 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"
-    //   }
-    // })
-    // .then((response) => response.json())
-    // .then((json) => console.log(json.choices));
+    // try {
+    //   const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    //     method: "POST",
+    //     headers: {
+    //       'Accept': 'application/json',
+    //       "Content-type": "application/json",
+    //       "Authorization": ""
+    //     },
+    //     body: JSON.stringify({
+    //       model: "gpt-3.5-turbo",
+    //       messages: [{"role": "user", "content": "Write a short Bible based devotional about spiritual growth and format it as a JSON object with the elements of a Title, Scripture, Devotional, Prayer and with HTML markdown embedded"}],
+    //       max_tokens: 100,
+    //       temperature: 0.7,
+    //     }),
+    //   // '{'+
+    //   //   '"model": "gpt-3.5-turbo",'+
+    //   //   '"messages": [{"role": "user", "content": "Write a short Bible based devotional about spiritual growth and format it as a JSON object with the elements of a Title, Scripture, Devotional, Prayer and with HTML markdown embedded"}],'+
+    //   //   '"temperature": 0.7 '+
+    //   // '}',
+      
+    //   })
+    //   // .then(res => console.log(res.json().choices[0].text))
+    //   const json = await response.json();  
+    //   console.log("this is the result", json.choices[0].message.content)
+    // } catch (error) {
+    //   console.error("this is the result", error);
     // }
+    // .then((json) => console.log('AI JSON choices',json.choices));
+    
+
+    // regular JSON returned
+    // {"choices": [{"finish_reason": "stop", "index": 0, "message": [Object]}], "created": 1698958749, "id": "chatcmpl-8GZ4PcWFvSiZxo3cGj8RJ0eMMdHdC", "model": "gpt-3.5-turbo-0613", "object": "chat.completion", "usage": {"completion_tokens": 544, "prompt_tokens": 27, "total_tokens": 571}}
 
     // json.choices response 
-    // [{"finish_reason": "stop", "index": 0, "message": {"content": "{
-    //   \"title\": \"Growing in the Spirit\",
-    //   \"verse\": \"But grow in the grace and knowledge of our Lord and Savior Jesus Christ. To him be the glory both now and to the day of eternity. Amen.\" (2 Peter 3:18 ESV),     
-    //   \"content\": \"## Growing in the Spirit\\n\\nAs followers of Christ, our journey does not end with salvation. In fact, it is only the beginning. The Bible encourages us to continually grow in our spiritual lives, to deepen our relationship with God and to mature in our faith.\\n\\n### The Importance of Spiritual Growth\\n\\nJust as physical growth is essential for a healthy life, spiritual growth is crucial for a vibrant and fulfilling Christian walk. The apostle Peter reminds us in his letter that we should 'grow in the grace and knowledge of our Lord and Savior Jesus Christ' (2 Peter 3:18 ESV).\\n\\n### Nourishing our Souls\\n\\nTo grow spiritually, we must nourish our souls with the Word of God. Just as our physical bodies need regular sustenance to thrive, our spirits need daily feeding from the Scriptures. The Bible is not merely a book of rules or stories, but it is the living Word of God that has the power to transform our lives.\\n\\n### Cultivating a Prayerful Life\\n\\nPrayer is another vital component of spiritual growth. Through prayer, we communicate with our Heavenly Father, seeking His guidance, pouring out our hearts, and developing a deeper intimacy with Him. Prayer is not only about presenting our requests but also about listening to God's voice and aligning our hearts with His will.\\n\\n### Community and Accountability\\n\\nIn our journey of spiritual growth, we are not meant to go alone. God designed us for community, to support and encourage one another. Engaging in fellowship with other believers provides opportunities for learning, accountability, and mutual edification. Together, we can spur one another on to love and good deeds.\\n\\n### Embracing the Process\\n\\nSpiritual growth is a lifelong process. Just as a seed planted in the ground takes time to grow into a fruitful tree, our spiritual growth requires patience and perseverance. There will be seasons of pruning, challenges, and even failures along the way. However, we can trust that God is always at work in us, shaping us into His image.\\n\\n### Conclusion\\n\\nLet us commit ourselves to grow in the grace and knowledge of our Lord Jesus Christ. May we immerse ourselves in His Word, cultivate a prayerful life, engage in community, and embrace the process of spiritual growth. As we do so, we will experience a deeper intimacy with God, bear fruit in our lives, and bring glory to His name. Amen.\"
-    // }", "role": "assistant"}}]
-    
+    // rsponseChoice = '{"choices": [{"finish_reason": "stop", "index": 0, "message": {"content": "{'+
+    //     '\"Title\": \"Growing in the Spirit\",'+
+    //     '\"Scripture\": \"But grow in the grace and knowledge of our Lord and Savior Jesus Christ. To him be the glory both now and to the day of eternity. Amen.\" (2 Peter 3:18),'+
+    //     '\"Devotional\": \"As followers of Christ, our journey does not end with salvation. Rather, it is just the beginning of a beautiful process of spiritual growth. Just as a seed planted in the ground requires nurturing, watering, and sunlight to grow, our faith also needs intentional care and attention in order to flourish. God desires for us to continually grow in our understanding of His grace and the knowledge of His Son, Jesus Christ. \\n\\nSpiritual growth involves a commitment to daily seek God and His Word, to develop a deeper relationship with Him through prayer, and to allow the Holy Spirit to transform us from the inside out. It requires surrendering our desires and aligning ourselves with God\'s will. It means consistently choosing to love and serve others, developing the fruit of the Spirit in our lives.\\n\\nJust as physical growth takes time, spiritual growth is a lifelong process. It is not about striving for perfection but about allowing God to mold and shape us into His image. Let us be encouraged knowing that God is faithful to complete the work He began in us (Philippians 1:6). He is the one who provides the necessary nourishment for our souls, helping us to grow in faith, love, and wisdom.\\n\\nToday, let us commit to intentionally invest in our spiritual growth. Let us hunger for more of God and His presence. May we continually seek His guidance, trusting that as we grow spiritually, we will bear much fruit for His glory.\",'+
+    //     '\"Prayer\": \"Heavenly Father, thank you for the gift of salvation and for the opportunity to grow in faith. Help us to prioritize our spiritual growth and to daily seek you with all our hearts. Guide us in your ways, and help us to surrender our lives to your will. We invite your Holy Spirit to transform us and to mold us into the image of your Son, Jesus Christ. May our lives bear much fruit for your glory. In Jesus\' name, Amen.\"'+
+    //   '}", "role": "assistant"}}], "created": 1698958749, "id": "chatcmpl-8GZ4PcWFvSiZxo3cGj8RJ0eMMdHdC", "model": "gpt-3.5-turbo-0613", "object": "chat.completion", "usage": {"completion_tokens": 544, "prompt_tokens": 27, "total_tokens": 571}}'
+
+    //   let rsponseChoiceTrim = JSON.stringify(rsponseChoice);
+    //   console.log(rsponseChoiceTrim);
+    // }
     // async function main() {
     //   const completion = await openai.chat.completions.create({
     //     messages: [{ role: "system", content: "You are a helpful assistant." }],
@@ -172,6 +188,7 @@ export default function App() {
     // }
     
     // main();
+  
   }
 
   
@@ -214,9 +231,11 @@ export default function App() {
             </Text>
           
           </Text>
-          <Pressable style={styles.getAIDevoButton} onPress={() => getAIDevo()}>
+          {/* <Pressable style={styles.getAIDevoButton} onPress={() => getAIDevo()}>
             <Text>get devo</Text>
-          </Pressable>
+            
+          </Pressable> */}
+         
         </View>
         
         {/* <Text style={styles.homeText}>

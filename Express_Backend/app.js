@@ -4,11 +4,31 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 app.use(bodyParser.json());
 app.use(cors());
-const {Client} = require('pg')
+const {Client} = require('pg');
+const axios = require('axios');  
+// const apiKey = '';
+// const { Configuration, OpenAIApi } = require('openai');
+// const configuration = new Configuration({
+//     organization: "",
+//     apiKey: apiKey
+// });
+// const openai = new OpenAIApi(configuration);
+// const response = openai.listEngines();
+// console.log('AI response', response);
+// const apiKey = process.env.OPENAI_API_KEY;
+// const apiKey = '';
+// const aiClient = axios.create({
+//     headers: { 'Authorization': 'Bearer ' + apiKey,
+//                'Content-Type': 'application/json'
+//               }
+// });
+
+
+
 
 // import { Configuration, OpenAIApi } from "openai";
 // const configuration = new Configuration({
-//     organization: "org-hlM7EyHTWqKNPhsIcAIZpCzg",
+//     organization: "",
 //     apiKey: process.env.OPENAI_API_KEY,
 // });
 // const openai = new OpenAIApi(configuration);
@@ -54,18 +74,18 @@ app.get('/data/prayerhistory', (req, res)=>{
   client.end;
 })
 
-app.get('/data/aiDevo', (req, res)=>{
+app.get('/data/aiDevoDB', (req, res)=>{
   console.log('aiDevo req.body',req.body);
-  // client.query(`Select * from prayerrequests WHERE status = 'Answered' ORDER BY nama ASC `, (err, result)=>{
-  //     if(!err){
-  //       console.log('result.rows', result.rows);
-  //         res.send(result.rows);
-  //     }
-  //     if(err){
-  //       console.log('err', err);
-  //   }
-  // });
-  // client.end;
+  client.query(`Select * from devotions`, (err, result)=>{
+    if(!err){
+      console.log('result.rows', result.rows);
+        res.send(result.rows);
+    }
+    if(err){
+      console.log('err', err);
+  }
+});
+client.end;
 })
 
 app.post('/data', (req, res)=>{
