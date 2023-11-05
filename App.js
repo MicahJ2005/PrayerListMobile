@@ -1,4 +1,4 @@
-import {View, Text, Image, ScrollView, Modal, Pressable, StyleSheet, SafeAreaView, SectionList, StatusBar} from 'react-native';
+import {View, Text, Image, ScrollView, Modal, Pressable, StyleSheet, SafeAreaView, StatusBar} from 'react-native';
 import NewPrayerRequest from './components/newPrayerRequest';
 import PersonalDevotionPage from './components/personalDevotionPage';
 import PrayerHistoryPage from './components/prayerHistoryPage';
@@ -9,7 +9,9 @@ import logo from './assets/logo-no-background.png';
 import blackAndWhiteLogo from './assets/devos4me-high-resolution-logo-white-transparent.png';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { SelectList } from 'react-native-dropdown-select-list';
+import {API_KEY} from '@env';
 import axios from 'axios';
+import {TextInput} from 'react-native';
 // import OpenAI from 'openai';
 
 // const openai = new OpenAI({ apiKey: 'JjMjNjAjCj2023!!!!' });
@@ -34,7 +36,7 @@ const data = [
 
 
 export default function App() {
-  const [page, setPage] = useState('home');
+  const [page, setPage] = useState('login');
   const [menuModalVisible, setMenuModalVisible] = useState(false);
   const [devoSelectorVisible, setDevoSelectorVisible] = useState(false);
   const [selected, setSelected] = React.useState("");
@@ -42,6 +44,7 @@ export default function App() {
   
   useEffect(() => {
     console.log('page: ', page);
+    console.log('APIKEY: ', API_KEY);
   })
 
   const openDevoTypeSelector = () => {
@@ -192,8 +195,68 @@ export default function App() {
   }
 
   
+  if(page === 'login'){
+    return (
+      
+      <ScrollView style={styles.scrollView}>
+        <View style={[styles.homeHeaderIcons]}>
+          
+        </View>
+        <Pressable onPress={() => navigateHome()}>
+          <Image
+            style={styles.tinyLogo}
+            source={logo}
+          />
+        </Pressable>
+        
+        <View style={styles.homeContentView}>
+        <Text style={styles.nameInputText}>User Email</Text>
+            <TextInput
+                style={{
+                    borderColor: '#113946',
+                    borderWidth: 4,
+                    borderRadius: 30,
+                    width:'95%',
+                    height: '15%',
+                    marginBottom: 40,
+                }}
+                onChangeText={newText => setText(newText)}
+                placeholder="    Email"
+            />
+            <Text style={styles.requestInputText}>Password</Text>
+            <TextInput
+                style={{
+                    // height: 100,
+                    borderColor: '#113946',
+                    borderWidth: 4,
+                    borderRadius: 30,
+                    width:'95%',
+                    height: '15%',
+                    marginBottom: 40,
+                    
+                }}
+                onChangeText={newDetailText => setDetails(newDetailText)}
+                placeholder="    Password"
+            />
+            <Pressable style={styles.myPrayerListPressable} onPress={() => navigateToPrayerList()}>
+            <Text style={styles.myPrayerListPressableText}>Login</Text>
+          </Pressable>
+          <Pressable style={styles.myDailyDevotionPressable} onPress={() => openDevoTypeSelector()}>
+            <Text style={styles.myDailyDevotionPressableText}>New User</Text>
+          </Pressable>
+          <Pressable style={styles.myDailyDevotionPressable} onPress={() => openDevoTypeSelector()}>
+            <Text style={styles.myDailyDevotionPressableText}>Forgot Password</Text>
+          </Pressable>
+        </View>
+          
+          
+      
+      </ScrollView>
   
-  if(page === 'home'){
+    );
+  
+  }
+  else if(page === 'home'){
     return (
       
       <ScrollView style={styles.scrollView}>
