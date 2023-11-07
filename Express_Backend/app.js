@@ -45,10 +45,25 @@ const client = new Client({
 })
 client.connect();
 
+app.get('/data/signIn', (req, res)=>{
+  console.log('req.query.username ',req.query.username);
+  console.log('req.query.password',req.query.password);
+  client.query(`Select * from users WHERE username = '${req.query.username}' AND password = '${req.query.password}' `, (err, result)=>{
+      if(!err){
+        console.log('result.rows', result.rows);
+          res.send(result.rows);
+      }
+      if(err){
+        console.log('err', err);
+    }
+  });
+  client.end;
+})
 
 app.get('/data', (req, res)=>{
   console.log('req.body',req.body);
-  client.query(`Select * from prayerrequests WHERE status = 'Praying' ORDER BY nama ASC `, (err, result)=>{
+  console.log('req.query.userId ',req.query.userId);
+  client.query(`Select * from prayerrequests WHERE status = 'Praying' AND submittedbyuserid = ${req.query.userId} ORDER BY nama ASC `, (err, result)=>{
       if(!err){
         console.log('result.rows', result.rows);
           res.send(result.rows);
@@ -62,7 +77,8 @@ app.get('/data', (req, res)=>{
 
 app.get('/data/prayerhistory', (req, res)=>{
   console.log('req.body',req.body);
-  client.query(`Select * from prayerrequests WHERE status = 'Answered' ORDER BY nama ASC `, (err, result)=>{
+  console.log('req.query.userId ',req.query.userId);
+  client.query(`Select * from prayerrequests WHERE status = 'Answered' AND submittedbyuserid = ${req.query.userId} ORDER BY nama ASC `, (err, result)=>{
       if(!err){
         console.log('result.rows', result.rows);
           res.send(result.rows);
@@ -88,6 +104,67 @@ app.get('/data/aiDevoDB', (req, res)=>{
 client.end;
 })
 
+app.get('/data/checktodaysdevo', (req, res)=>{
+  console.log('aiDevo req.body',req.body);
+  console.log('req.query.userId ',req.query.userid);
+  let objectDate = new Date();
+
+
+  let day = objectDate.getDate();
+  console.log(day); // 23
+
+  let month = objectDate.getMonth() + 1;
+  console.log(month + 1); // 8
+
+  let year = objectDate.getFullYear();
+  console.log(year); // 2022
+
+  let DateToSend = year+'-'+month+'-'+day;
+  console.log("DateToSend", DateToSend);
+  client.query(`Select * from devotions WHERE userid = ${req.query.userid} AND devodate = '${DateToSend}'`, (err, result)=>{
+    if(!err){
+      console.log('result.rows', result.rows);
+        res.send(result.rows);
+    }
+    if(err){
+      console.log('err', err);
+  }
+  });
+    client.end;
+  })
+
+app.post('/data/postdailydevo', (req, res)=>{
+  console.log('POST req.body',req.body);
+  console.log('POST req.body.title',req.body.title);
+  console.log('POST req.body.scripture',req.body.scripture);
+  console.log('POST req.body.body',req.body.body);
+  console.log('POST req.body.userid',req.body.userid);
+  let objectDate = new Date();
+
+
+  let day = objectDate.getDate();
+  console.log(day); // 23
+
+  let month = objectDate.getMonth() + 1;
+  console.log(month + 1); // 8
+
+  let year = objectDate.getFullYear();
+  console.log(year); // 2022
+
+  let DateToSend = year+'-'+month+'-'+day;
+  console.log("DateToSend", DateToSend);
+  let insertQuery = `insert into devotions(title, scripture, body, userid, devodate) 
+                     values('${req.body.title}', '${req.body.scripture}', '${req.body.body}', ${req.body.userid}, '${DateToSend}')`
+    client.query(insertQuery, (err, result)=>{
+        if(!err){
+          console.log('POST SUCCESS', result)
+            res.send('Insertion was successful')
+        }
+        else{ console.log('ERROR', err.message) }
+    })
+    client.end;
+})
+
 app.post('/data', (req, res)=>{
   console.log('POST req.body',req.body);
   let objectDate = new Date();
@@ -96,7 +173,7 @@ app.post('/data', (req, res)=>{
   let day = objectDate.getDate();
   console.log(day); // 23
 
-  let month = objectDate.getMonth();
+  let month = objectDate.getMonth() + 1;
   console.log(month + 1); // 8
 
   let year = objectDate.getFullYear();
@@ -104,8 +181,8 @@ app.post('/data', (req, res)=>{
 
   let DateToSend = year+'-'+month+'-'+day;
   console.log("DateToSend", DateToSend);
-  let insertQuery = `insert into prayerrequests(nama, details, createdat, updatedat, status, timesprayed) 
-                     values('${req.body.nama}', '${req.body.details}', '${DateToSend}', '${DateToSend}', '${req.body.status}', 0 )`
+  let insertQuery = `insert into prayerrequests(nama, details, createdat, updatedat, status, timesprayed, submittedbyuserid) 
+                     values('${req.body.nama}', '${req.body.details}', '${DateToSend}', '${DateToSend}', '${req.body.status}', 0, '${req.body.submittedbyuserid}' )`
     client.query(insertQuery, (err, result)=>{
         if(!err){
           console.log('POST SUCCESS', result)
@@ -138,7 +215,7 @@ app.put('/data', (req, res)=>{
   let day = objectDate.getDate();
   console.log(day); // 23
 
-  let month = objectDate.getMonth();
+  let month = objectDate.getMonth() + 1;
   console.log(month + 1); // 8
 
   let year = objectDate.getFullYear();

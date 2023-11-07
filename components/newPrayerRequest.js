@@ -10,7 +10,8 @@ import axios from "axios";
 
 let initialData = [];
 
-const newPrayerRequest = () => {
+const newPrayerRequest = (runningUser) => {
+  console.log('runningUser in newPrayerRequest:', runningUser);
   const [modalVisible, setModalVisible] = useState(false);
   const [text, setText] = useState('');
   const [count, setCount] = useState(-1);
@@ -30,7 +31,7 @@ const newPrayerRequest = () => {
   }, []);
 
   const loadData = () => {
-    fetch('http://10.0.0.13:3210/data')
+    fetch(`http://10.0.0.13:3210/data?userId=${runningUser.runningUser[0].id}`)
       .then((resp) => resp.json())
       .then((json) => setData(json))
       .catch((error) => console.error(error))
@@ -48,6 +49,7 @@ const newPrayerRequest = () => {
 
 
   const addName = () => {
+    // console.log(runningUser.runningUser[0].id);
     fetch("http://10.0.0.13:3210/data", {
       method: "POST",
       headers: {
@@ -57,6 +59,7 @@ const newPrayerRequest = () => {
       body: JSON.stringify({
         nama: text,
         details: details,
+        submittedbyuserid: runningUser.runningUser[0].id,
         status: 'Praying',
       }),
     })

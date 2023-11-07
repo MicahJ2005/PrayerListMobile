@@ -72,13 +72,14 @@ const personalDevotionPage = (devoTypeselected) => {
 
     useEffect(() => {
         console.log('personalDevotionPage devoTypeselected.selected= ', devoTypeselected.selected);
+        console.log('runningUser in personalDevotionPage:', devoTypeselected.runningUser[0]);
         console.log('APIKEY: ', API_KEY);
         // setDevotionTitle("Embracing the Journey: Finding Meaning in the Unknown");
         // setDevotionScripture("Train up a child in the way he should go; even when he is old he will not depart from it.\" - Proverbs 22:6");
         // setDevotionBody("In life, we often find ourselves on a journey, navigating through the unknown. This journey is not always easy, and it can be filled with uncertainties and challenges. However, as believers, we are called to embrace this journey and seek meaning in the midst of the unknown. The scripture in Proverbs 22:6 reminds us of the importance of training up a child in the way they should go. This verse not only applies to literal children but can also be applied to our own lives as we navigate through our personal journeys. Just as a child needs guidance and direction, we too need to seek wisdom and understanding in order to find meaning in the unknown.' Embracing the journey means acknowledging that we do not have all the answers and that we are constantly learning and growing. It means surrendering our need for control and instead placing our trust in God. As we embrace the journey, we discover that God has a purpose and a plan for our lives, even in the midst of the unknown. Finding meaning in the unknown requires us to have faith and trust in God\'s sovereignty. We can take comfort in knowing that God is with us every step of the way, even when we cannot see the road ahead. He is the one who goes before us, paving the way and guiding us through the uncertainties of life. When we encounter challenges and uncertainties, we can turn to God\'s Word for guidance and encouragement. Just as a child looks to their parents for guidance, we can look to our Heavenly");
         
         // getDevoDB();
-        getAIDevo(devoTypeselected.selected)
+        getAIDevo(devoTypeselected)
     }, []);
 
        
@@ -87,30 +88,23 @@ const personalDevotionPage = (devoTypeselected) => {
 
     const getAIDevo = async (devoType) => {
     console.log('personalDevotionPage getAIDevo devoType', devoType);
-    try {
-        let contentToSend = `"Provide just a Bible verse about ${devoType}"`;
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                "Content-type": "application/json",
-                "Authorization": `Bearer ${API_KEY}`
-            },
-            body: JSON.stringify({
-                model: "gpt-3.5-turbo",
-                messages: [{"role": "user", "content": contentToSend}],
-                max_tokens: 300,
-                temperature: 0.7,
-            }),
-        
-        })
-        const jsonScripture = await response.json(); 
-            console.log("this is the result devotionScripture", jsonScripture); 
-            setDevotionScripture(jsonScripture.choices[0].message.content);
-            console.log("this is the result devotionScripture", jsonScripture.choices[0].message.content);
-        if(jsonScripture.choices[0].message.content != null){
-            console.log("MADE IT TO THE TITLE with scripture: ", jsonScripture.choices[0].message.content);
-            let contentToSend = `"Provide just a devotional title based on ${jsonScripture} but don't include any scripture in this response"`;
+    console.log('personalDevotionPage getAIDevo.selected= ', devoType.selected);
+    console.log('runningUser in getAIDevo:', devoType.runningUser[0]);
+    const response = await fetch(`http://10.0.0.13:3210/data/checktodaysdevo?userid=${devoType.runningUser[0].id}`)
+    const jsonDevotion = await response.json();  
+    console.log('jsonDevotion', jsonDevotion);
+    console.log('jsonDevotion size', jsonDevotion.length);
+    if(jsonDevotion.length > 0){
+        setDevotionTitle(jsonDevotion[0].title);
+        setDevotionScripture(jsonDevotion[0].scripture);
+        setDevotionBody(jsonDevotion[0].body);
+        setLoading(false);
+    }
+    else{
+        console.log('no devo yet today... Generating');
+    
+        try {
+            let contentToSend = `"Provide just a Bible verse about ${devoType.selected}"`;
             const response = await fetch("https://api.openai.com/v1/chat/completions", {
                 method: "POST",
                 headers: {
@@ -126,12 +120,13 @@ const personalDevotionPage = (devoTypeselected) => {
                 }),
             
             })
-            const jsonTitle = await response.json();  
-            setDevotionTitle(jsonTitle.choices[0].message.content);
-            console.log("this is the result devotionTitle", jsonTitle.choices[0].message.content);
-            if(jsonTitle.choices[0].message.content != null){
-                console.log("MADE IT TO THE DEVO WRITTING with title: ", jsonTitle.choices[0].message.content);
-                let contentToSend = `"Write a brief devotional based on the title ${jsonTitle.choices[0].message.content} and scripture ${jsonScripture.choices[0].message.content}"`;
+            const jsonScripture = await response.json(); 
+                console.log("this is the result devotionScripture", jsonScripture); 
+                setDevotionScripture(jsonScripture.choices[0].message.content);
+                console.log("this is the result devotionScripture", jsonScripture.choices[0].message.content);
+            if(jsonScripture.choices[0].message.content != null){
+                console.log("MADE IT TO THE TITLE with scripture: ", jsonScripture.choices[0].message.content);
+                let contentToSend = `"Provide just a devotional title based on ${jsonScripture} but don't include any scripture in this response"`;
                 const response = await fetch("https://api.openai.com/v1/chat/completions", {
                     method: "POST",
                     headers: {
@@ -142,63 +137,71 @@ const personalDevotionPage = (devoTypeselected) => {
                     body: JSON.stringify({
                         model: "gpt-3.5-turbo",
                         messages: [{"role": "user", "content": contentToSend}],
-                        max_tokens: 500,
+                        max_tokens: 300,
                         temperature: 0.7,
                     }),
                 
                 })
-                const jsonDevotion = await response.json();  
-                setDevotionBody(jsonDevotion.choices[0].message.content);
-                console.log("this is the result devotionTitle", jsonDevotion.choices[0].message.content);
-                
-                setLoading(false);
-                console.log('devotionTitle AFTER LOAD: ', jsonTitle.choices[0].message.content);
-                console.log('devotionScripture AFTER LOAD: ', jsonScripture.choices[0].message.content);
-                console.log('devotionBOdy AFTER LOAD: ', jsonDevotion.choices[0].message.content);
-            }
-        }
-            
-            // console.log("this is the result", json.choices[0].message.content);
-            // console.log("this is the result", JSON.parse(json.choices[0].message.content).Devotional);
-            // setDevotionBody(JSON.stringify(json.choices[0].message.content.Devotional));
-            // console.log("this is the result", JSON.parse(json.choices[0].message.content).Scripture);
-            
-            // console.log("this is the result", JSON.parse(json.choices[0].message.content).Title);
-            // setDevotionTitle(JSON.stringify(json.choices[0].message.content.Title));
-            
-            // setLoading(false);
-            
-        } catch (error) {
-            console.error("this is the result", error);
-        }      
-        // const bodyString = '{'+
-        // '"Title": "Strength in the Lord",'+
-        // '"Scripture": "Finally, be strong in the Lord and in his mighty power." (Ephesians 6:10, NIV),'+
-        // '"Devotional": "Strength is something we all desire, especially in times of challenges and difficulties. However, true strength does not come from our own abilities or willpower. As followers of Christ, our strength comes from the Lord. The apostle Paul reminds us in Ephesians 6:10 to be strong in the Lord and in his mighty power. This means that our source of strength is not found within ourselves, but in the One who created us.\n\nWhen we rely on our own strength, we often fall short and become overwhelmed. But when we place our trust in the Lord and draw from his mighty power, we tap into an unlimited source of strength. This divine strength enables us to endure hardships, overcome obstacles, and stand firm in our faith.\n\nTo be strong in the Lord means surrendering our weaknesses, fears, and insecurities to him. It means seeking his guidance and relying on his wisdom. It means trusting that he will provide us with the strength we need to face any situation.\n\nIn moments of weakness, let us remember that our strength lies not in ourselves, but in the Lord. As we lean on him, his power will sustain us and carry us through. Let us pray for the strength to trust in him}';
-        
-        // console.log('bodyString', bodyString[0]);
-        
-        // setDevotionBody('{'+
-        //     '"Title": "Strength in the Lord",'+
-        //     '"Scripture": "Finally, be strong in the Lord and in his mighty power." (Ephesians 6:10, NIV),'+
-        //     '"Devotional": "Strength is something we all desire, especially in times of challenges and difficulties. However, true strength does not come from our own abilities or willpower. As followers of Christ, our strength comes from the Lord. The apostle Paul reminds us in Ephesians 6:10 to be strong in the Lord and in his mighty power. This means that our source of strength is not found within ourselves, but in the One who created us.\n\nWhen we rely on our own strength, we often fall short and become overwhelmed. But when we place our trust in the Lord and draw from his mighty power, we tap into an unlimited source of strength. This divine strength enables us to endure hardships, overcome obstacles, and stand firm in our faith.\n\nTo be strong in the Lord means surrendering our weaknesses, fears, and insecurities to him. It means seeking his guidance and relying on his wisdom. It means trusting that he will provide us with the strength we need to face any situation.\n\nIn moments of weakness, let us remember that our strength lies not in ourselves, but in the Lord. As we lean on him, his power will sustain us and carry us through. Let us pray for the strength to trust in him}'
-        // );
-    }
+                const jsonTitle = await response.json();  
+                setDevotionTitle(jsonTitle.choices[0].message.content);
+                console.log("this is the result devotionTitle", jsonTitle.choices[0].message.content);
+                if(jsonTitle.choices[0].message.content != null){
+                    console.log("MADE IT TO THE DEVO WRITTING with title: ", jsonTitle.choices[0].message.content);
+                    let contentToSend = `"Write a brief devotional based on the title ${jsonTitle.choices[0].message.content} and scripture ${jsonScripture.choices[0].message.content}"`;
+                    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                        method: "POST",
+                        headers: {
+                            'Accept': 'application/json',
+                            "Content-type": "application/json",
+                            "Authorization": `Bearer ${API_KEY}`
+                        },
+                        body: JSON.stringify({
+                            model: "gpt-3.5-turbo",
+                            messages: [{"role": "user", "content": contentToSend}],
+                            max_tokens: 500,
+                            temperature: 0.7,
+                        }),
+                    
+                    })
+                    const jsonDevotion = await response.json();  
+                    setDevotionBody(jsonDevotion.choices[0].message.content);
+                    console.log("this is the result devotionTitle", jsonDevotion.choices[0].message.content);
+                    
+                    setLoading(false);
+                    console.log('devotionTitle AFTER LOAD: ', jsonTitle.choices[0].message.content);
+                    console.log('devotionScripture AFTER LOAD: ', jsonScripture.choices[0].message.content);
+                    console.log('devotionBOdy AFTER LOAD: ', jsonDevotion.choices[0].message.content);
+                    console.log('devotion Running UserId: ', devoType.runningUser[0].id);
 
-    const getDevoDB = () => {
-        try {
-            fetch('http://10.0.0.13:3210/data/aiDevoDB')
-            .then((resp) => resp.json())
-            .then((json) => setData(json))
-            .catch((error) => console.error(error))
-            .finally(() => setLoading(false));
-            console.log('aiDevoDB data', data); 
-            setDevotionTitle(data[0].title);
-            setDevotionScripture(data[0].scripture);
-            setDevotionBody(data[0].body);
-        } catch (error) {
-            console.error("this is the result", error);
-        }    
+                    ///POST DAILY DEVO TO DB
+                    await fetch("http://10.0.0.13:3210/data/postdailydevo", {
+                        method: "POST",
+                        headers: {
+                          Accept: "application/json",
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            title: jsonTitle.choices[0].message.content,
+                            scripture: jsonScripture.choices[0].message.content,
+                            body: jsonDevotion.choices[0].message.content,
+                            userid: devoType.runningUser[0].id
+                        }),
+                      })
+                    .then((response) =>{
+                        console.log('response', response);
+                    //   loadData();
+                    //   Alert.alert('Prayer Request Submitted!');
+                    //   setModalVisible(false);
+                    })
+                    // const dbResponse = await responseDb.json(); 
+                    // console.log('dbResponse', dbResponse);
+                }
+            }
+                
+            } catch (error) {
+                console.error("this is the result", error);
+            }  
+        }
     }
 
     if(loading){

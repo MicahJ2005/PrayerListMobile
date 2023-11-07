@@ -8,7 +8,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import PrayerList from './prayerList';
 import axios from "axios";
 
-const PrayerHistoryPage = (devoTypeselected) => {
+const PrayerHistoryPage = (runningUser) => {
+    console.log('runningUser in newPrayerRequest:', runningUser);
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [detailsModalVisible, setDetailsModalVisible] = useState(false);
@@ -20,7 +21,7 @@ const PrayerHistoryPage = (devoTypeselected) => {
       }, []);
     
     const loadData = () => {
-    fetch('http://10.0.0.13:3210/data/prayerhistory')
+    fetch(`http://10.0.0.13:3210/data/prayerhistory?userId=${runningUser.runningUser[0].id}`)
         .then((resp) => resp.json())
         .then((json) => setData(json))
         .catch((error) => console.error(error))
