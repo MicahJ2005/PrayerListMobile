@@ -7,6 +7,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import PrayerList from './prayerList';
 import axios from "axios";
+import {BASE_URL_DEV} from '@env';
 
 let initialData = [];
 
@@ -31,7 +32,7 @@ const newPrayerRequest = (runningUser) => {
   }, []);
 
   const loadData = () => {
-    fetch(`http://10.0.0.13:3210/data?userId=${runningUser.runningUser[0].id}`)
+    fetch(`${BASE_URL_DEV}/data?userId=${runningUser.runningUser[0].id}`)
       .then((resp) => resp.json())
       .then((json) => setData(json))
       .catch((error) => console.error(error))
@@ -50,7 +51,7 @@ const newPrayerRequest = (runningUser) => {
 
   const addName = () => {
     // console.log(runningUser.runningUser[0].id);
-    fetch("http://10.0.0.13:3210/data", {
+    fetch(`${BASE_URL_DEV}/data`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -73,7 +74,7 @@ const newPrayerRequest = (runningUser) => {
 
   const deleteFunction = (item) => {
     console.log('deleteFunction item', item);
-    fetch("http://10.0.0.13:3210/data", {
+    fetch(`${BASE_URL_DEV}/data`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",
@@ -103,7 +104,7 @@ const newPrayerRequest = (runningUser) => {
 
   const editDetails = (id) => {
     console.log('editDetails Id', id);
-    fetch("http://10.0.0.13:3210/data", {
+    fetch(`${BASE_URL_DEV}/data`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -128,7 +129,7 @@ const newPrayerRequest = (runningUser) => {
     console.log('timesPrayed ', timesPrayed);
     let newtimesPrayed = timesPrayed + 1;
     console.log('newtimesPrayed ', newtimesPrayed);
-    fetch("http://10.0.0.13:3210/data/timesprayed", {
+    fetch(`${BASE_URL_DEV}/data/timesprayed`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -183,7 +184,7 @@ const newPrayerRequest = (runningUser) => {
     console.log('updateAnsweredPrayer answeredPrayerText', answeredPrayerText);
     // setDetails(details);
     // setDetailsModalVisible(false);
-    fetch("http://10.0.0.13:3210/data/answeredprayer", {
+    fetch(`${BASE_URL_DEV}/data/answeredprayer`, {
       method: "PUT",
       headers: {
         Accept: "application/json",

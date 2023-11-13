@@ -60,6 +60,36 @@ app.get('/data/signIn', (req, res)=>{
   client.end;
 })
 
+app.get('/data/prayergroups', (req, res)=>{
+  console.log('req.query.userId ',req.query.userId);
+  // console.log('req.query.password',req.query.password);
+  client.query(`SELECT * FROM public.groupstousersjunction gtuj JOIN prayergroups pg ON gtuj.groupid = pg.id WHERE userid = ${req.query.userId}`, (err, result)=>{
+      if(!err){
+        console.log('result.rows', result.rows);
+          res.send(result.rows);
+      }
+      if(err){
+        console.log('err', err);
+    }
+  });
+  client.end;
+})
+
+app.get('/data/groupprayerrequests', (req, res)=>{
+  console.log('req.query.userId ',req.query.groupid);
+  // console.log('req.query.password',req.query.password);
+  client.query(`SELECT * FROM public.groupprayerrequests WHERE groupid = ${req.query.groupid}`, (err, result)=>{
+      if(!err){
+        console.log('result.rows', result.rows);
+          res.send(result.rows);
+      }
+      if(err){
+        console.log('err', err);
+    }
+  });
+  client.end;
+})
+
 app.get('/data', (req, res)=>{
   console.log('req.body',req.body);
   console.log('req.query.userId ',req.query.userId);

@@ -2,7 +2,7 @@ import {Switch} from 'native-base';
 import React, {useState, useEffect} from 'react';
 import {View, Text, Image, ScrollView, TextInput, Button, StyleSheet, Pressable, Alert,FlatList, ActivityIndicator, useWindowDimensions } from 'react-native';
 import RenderHtml, { HTMLElementModel, HTMLContentModel } from 'react-native-render-html';
-import {API_KEY} from '@env';
+import {API_KEY, BASE_URL_DEV} from '@env';
 
 const depression = [{
     "Title": "Finding Hope in the Midst of Darkness",
@@ -90,7 +90,7 @@ const personalDevotionPage = (devoTypeselected) => {
     console.log('personalDevotionPage getAIDevo devoType', devoType);
     console.log('personalDevotionPage getAIDevo.selected= ', devoType.selected);
     console.log('runningUser in getAIDevo:', devoType.runningUser[0]);
-    const response = await fetch(`http://10.0.0.13:3210/data/checktodaysdevo?userid=${devoType.runningUser[0].id}`)
+    const response = await fetch(`${BASE_URL_DEV}/data/checktodaysdevo?userid=${devoType.runningUser[0].id}`)
     const jsonDevotion = await response.json();  
     console.log('jsonDevotion', jsonDevotion);
     console.log('jsonDevotion size', jsonDevotion.length);
@@ -174,7 +174,7 @@ const personalDevotionPage = (devoTypeselected) => {
                     console.log('devotion Running UserId: ', devoType.runningUser[0].id);
 
                     ///POST DAILY DEVO TO DB
-                    await fetch("http://10.0.0.13:3210/data/postdailydevo", {
+                    await fetch(`${BASE_URL_DEV}/data/postdailydevo`, {
                         method: "POST",
                         headers: {
                           Accept: "application/json",

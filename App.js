@@ -4,12 +4,13 @@ import PersonalDevotionPage from './components/personalDevotionPage';
 import PrayerHistoryPage from './components/prayerHistoryPage';
 import AboutPage from './components/aboutPage';
 import ResourcesPage from './components/resourcesPage';
+import PrayerGroup from './components/prayerGroups';
 import React, {useState, useEffect} from 'react';
 import logo from './assets/logo-no-background.png';
 import blackAndWhiteLogo from './assets/devos4me-high-resolution-logo-white-transparent.png';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { SelectList } from 'react-native-dropdown-select-list';
-import {API_KEY} from '@env';
+import {BASE_URL_DEV} from '@env';
 import axios from 'axios';
 import {TextInput} from 'react-native';
 // import OpenAI from 'openai';
@@ -55,7 +56,7 @@ export default function App() {
     console.log('IN openDevoTypeSelector ');
     console.log('runningUser ', runningUser);
     setLoading(true);
-    const response = await fetch(`http://10.0.0.13:3210/data/checktodaysdevo?userid=${runningUser[0].id}`)
+    const response = await fetch(`${BASE_URL_DEV}/data/checktodaysdevo?userid=${runningUser[0].id}`)
     const jsonDevotion = await response.json();  
     console.log('jsonDevotion', jsonDevotion);
     console.log('jsonDevotion size', jsonDevotion.length);
@@ -71,6 +72,11 @@ export default function App() {
     }
   }
 
+  const openFamilyDevoTypeSelector = async () => {
+    console.log('IN openFamilyDevoTypeSelector ');
+    console.log('runningUser ', runningUser);
+  }
+
   const navigateToDevotions = () => {
     console.log('navigateToDevotions Click');
     setSelected('');
@@ -81,6 +87,11 @@ export default function App() {
   const navigateToPrayerList = () => {
     console.log('navigateToPrayerList click', );
     setPage('prayerList');
+  }
+
+  const navigateToPrayerGroups = () => {
+    console.log('navigateToPrayerGroups click', );
+    setPage('prayerGroup');
   }
 
   const navigateHome = () => {
@@ -147,7 +158,10 @@ export default function App() {
     setUsername('micahj2005@hotmail.com');
     setPassword('1234');
       
-    const response = await fetch(`http://10.0.0.13:3210/data/signIn?username=${username}&password=${password}`)
+    let username = 'micahj2005@hotmail.com';
+    let password = '1234';
+
+    const response = await fetch(`${BASE_URL_DEV}/data/signIn?username=${username}&password=${password}`)
       .then(response => response.json())
       .then(json => {
         console.log('user response', json)
@@ -500,6 +514,39 @@ else{
         </View>
       )
     }
+    else if(page === 'prayerGroup'){
+      return (
+        <View style={styles.scrollView}>
+          <View style={[styles.homeHeaderIcons]}>
+            <Pressable onPress={() => navigateHome()} >
+                <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
+                {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
+            </Pressable>
+            <Pressable onPress={() => openMenu()} >
+                {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
+                <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
+            </Pressable>
+          </View>
+          <View style={styles.prayerListHeader}>
+            <Pressable onPress={() => navigateHome()}>
+              <Image
+                style={styles.tinyLogoPrayerList}
+                source={logo}
+              />
+            </Pressable>
+            <Text style={[styles.myPrayerClosetText]}>My Prayer Groups
+              
+            </Text>
+            {/* <Pressable onPress={() => openMenu()}>
+                <MaterialIcons style={[styles.myPrayerClosetMenu]} name="menu" size={0} color="black" />
+            </Pressable> */}
+            
+          </View>
+          
+          <PrayerGroup runningUser={runningUser}></PrayerGroup> 
+        </View>
+      )
+    }
     else if(page === 'navigation'){
       return (
         // <Modal
@@ -544,8 +591,14 @@ else{
               <Pressable style={styles.myDailyDevotionPressableNavigation} onPress={() => openDevoTypeSelector()}>
                 <Text style={styles.myDailyDevotionPressableTextNavigation}>My Daily Devotion</Text>
               </Pressable>
+              <Pressable style={styles.myDailyDevotionPressableNavigation} onPress={() => openFamilyDevoTypeSelector()}>
+                <Text style={styles.myDailyDevotionPressableTextNavigation}>Family Devotion</Text>
+              </Pressable>
               <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateToPrayerList()}>
                 <Text style={styles.myPrayerListPressableTextNavigation}>My Prayer List</Text>
+              </Pressable>
+              <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateToPrayerGroups()}>
+                <Text style={styles.myPrayerListPressableTextNavigation}>Prayer Groups</Text>
               </Pressable>
               <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateHistory()}>
                 <Text style={styles.myPrayerListPressableTextNavigation}>My Prayer History</Text>

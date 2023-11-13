@@ -7,6 +7,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import PrayerList from './prayerList';
 import axios from "axios";
+import {BASE_URL_DEV} from '@env';
 
 const PrayerHistoryPage = (runningUser) => {
     console.log('runningUser in newPrayerRequest:', runningUser);
@@ -21,7 +22,7 @@ const PrayerHistoryPage = (runningUser) => {
       }, []);
     
     const loadData = () => {
-    fetch(`http://10.0.0.13:3210/data/prayerhistory?userId=${runningUser.runningUser[0].id}`)
+    fetch(`${BASE_URL_DEV}/data/prayerhistory?userId=${runningUser.runningUser[0].id}`)
         .then((resp) => resp.json())
         .then((json) => setData(json))
         .catch((error) => console.error(error))
