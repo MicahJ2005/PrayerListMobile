@@ -63,7 +63,7 @@ app.get('/data/signIn', (req, res)=>{
 app.get('/data/prayergroups', (req, res)=>{
   console.log('req.query.userId ',req.query.userId);
   // console.log('req.query.password',req.query.password);
-  client.query(`SELECT * FROM public.groupstousersjunction gtuj JOIN prayergroups pg ON gtuj.groupid = pg.id WHERE userid = ${req.query.userId}`, (err, result)=>{
+  client.query(`SELECT * FROM public.groupstousersjunction gtuj JOIN prayergroups pg ON gtuj.groupid = pg.id WHERE userid = ${req.query.userId} AND pg.status = 'active'`, (err, result)=>{
       if(!err){
         console.log('result.rows', result.rows);
           res.send(result.rows);
@@ -195,6 +195,51 @@ app.post('/data/postdailydevo', (req, res)=>{
     client.end;
 })
 
+app.post('/data/newGroup', (req, res)=>{
+  console.log('POST req.body',req.body);
+  // console.log('POST req.body.title',req.body.title);
+  // console.log('POST req.body.scripture',req.body.scripture);
+  // console.log('POST req.body.body',req.body.body);
+  // console.log('POST req.body.userid',req.body.userid);
+  // let objectDate = new Date();
+
+
+  // let day = objectDate.getDate();
+  // console.log(day); // 23
+
+  // let month = objectDate.getMonth() + 1;
+  // console.log(month + 1); // 8
+
+  // let year = objectDate.getFullYear();
+  // console.log(year); // 2022
+
+  // let DateToSend = year+'-'+month+'-'+day;
+  // console.log("DateToSend", DateToSend);
+  /// INSERT INTO prayergroups
+  let insertQuery = `insert into prayergroups(groupname, createdbyid, status) 
+                     values('${req.body.groupname}', '${req.body.submittedbyuserid}', '${req.body.status}') RETURNING id`
+    client.query(insertQuery, (err, result)=>{
+        if(!err){
+          console.log('POST SUCCESS id', result.rows[0].id)
+            // res.send('Insertion was successful')
+            let insertQuery2 = `insert into groupstousersjunction(groupid, userid) 
+                                values('${ result.rows[0].id}', '${req.body.submittedbyuserid}') RETURNING id`
+            client.query(insertQuery2, (err, result2) => {
+                if(!err){
+                  console.log('POST SUCCESS', result2)
+                    res.send('Insertion was successful')
+                }
+                else{ console.log('ERROR', err.message) }
+            })
+        }
+        else{ console.log('ERROR', err.message) }
+    })
+
+    ////INSERT into junction table
+    
+    client.end;
+})
+
 app.post('/data', (req, res)=>{
   console.log('POST req.body',req.body);
   let objectDate = new Date();
@@ -302,6 +347,77 @@ app.put('/data/timesprayed', (req, res)=>{
     if(!err){
       console.log('PUT TIMESPRAYED SUCCESS', result)
       res.send('Insertion was successful')
+    }
+      else{ console.log('ERROR', err.message) }
+    })
+    client.end;
+  }
+  else{ console.log('ERROR', err.message) }
+  
+})
+
+app.put('/data/timesprayedgroup', (req, res)=>{
+  console.log('PUT timesprayedgroup req.body',req.body);
+  let objectDate = new Date();
+
+
+  let day = objectDate.getDate();
+  console.log(day); // 23
+
+  let month = objectDate.getMonth() + 1;
+  console.log(month + 1); // 8
+
+  let year = objectDate.getFullYear();
+  console.log(year); // 2022
+
+  let DateToSend = year+'-'+month+'-'+day;
+  console.log("DateToSend", DateToSend);
+  if(req.body.id != null){
+    let insertQuery = `update groupprayerrequests 
+                        set 
+                        updatedat = '${DateToSend}',
+                        timesprayed = '${req.body.timesprayed}'
+                        where id = '${req.body.id}'`
+
+    client.query(insertQuery, (err, result)=>{
+    if(!err){
+      console.log('PUT TIMESPRAYED SUCCESS', result)
+      res.send('Insertion was successful')
+    }
+      else{ console.log('ERROR', err.message) }
+    })
+    client.end;
+  }
+  else{ console.log('ERROR', err.message) }
+  
+})
+
+app.put('/data/deativateprayergroup', (req, res)=>{
+  console.log('PUT deativateprayergroup req.body',req.body.groupid);
+  // let objectDate = new Date();
+
+
+  // let day = objectDate.getDate();
+  // console.log(day); // 23
+
+  // let month = objectDate.getMonth() + 1;
+  // console.log(month + 1); // 8
+
+  // let year = objectDate.getFullYear();
+  // console.log(year); // 2022
+
+  // let DateToSend = year+'-'+month+'-'+day;
+  // console.log("DateToSend", DateToSend);
+  if(req.body.groupid != null){
+    let insertQuery = `update prayergroups 
+                        set 
+                        status = 'inactive'
+                        where id = '${req.body.groupid}'`
+
+    client.query(insertQuery, (err, result)=>{
+    if(!err){
+      console.log('PUT deativateprayergroup SUCCESS', result)
+      res.send('update was successful')
     }
       else{ console.log('ERROR', err.message) }
     })
