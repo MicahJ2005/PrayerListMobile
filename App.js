@@ -5,6 +5,7 @@ import PrayerHistoryPage from './components/prayerHistoryPage';
 import AboutPage from './components/aboutPage';
 import ResourcesPage from './components/resourcesPage';
 import PrayerGroup from './components/prayerGroups';
+import JoinAPrayerGroup from './components/joinAPrayerGroupPage';
 import React, {useState, useEffect} from 'react';
 import logo from './assets/logo-no-background.png';
 import blackAndWhiteLogo from './assets/devos4me-high-resolution-logo-white-transparent.png';
@@ -93,6 +94,12 @@ export default function App() {
     console.log('navigateToPrayerGroups click', );
     setPage('prayerGroup');
   }
+
+  const navigateToJoinPrayerGroups = () => {
+    console.log('navigateToPrayerGroups click', );
+    setPage('joinPrayerGroup');
+  }
+  
 
   const navigateHome = () => {
     console.log('navigateHome click', );
@@ -514,6 +521,41 @@ else{
         </View>
       )
     }
+    
+    else if(page === 'joinPrayerGroup'){
+      return(
+        <View style={styles.scrollView}>
+          <View style={[styles.homeHeaderIcons]}>
+            <Pressable onPress={() => navigateHome()} >
+                <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
+                {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
+            </Pressable>
+            <Pressable onPress={() => openMenu()} >
+                {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
+                <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
+            </Pressable>
+          </View>
+          <View style={styles.prayerListHeader}>
+            <Pressable onPress={() => navigateHome()}>
+              <Image
+                style={styles.tinyLogoPrayerList}
+                source={logo}
+              />
+            </Pressable>
+            <Text style={[styles.myPrayerClosetText]}>Join A Prayer Group
+              
+            </Text>
+            {/* <Pressable onPress={() => openMenu()}>
+                <MaterialIcons style={[styles.myPrayerClosetMenu]} name="menu" size={0} color="black" />
+            </Pressable> */}
+            
+          </View>
+          
+          <JoinAPrayerGroup runningUser={runningUser}></JoinAPrayerGroup> 
+        </View>
+      )
+      
+    }
     else if(page === 'prayerGroup'){
       return (
         <View style={styles.scrollView}>
@@ -598,10 +640,13 @@ else{
                 <Text style={styles.myPrayerListPressableTextNavigation}>My Prayer List</Text>
               </Pressable>
               <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateToPrayerGroups()}>
-                <Text style={styles.myPrayerListPressableTextNavigation}>Prayer Groups</Text>
+                <Text style={styles.myPrayerListPressableTextNavigation}>My Prayer Groups</Text>
+              </Pressable>
+              <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateToJoinPrayerGroups()}>
+                <Text style={styles.myPrayerListPressableTextNavigation}>Join A Prayer Group</Text>
               </Pressable>
               <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateHistory()}>
-                <Text style={styles.myPrayerListPressableTextNavigation}>My Prayer History</Text>
+                <Text style={styles.myPrayerListPressableTextNavigation}>My Answered Prayers</Text>
               </Pressable>
               <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateResources()}>
                 <Text style={styles.myPrayerListPressableTextNavigation}>Resources</Text>

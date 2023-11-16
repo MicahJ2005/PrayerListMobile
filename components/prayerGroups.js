@@ -282,7 +282,7 @@ const prayerGroups = (runningUser) => {
           loadData();
           setNewPrayerGroupModalVisible(false);
           setText('');
-          Alert.alert('Prayer Request Submitted!');
+          Alert.alert('Enjoy your new Group!');
           setModalVisible(false);
         })
   }
@@ -394,6 +394,9 @@ const prayerGroups = (runningUser) => {
           </SafeAreaView>
           <Pressable style={styles.bottomButton} onPress={() => addNewPrayerGroup()}>
             <Text style={styles.bottomButtonText}>New Prayer Group</Text>
+          </Pressable>
+          <Pressable style={styles.bottomButton} onPress={() => addNewPrayerGroup()}>
+            <Text style={styles.bottomButtonText}>Join Prayer Group</Text>
           </Pressable>
         </View>
       );

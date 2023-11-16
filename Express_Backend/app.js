@@ -60,6 +60,21 @@ app.get('/data/signIn', (req, res)=>{
   client.end;
 })
 
+app.get('/data/searchPrayerGroups', (req, res)=>{
+  console.log('searchPrayerGroups group', req.query.grouporid)
+  // let queryString = req.query.grouporid.toString;
+  client.query(`Select * from prayergroups WHERE groupname LIKE '%${req.query.grouporid}%' AND status = 'active'`, (err, result)=>{
+      if(!err){
+        console.log('result.rows', result.rows);
+          res.send(result.rows);
+      }
+      if(err){
+        console.log('err', err);
+    }
+  });
+  client.end;
+})
+
 app.get('/data/prayergroups', (req, res)=>{
   console.log('req.query.userId ',req.query.userId);
   // console.log('req.query.password',req.query.password);
@@ -240,6 +255,24 @@ app.post('/data/newGroup', (req, res)=>{
     client.end;
 })
 
+app.post('/data/joinPrayerGroup', (req, res)=>{
+  console.log('POST req.body',req.body);
+  let insertQuery = `insert into groupstousersjunction(groupid, userid) 
+                     values('${req.body.groupid}', '${req.body.userid}')`
+    client.query(insertQuery, (err, result)=>{
+        if(!err){
+          // console.log('POST SUCCESS id', result.rows[0].id)
+          res.send('Insertion was successful')
+            
+        }
+        else{ console.log('ERROR', err.message) }
+    })
+
+    ////INSERT into junction table
+    
+    client.end;
+})
+
 app.post('/data', (req, res)=>{
   console.log('POST req.body',req.body);
   let objectDate = new Date();
@@ -268,18 +301,56 @@ app.post('/data', (req, res)=>{
     client.end;
 })
 
-app.delete('/data', (req, res)=>{
-  console.log('DELETE req.body',req.body);
-  client.query(`delete from prayerrequests where id=${req.body.id}`, (err, result)=>{
-      if(!err){
-        console.log('DELETE result.rows', result);
-          res.send(result);
-      }
-      if(err){
-        console.log('err', err);
+///CHANGE THIS TO A PUT WITH A NEW STATUS
+// app.delete('/data', (req, res)=>{
+//   console.log('DELETE req.body',req.body);
+//   client.query(`delete from prayerrequests where id=${req.body.id}`, (err, result)=>{
+//       if(!err){
+//         console.log('DELETE result.rows', result);
+//           res.send(result);
+//       }
+//       if(err){
+//         console.log('err', err);
+//     }
+//   });
+//   client.end;
+// })
+
+///USE THIS TO REPLACE THE ABOVE DELETE FUNCTION
+app.put('/data/removePrayerRequest', (req, res)=>{
+  console.log('PUT update to INACTIVE request req.body',req.body);
+  let objectDate = new Date();
+
+
+  let day = objectDate.getDate();
+  console.log(day); // 23
+
+  let month = objectDate.getMonth() + 1;
+  console.log(month + 1); // 8
+
+  let year = objectDate.getFullYear();
+  console.log(year); // 2022
+
+  let DateToSend = year+'-'+month+'-'+day;
+  console.log("DateToSend", DateToSend);
+  if(req.body.id != null){
+    let insertQuery = `update prayerrequests 
+                        set 
+                        updatedat = '${DateToSend}',
+                        status = 'inactive'
+                        where id = '${req.body.id}'`
+
+    client.query(insertQuery, (err, result)=>{
+    if(!err){
+      console.log('PUT TIMESPRAYED SUCCESS', result)
+      res.send('Insertion was successful')
     }
-  });
-  client.end;
+      else{ console.log('ERROR', err.message) }
+    })
+    client.end;
+  }
+  else{ console.log('ERROR', err.message) }
+  
 })
 
 app.put('/data', (req, res)=>{
@@ -463,7 +534,12 @@ app.put('/data/answeredprayer', (req, res)=>{
   else{ console.log('ERROR', err.message) }
   
 })
-
+///for my phone
 app.listen(3210, ()=>{
   console.log('Server @port 3210 gan!')
 })
+
+///for expo on computer
+// app.listen(8082, ()=>{
+//   console.log('Server @port 8082 gan!')
+// })

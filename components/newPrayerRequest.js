@@ -25,6 +25,8 @@ const newPrayerRequest = (runningUser) => {
   const [timesPrayed, setTimesPrayed] = useState('');
   const [answeredPrayerInputModalOpen, setAnsweredPrayerInputModalOpen] = useState(false);
   const [answeredPrayerText, setAnsweredPrayerText] = useState('');
+  const [deleteRequestModalVisible, setDeleteRequestModalVisible] = useState(false);
+  
   
 
   useEffect(() => {
@@ -73,21 +75,47 @@ const newPrayerRequest = (runningUser) => {
   }
 
   const deleteFunction = (item) => {
-    console.log('deleteFunction item', item);
-    fetch(`${BASE_URL_DEV}/data`, {
-      method: "DELETE",
+    setDeleteRequestModalVisible(true);
+    // console.log('deleteFunction item', item);
+    // fetch(`${BASE_URL_DEV}/data/removePrayerRequest`, {
+    //   method: "PUT",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     id: item.id,
+    //     nama: text,
+    //     details: details,
+    //   }),
+    // })
+    //   .then((response) =>{
+    //     console.log('response', response);
+    //   })
+  }
+  const closeDeleteModal = () => {
+    setDeleteRequestModalVisible(false);
+  }
+
+  const removePrayerRequest = () => {
+    console.log('deleteFunction item', details.id);
+    fetch(`${BASE_URL_DEV}/data/removePrayerRequest`, {
+      method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: item.id,
+        id: details.id,
         nama: text,
         details: details,
       }),
     })
       .then((response) =>{
         console.log('response', response);
+        setDeleteRequestModalVisible(false);
+        setDetailsModalVisible(false)
+        loadData();
       })
   }
 
@@ -270,6 +298,29 @@ const newPrayerRequest = (runningUser) => {
         </View>
       </Modal>
       {/* end new prayer request Modal */}
+
+      {/* start delete request Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={deleteRequestModalVisible}
+        onRequestClose={() => {
+          setDeleteRequestModalVisible(!deleteRequestModalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+          <Pressable style={styles.circleButtonDetailCloseModal2} onPress={() => closeDeleteModal()}>
+            <MaterialIcons name="close" size={25} color="white" />
+          </Pressable>
+            <Text style={styles.deleteQuestionText}>Are you sure you want to remove this request?</Text>
+            
+              <Pressable style={styles.circleDeleteRequest} onPress={() => removePrayerRequest()} >
+                <MaterialIcons name="delete-forever" size={30} color="#EAD7BB" />
+              </Pressable>
+          </View>
+        </View>
+      </Modal>
+      {/* end delete request Modal */}
 
        {/* start Answered Prayer Input Modal */}
        <Modal
@@ -754,6 +805,28 @@ const styles = StyleSheet.create({
       shadowOpacity: 1,
       shadowRadius: 10,
   },
+  circleDeleteRequest:{
+    width:50,
+    height: 50,
+    marginTop:20,
+    marginLeft: '90%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 42,
+    backgroundColor: '#113946',
+    // position: 'absolute',
+    // right:10,
+    // top: 40,
+    // bottom: 0,
+    elevation: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 2,
+      height: 4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
   circleButtonContainer: {
     width: 4,
     height: 4,
@@ -895,6 +968,11 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   nameInputText:{
+    textAlign: 'left',
+    color: '#C56E33'
+  },
+  deleteQuestionText:{
+    fontSize:25,
     textAlign: 'left',
     color: '#C56E33'
   },
