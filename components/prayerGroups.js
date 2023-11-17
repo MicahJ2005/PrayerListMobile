@@ -32,6 +32,8 @@ const prayerGroups = (runningUser) => {
   const [groupName, setGroupName] = useState('');
   const [groupCreatedBy, setGroupCreatedBy] = useState('');
   const [newPrayerGroupModalVisible, setNewPrayerGroupModalVisible] = useState(false);
+  const [removeFromGroupModalVisible, setRemoveFromGroupModalVisible] = useState(false);
+  
   
 
   useEffect(() => {
@@ -244,9 +246,6 @@ const prayerGroups = (runningUser) => {
         Alert.alert('Praise the Lord!');
         
       })
-
-      
-    
   }
 
   const deleteGroup = (group) => {
@@ -318,9 +317,109 @@ const prayerGroups = (runningUser) => {
     setPage('groupList');
   }
 
+  const askToRemoveGroup = (group) => {
+    console.log('IN askToRemoveGroup with group', group);
+    setGroupId(group.id)
+    setGroupName(group.groupname)
+    setRemoveFromGroupModalVisible(true);
+  }
+
+  const removeFromGroup = (group) => {
+    console.log('IN removeFromGroup with group', groupId);
+    console.log('IN removeFromGroup with userId', runningUser.runningUser[0].id);
+    fetch(`${BASE_URL_DEV}/data/removeUserFromGroup`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        groupid: groupId,
+        userid: runningUser.runningUser[0].id,
+      }),
+    })
+      .then((response) =>{
+        console.log('response', response);
+        setModalVisible(false);
+        setDetailsModalVisible(false);
+        setRemoveFromGroupModalVisible(false);
+        setDetails('');
+        loadData();
+        setPage('groupList');
+        Alert.alert('Done!');
+        
+      })
+  }
+
+  const cancelRemoveFromGroup = () => {
+    console.log('IN cancelRemoveFromGroup');
+    setRemoveFromGroupModalVisible(false);
+  }
+
   if(page == 'groupList'){
     return (
         <View style={styles.centeredViewPrayerList}>
+          {/* Start Leave Group Modal */}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={removeFromGroupModalVisible}
+            onRequestClose={() => {
+              // Alert.alert('Modal has been closed.');
+              setRemoveFromGroupModalVisible(!removeFromGroupModalVisible);
+            }}>
+            {/* <View style={styles.centeredViewRequestDetails}> */}
+              
+              <View style={styles.modalViewDetails}>
+              {/* <Pressable style={styles.circleButtonDetailEditModal} onPress={() => openEditDetail(details)}>
+                <MaterialIcons name="edit" size={25} color="black" />
+              </Pressable>
+              <Pressable style={styles.circleButtonDetailCloseModal} onPress={() => closeDetails()}>
+                <MaterialIcons name="close" size={25} color="white" />
+              </Pressable>
+              <Pressable style={styles.circleButtonDetailDeleteModal} onPress={() => deleteFunction(details)}>
+                <MaterialIcons name="delete" size={25} color="white" />
+              </Pressable> */}
+                <Text style={[styles.requestNameText]}>
+                  Do you want to leave {groupName} Prayer Group?
+                </Text>
+                {/* <Text style={[styles.requestNameText]}>
+                  Note: All users will no longer have visibility to this group
+                </Text> */}
+                {/* <Text style={[styles.prayingForText]}>Praying for...</Text>
+                <SafeAreaView style={styles.safeAreaContainer}>
+                  <ScrollView style={styles.requestDetailsScrollView}>
+                    <Text style={[styles.requestDetailsText]}>
+                      {details.details}
+                    </Text>
+                  </ScrollView>
+                </SafeAreaView>
+                <View style={styles.detailButtonGroup}> */}
+                   <Pressable
+                    style={[styles.closeDeleteModal]}
+                    onPress={() => cancelRemoveFromGroup()}>
+                    {/* <MaterialCommunityIcons name="human-handsup" size={30} color="#BCA37F" /> */}
+                    <Text style={styles.textStylePrayerRequest}>Cancel</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[styles.deactivateGroupButton]}
+                    onPress={() => removeFromGroup()}>
+                    {/* <MaterialCommunityIcons name="human-handsup" size={30} color="#BCA37F" /> */}
+                    <Text style={styles.textStylePrayerRequest}>OK</Text>
+                  </Pressable>
+    
+                {/* <Pressable
+                    style={[styles.prayedCircleButton]}
+                    onPress={() => incermentTimesPrayed()}>
+                    
+                    <FontAwesome5 name="pray" size={34} color="#BCA37F" />
+                    <Text style={styles.textStylePrayed}>Prayed</Text>
+                  </Pressable> */}
+              {/* </View> */}
+            </View>
+          </Modal> 
+          {/* end Leave Group Modal */}
+
            {/* start new prayer group Modal */}
         <Modal
             animationType="slide"
@@ -387,7 +486,10 @@ const prayerGroups = (runningUser) => {
               data={data}
               renderItem={({item}) => 
                 <Pressable style={[styles.buttonShowDetail]} onPress={() => showGroupPrayerList(item)}>
-                    <Text style={styles.item} key={item.groupid}>{item.groupname}</Text>
+                  <Pressable style={styles.circleButtonRemoveFromGroup} onPress={() => askToRemoveGroup(item)}>
+                    <MaterialIcons name="close" size={25} color="white" />
+                  </Pressable>
+                    <Text style={styles.item} key={item.id}>{item.groupname}</Text>
                 </Pressable>
               }
             />
@@ -395,15 +497,17 @@ const prayerGroups = (runningUser) => {
           <Pressable style={styles.bottomButton} onPress={() => addNewPrayerGroup()}>
             <Text style={styles.bottomButtonText}>New Prayer Group</Text>
           </Pressable>
-          <Pressable style={styles.bottomButton} onPress={() => addNewPrayerGroup()}>
+          {/* <Pressable style={styles.bottomButton} onPress={() => addNewPrayerGroup()}>
             <Text style={styles.bottomButtonText}>Join Prayer Group</Text>
-          </Pressable>
+          </Pressable> */}
         </View>
       );
   }
   else if(page == 'groupRequests'){
     return (
         <View style={styles.centeredViewPrayerList}>
+          
+
               {/* start Delete Group Modal */}
           <Modal
             animationType="slide"
@@ -465,7 +569,7 @@ const prayerGroups = (runningUser) => {
           </Modal> 
           {/* end Delete Group Modal */}
 
-       
+          
 
           {/* start new prayer request Modal */}
           <Modal
@@ -699,7 +803,7 @@ const prayerGroups = (runningUser) => {
                     </View>
                       
                       
-                      <Text style={styles.item} key={item.groupid}>{item.nama}
+                      <Text style={styles.item} key={item.Id}>{item.nama}
                         
                       </Text>
                   </View>
@@ -1198,6 +1302,29 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
   },
+  circleButtonRemoveFromGroup:{
+    width:40,
+    height: 40,
+    margin:10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 42,
+    backgroundColor: '#fff',
+    position: 'absolute',
+    left:10,
+    top: -10,
+    backgroundColor:'grey',
+    color: 'white',
+    elevation: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+
   circleButtonAnsweredPrayerCloseModal: {
     width:40,
     height: 40,
