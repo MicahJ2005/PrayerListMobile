@@ -686,7 +686,7 @@ else{
                 source={logo}
               />
             </Pressable>
-            <Text style={[styles.myNavigationMenuText]}>Prayer History
+            <Text style={[styles.myNavigationMenuText]}>Answered Prayers
               
             </Text>
             {/* <Pressable onPress={() => navigateHome()}>

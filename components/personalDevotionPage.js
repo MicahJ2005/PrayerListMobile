@@ -79,7 +79,7 @@ const personalDevotionPage = (devoTypeselected) => {
         // setDevotionBody("In life, we often find ourselves on a journey, navigating through the unknown. This journey is not always easy, and it can be filled with uncertainties and challenges. However, as believers, we are called to embrace this journey and seek meaning in the midst of the unknown. The scripture in Proverbs 22:6 reminds us of the importance of training up a child in the way they should go. This verse not only applies to literal children but can also be applied to our own lives as we navigate through our personal journeys. Just as a child needs guidance and direction, we too need to seek wisdom and understanding in order to find meaning in the unknown.' Embracing the journey means acknowledging that we do not have all the answers and that we are constantly learning and growing. It means surrendering our need for control and instead placing our trust in God. As we embrace the journey, we discover that God has a purpose and a plan for our lives, even in the midst of the unknown. Finding meaning in the unknown requires us to have faith and trust in God\'s sovereignty. We can take comfort in knowing that God is with us every step of the way, even when we cannot see the road ahead. He is the one who goes before us, paving the way and guiding us through the uncertainties of life. When we encounter challenges and uncertainties, we can turn to God\'s Word for guidance and encouragement. Just as a child looks to their parents for guidance, we can look to our Heavenly");
         
         // getDevoDB();
-        // getAIDevo(devoTypeselected)
+        getAIDevo(devoTypeselected)
     }, []);
 
        
@@ -176,7 +176,7 @@ const personalDevotionPage = (devoTypeselected) => {
                         body: JSON.stringify({
                             model: "gpt-3.5-turbo",
                             messages: [{"role": "user", "content": contentToSend}],
-                            max_tokens: 500,
+                            max_tokens: 700,
                             temperature: 0.7,
                         }),
                     

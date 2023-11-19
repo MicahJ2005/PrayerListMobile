@@ -69,7 +69,7 @@ const prayerGroups = (runningUser) => {
 
   const addName = () => {
     // console.log(runningUser.runningUser[0].id);
-    fetch(`${BASE_URL_DEV}/data`, {
+    fetch(`${BASE_URL_DEV}/data/addGroupRequest`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -79,6 +79,7 @@ const prayerGroups = (runningUser) => {
         nama: text,
         details: details,
         submittedbyuserid: runningUser.runningUser[0].id,
+        groupid: groupId,
         status: 'Praying',
       }),
     })
@@ -577,7 +578,7 @@ const prayerGroups = (runningUser) => {
             transparent={true}
             visible={modalVisible}
             onRequestClose={() => {
-              Alert.alert('Modal has been closed.');
+              // Alert.alert('Modal has been closed.');
               setModalVisible(!modalVisible);
             }}>
             <View style={styles.centeredView}>
@@ -607,7 +608,7 @@ const prayerGroups = (runningUser) => {
                         borderWidth: 4,
                         borderRadius: 30,
                         width:'95%',
-                        height: '64%',
+                        height: '55%',
                         marginBottom: 40,
                         
                     }}
