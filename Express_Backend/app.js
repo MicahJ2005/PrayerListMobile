@@ -93,7 +93,7 @@ app.get('/data/prayergroups', (req, res)=>{
 app.get('/data/groupprayerrequests', (req, res)=>{
   console.log('req.query.userId ',req.query.groupid);
   // console.log('req.query.password',req.query.password);
-  client.query(`SELECT * FROM public.groupprayerrequests WHERE groupid = ${req.query.groupid}`, (err, result)=>{
+  client.query(`SELECT * FROM public.groupprayerrequests WHERE groupid = ${req.query.groupid} AND status = 'Praying'`, (err, result)=>{
       if(!err){
         console.log('result.rows', result.rows);
           res.send(result.rows);
@@ -619,10 +619,6 @@ app.put('/data/answeredprayer', (req, res)=>{
   else{ console.log('ERROR', err.message) }
   
 })
-///for my phone
-app.listen(3210, ()=>{
-  console.log('Server @port 3210 gan!')
-})
 
 app.put('/data/answeredgroupprayer', (req, res)=>{
   console.log('PUT answeredgroupprayer req.body',req.body);
@@ -663,9 +659,17 @@ app.put('/data/answeredgroupprayer', (req, res)=>{
   
 })
 ///for my phone
+// app.listen(3210, ()=>{
+//   console.log('Server @port 3210 gan!')
+// })
+
+
+
+///for my phone
 app.listen(3210, ()=>{
   console.log('Server @port 3210 gan!')
 })
+
 
 ///for expo on computer
 // app.listen(8082, ()=>{

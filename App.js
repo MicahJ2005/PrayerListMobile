@@ -930,7 +930,7 @@ const styles = StyleSheet.create({
     flex: 2,
     // justifyContent: 'center',
     // alignItems: 'center',
-    marginTop: 22,
+    marginTop: 30,
     backgroundColor: '#BCA37F',
   },
   scrollViewNavigation:{
