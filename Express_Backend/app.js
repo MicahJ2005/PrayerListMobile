@@ -597,12 +597,57 @@ app.put('/data/answeredprayer', (req, res)=>{
 
   let DateToSend = year+'-'+month+'-'+day;
   console.log("DateToSend", DateToSend);
+
+  let refinedNotes = req.body.answerednote.replaceAll("'","''");
   if(req.body.id != null){
     let insertQuery = `update prayerrequests 
                         set 
                         updatedat = '${DateToSend}',
                         status = '${req.body.status}',
-                        answerednote = '${req.body.answerednote}'
+                        answerednote = '${refinedNotes}'
+                        where id = '${req.body.id}'`
+
+    client.query(insertQuery, (err, result)=>{
+    if(!err){
+      console.log('PUT TIMESPRAYED SUCCESS', result)
+      res.send('Insertion was successful')
+    }
+      else{ console.log('ERROR', err.message) }
+    })
+    client.end;
+  }
+  else{ console.log('ERROR', err.message) }
+  
+})
+///for my phone
+app.listen(3210, ()=>{
+  console.log('Server @port 3210 gan!')
+})
+
+app.put('/data/answeredgroupprayer', (req, res)=>{
+  console.log('PUT answeredgroupprayer req.body',req.body);
+  let objectDate = new Date();
+
+
+  let day = objectDate.getDate();
+  console.log(day); // 23
+
+  let month = objectDate.getMonth() + 1;
+  console.log(month + 1); // 8
+
+  let year = objectDate.getFullYear();
+  console.log(year); // 2022
+
+  let DateToSend = year+'-'+month+'-'+day;
+  console.log("DateToSend", DateToSend);
+
+  let refinedNotes = req.body.answerednote.replaceAll("'","''");
+  if(req.body.id != null){
+    let insertQuery = `update groupprayerrequests 
+                        set 
+                        updatedat = '${DateToSend}',
+                        status = '${req.body.status}',
+                        answerednote = '${refinedNotes}'
                         where id = '${req.body.id}'`
 
     client.query(insertQuery, (err, result)=>{

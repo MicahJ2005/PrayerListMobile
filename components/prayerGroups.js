@@ -85,7 +85,7 @@ const prayerGroups = (runningUser) => {
     })
       .then((response) =>{
         console.log('response', response);
-        loadData();
+        refreshGroupPrayerList(groupId)
         Alert.alert('Prayer Request Submitted!');
         setModalVisible(false);
       })
@@ -192,6 +192,25 @@ const prayerGroups = (runningUser) => {
     
   }
 
+  const refreshGroupPrayerList = async (groupid) => {
+    console.log('showGroupPrayerList groupId', groupid);
+    // setGroupId(group.groupid);
+    // setGroupName(group.groupname);
+    // setGroupCreatedBy(group.createdbyid)
+    const response = await fetch(`${BASE_URL_DEV}/data/groupprayerrequests?groupid=${groupid}`)
+      .then(response => response.json())
+      .then(json => {
+        console.log('showGroupPrayerList response', json)
+        // setRunningUser(json);
+        setRequestData(json);
+        setPage('groupRequests');
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    
+  }
+
   const showDetails = (item) => {
     console.log('showDetails item', item);
     setDetails(item);
@@ -225,7 +244,7 @@ const prayerGroups = (runningUser) => {
     console.log('updateAnsweredPrayer answeredPrayerText', answeredPrayerText);
     // setDetails(details);
     // setDetailsModalVisible(false);
-    fetch(`${BASE_URL_DEV}/data/answeredprayer`, {
+    fetch(`${BASE_URL_DEV}/data/answeredgroupprayer`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
