@@ -73,6 +73,7 @@ const personalDevotionPage = (devoTypeselected) => {
     useEffect(() => {
         console.log('personalDevotionPage devoTypeselected.selected= ', devoTypeselected.selected);
         console.log('runningUser in personalDevotionPage:', devoTypeselected.runningUser[0]);
+        console.log('personalDevotionPage devoTypeselected.devotionTopicText= ', devoTypeselected.devotionTopicText);
         console.log('APIKEY: ', API_KEY);
         // setDevotionTitle("Embracing the Journey: Finding Meaning in the Unknown");
         // setDevotionScripture("Train up a child in the way he should go; even when he is old he will not depart from it.\" - Proverbs 22:6");
@@ -107,6 +108,7 @@ const personalDevotionPage = (devoTypeselected) => {
     const getAIDevo = async (devoType) => {
     console.log('personalDevotionPage getAIDevo devoType', devoType);
     console.log('personalDevotionPage getAIDevo.selected= ', devoType.selected);
+    console.log('personalDevotionPage devoTypeselected.devotionTopicText= ', devoTypeselected.devotionTopicText);
     console.log('runningUser in getAIDevo:', devoType.runningUser[0]);
     const response = await fetch(`${BASE_URL_DEV}/data/checktodaysdevo?userid=${devoType.runningUser[0].id}`)
     const jsonDevotion = await response.json();  
@@ -122,7 +124,7 @@ const personalDevotionPage = (devoTypeselected) => {
         console.log('no devo yet today... Generating');
     
         try {
-            let contentToSend = `"Provide just a Bible verse about ${devoType.selected}"`;
+            let contentToSend = `"Provide just a Bible verse about ${devoType.devotionTopicText}"`;
             const response = await fetch("https://api.openai.com/v1/chat/completions", {
                 method: "POST",
                 headers: {

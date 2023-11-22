@@ -47,6 +47,8 @@ export default function App() {
   const [password, setPassword] = useState('');
   const [runningUser, setRunningUser] = useState('');
   const [loading, setLoading] = useState(false);
+  const [devotionTopicText, setDevotionTopicText] = useState('');
+  
   
   useEffect(() => {
     console.log('page: ', page);
@@ -135,6 +137,8 @@ export default function App() {
   const getDevo = () => {
     // this will initiate the callout to get a new devo based on the "selected" devot type
     console.log('getDevo click', selected);
+    console.log('getDevo click devotionTopicText', devotionTopicText);
+    devotionTopicText
     // setSubmitDevoButtonDisabled(true);
     setPage('devotion');
   }
@@ -363,8 +367,8 @@ else{
           } */}
           
           <View style={styles.homeContentView}>
+            <Text>Welcome {runningUser[0].firstname} </Text>
             <Text >
-              <Text>logged in as {runningUser[0].firstname} with id {runningUser[0].id} </Text>
               <Text style={styles.homeText}>
                 And this is eternal life, that they know You, the only true God, and Jesus Christ whom you have sent. John 17:3
               </Text>
@@ -418,13 +422,26 @@ else{
                   <View style={styles.modalView}>
                     <Text style={styles.modalText}>How can you be encouraged today?</Text>
                     <SafeAreaView style={styles.container}>
-                      <SelectList 
+                      {/* <SelectList 
                           setSelected={(val) => setSelected(val)} 
                           onSelect={() => setDevoType()}
                           boxStyles={{width:250}}
                           data={data} 
                           save="value"
-                      />
+                      /> */}
+                      <TextInput
+                        style={{
+                            borderColor: '#113946',
+                            borderWidth: 4,
+                            borderRadius: 30,
+                            width:'95%',
+                            height: '15%',
+                            marginBottom: 40,
+                        }}
+                        onChangeText={newUsernameText => setDevotionTopicText(newUsernameText)}
+                        onEndEditing={() => setDevoType()}
+                        placeholder="    Devotion Topic"
+                    />
                     </SafeAreaView>
                     <Pressable
                       style={[styles.circleButtonDetailCloseModal]}
@@ -484,7 +501,7 @@ else{
           </View>
           
           {/* <Text>Devotion Page</Text> */}
-          <PersonalDevotionPage selected={selected} runningUser={runningUser}></PersonalDevotionPage>
+          <PersonalDevotionPage selected={selected} runningUser={runningUser} devotionTopicText={devotionTopicText}></PersonalDevotionPage>
         </View>
       );
     }
@@ -741,35 +758,150 @@ else{
     else if(page === 'about'){
 
       return(
-        <View style={styles.scrollView}>
-          <View style={[styles.homeHeaderIcons]}>
-            <Pressable onPress={() => navigateHome()} >
-                <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
-                {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
-            </Pressable>
-            <Pressable onPress={() => openMenu()} >
-                {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
-                <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
-            </Pressable>
-          </View>
+        <ScrollView style={styles.scrollView}>
+          {/* <View style={styles.scrollView}> */}
+            <View style={[styles.homeHeaderIcons]}>
+              <Pressable onPress={() => navigateHome()} >
+                  <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
+                  {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
+              </Pressable>
+              <Pressable onPress={() => openMenu()} >
+                  {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
+                  <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
+              </Pressable>
+            </View>
+            {/* </View> */}
+          <Pressable onPress={() => navigateHome()}>
+            <Image
+              style={styles.tinyLogo}
+              source={logo}
+            />
+          </Pressable>
           
-          <View style={styles.prayerListHeader}>
-            <Pressable onPress={() => navigateHome()}>
-              <Image
-                style={styles.tinyLogoPrayerList}
-                source={logo}
-              />
-            </Pressable>
-            <Text style={[styles.myNavigationMenuText]}>About
-              
+          {/* if(page === 'home'){
+            <Text>home</Text>
+          } */}
+          
+          <View style={styles.homeContentView}>
+            <Text >About</Text>
+            <Text >
+              {/* <Text style={styles.homeText}>
+                And this is eternal life, that they know You, the only true God, and Jesus Christ whom you have sent. John 17:3
+              </Text>
+              {'\n'}
+              {'\n'}
+              {'\n'}
+              {'\n'} */}
+              <Text style={styles.homeText2}>
+                  Devos4Me is designed with you in mind. God desires you to know Him personally. May each day's devotional be a time where God meets you where you are, as you walk this life together
+              </Text>
+            
             </Text>
-            {/* <Pressable onPress={() => navigateHome()}>
-                <MaterialIcons style={[styles.myPrayerClosetMenu]} name="home" size={0} color="black" />
+            {/* <Pressable style={styles.getAIDevoButton} onPress={() => getAIDevo()}>
+              <Text>get devo</Text>
+              
             </Pressable> */}
           
           </View>
-          <AboutPage></AboutPage>
-        </View>
+          
+          {/* <Text style={styles.homeText}>
+            <Text >
+              And this is eternal life, that they know You, the only true God, and Jesus Christ whom you have sent. John 17:3
+            </Text>
+            {'\n'}
+            {'\n'}
+            <Text style={styles.homeText2}>
+                Devos4Me is designed with you in mind. God desires to "know you" personally. May each day's devotional be a time where God meets you where you are, as you walk this life together
+            </Text>
+          
+          </Text> */}
+          {/* <View style={styles.homeButtonContainer}>
+            <Pressable style={styles.myDailyDevotionPressable} onPress={() => openDevoTypeSelector()}>
+              <Text style={styles.myDailyDevotionPressableText}>My Daily Devotion</Text>
+            </Pressable>
+            <Pressable style={styles.myPrayerListPressable} onPress={() => navigateToPrayerList()}>
+              <Text style={styles.myPrayerListPressableText}>My Prayer List</Text>
+            </Pressable>
+          </View> */}
+          
+          {/* <View style={styles.prayerTypeModalView}> */}
+              {/* <View style={styles.centeredView}>
+                <Modal
+                  animationType="slide"
+                  transparent={true}
+                  visible={devoSelectorVisible}
+                  onRequestClose={() => {
+                    // Alert.alert('Modal has been closed.');
+                    setDevoSelectorVisible(!devoSelectorVisible);
+                  }}>
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    <Text style={styles.modalText}>How can you be encouraged today?</Text>
+                    <SafeAreaView style={styles.container}>
+                      <SelectList 
+                          setSelected={(val) => setSelected(val)} 
+                          onSelect={() => setDevoType()}
+                          boxStyles={{width:250}}
+                          data={data} 
+                          save="value"
+                      />
+                    </SafeAreaView>
+                    <Pressable
+                      style={[styles.circleButtonDetailCloseModal]}
+                      onPress={() => devoSelectorModalclose()}>
+                      <MaterialIcons name="close" size={25} color="white" />
+                    </Pressable>
+
+                      {submitDevoButtonDisabled ?
+                        ''
+                        : 
+                        <Pressable
+                          style={[styles.circleSubmitNewRequest]}
+                          onPress={() => getDevo()}
+                          disabled={submitDevoButtonDisabled}
+                        >
+                        <MaterialIcons name="send" size={30} color="#EAD7BB" />
+                      </Pressable>}
+                    
+                  </View>
+                </View>
+              </Modal>
+            </View> */}
+            {/* </View> */}
+          {/* <HeaderComp></HeaderComp> */}
+          
+          {/* <NewPrayerRequest></NewPrayerRequest> */}
+        
+        </ScrollView>
+        // <View style={styles.scrollView}>
+        //   <View style={[styles.homeHeaderIcons]}>
+        //     <Pressable onPress={() => navigateHome()} >
+        //         <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
+        //         {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
+        //     </Pressable>
+        //     <Pressable onPress={() => openMenu()} >
+        //         {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
+        //         <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
+        //     </Pressable>
+        //   </View>
+          
+        //   <View style={styles.prayerListHeader}>
+        //     <Pressable onPress={() => navigateHome()}>
+        //       <Image
+        //         style={styles.tinyLogoPrayerList}
+        //         source={logo}
+        //       />
+        //     </Pressable>
+        //     <Text style={[styles.myNavigationMenuText]}>About
+              
+        //     </Text>
+        //     {/* <Pressable onPress={() => navigateHome()}>
+        //         <MaterialIcons style={[styles.myPrayerClosetMenu]} name="home" size={0} color="black" />
+        //     </Pressable> */}
+          
+        //   </View>
+        //   <AboutPage></AboutPage>
+        // </View>
       )
     }
   }
