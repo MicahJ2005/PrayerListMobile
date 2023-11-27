@@ -63,7 +63,22 @@ app.get('/data/signIn', (req, res)=>{
 app.get('/data/searchPrayerGroups', (req, res)=>{
   console.log('searchPrayerGroups group', req.query.grouporid)
   // let queryString = req.query.grouporid.toString;
-  client.query(`Select * from prayergroups WHERE groupname LIKE '%${req.query.grouporid}%' AND status = 'active'`, (err, result)=>{
+  client.query(`Select * from prayergroups WHERE groupname LIKE '%${req.query.grouporid}%' AND status = 'active' AND isprivategroup = false`, (err, result)=>{
+      if(!err){
+        console.log('result.rows', result.rows);
+          res.send(result.rows);
+      }
+      if(err){
+        console.log('err', err);
+    }
+  });
+  client.end;
+})
+
+app.get('/data/searchPrivatePrayerGroups', (req, res)=>{
+  console.log('searchPrivatePrayerGroups group', req.query.grouporid)
+  // let queryString = req.query.grouporid.toString;
+  client.query(`Select * from prayergroups WHERE Id = '${req.query.grouporid}' AND status = 'active' AND isprivategroup = true`, (err, result)=>{
       if(!err){
         console.log('result.rows', result.rows);
           res.send(result.rows);
@@ -89,6 +104,7 @@ app.get('/data/prayergroups', (req, res)=>{
   });
   client.end;
 })
+
 
 app.get('/data/groupprayerrequests', (req, res)=>{
   console.log('req.query.userId ',req.query.groupid);
@@ -124,6 +140,22 @@ app.get('/data/prayerhistory', (req, res)=>{
   console.log('req.body',req.body);
   console.log('req.query.userId ',req.query.userId);
   client.query(`Select * from prayerrequests WHERE status = 'Answered' AND submittedbyuserid = ${req.query.userId} ORDER BY nama ASC `, (err, result)=>{
+      if(!err){
+        console.log('result.rows', result.rows);
+          res.send(result.rows);
+      }
+      if(err){
+        console.log('err', err);
+    }
+  });
+  client.end;
+})
+
+app.get('/data/groupPrayerhistory', (req, res)=>{
+  console.log('req.body',req.body);
+  console.log('req.query.userId ',req.query.userId);
+  
+  client.query(`SELECT * FROM public.groupstousersjunction gtuj JOIN prayergroups pg ON gtuj.groupid = pg.id JOIN groupprayerrequests gpr ON gtuj.groupid = gpr.groupid WHERE gtuj.userid = ${req.query.userId} AND gpr.status = 'Answered' ORDER BY nama ASC `, (err, result)=>{
       if(!err){
         console.log('result.rows', result.rows);
           res.send(result.rows);
@@ -190,6 +222,7 @@ app.post('/data/postdailydevo', (req, res)=>{
   let scripture = req.body.scripture;
   let body = req.body.body;
   let userid = req.body.userid;
+  let searchinput = req.body.searchinput;
   // let title = '"Embracing Divine Guidance"';
   // let scripture = '"But grow in the grace and knowledge of our Lord and Savior Jesus Christ. To him be glory both now and forever! Amen." - 2 Peter 3:18';
   // let body = 'Title: Embracing Divine Guidance\n' +
@@ -227,8 +260,8 @@ app.post('/data/postdailydevo', (req, res)=>{
 
   let DateToSend = year+'-'+month+'-'+day;
   console.log("DateToSend", DateToSend);
-  let insertQuery = `insert into devotions(title, scripture, body, userid, devodate) 
-                     values('${replacedTitle}', '${replacedScripture}', '${replacedBody}', ${userid}, '${DateToSend}')`
+  let insertQuery = `insert into devotions(title, scripture, body, userid, devodate, searchinput) 
+                     values('${replacedTitle}', '${replacedScripture}', '${replacedBody}', ${userid}, '${DateToSend}', '${searchinput}')`
     client.query(insertQuery, (err, result)=>{
         if(!err){
           console.log('POST SUCCESS', result)
@@ -262,8 +295,8 @@ app.post('/data/newGroup', (req, res)=>{
   /// INSERT INTO prayergroups
   let groupNameRefined = req.body.groupname.replaceAll("'","''");
 
-  let insertQuery = `insert into prayergroups(groupname, createdbyid, status) 
-                     values('${groupNameRefined}', '${req.body.submittedbyuserid}', '${req.body.status}') RETURNING id`
+  let insertQuery = `insert into prayergroups(groupname, createdbyid, status, isprivategroup) 
+                     values('${groupNameRefined}', '${req.body.submittedbyuserid}', '${req.body.status}', '${req.body.isprivate}') RETURNING id`
     client.query(insertQuery, (err, result)=>{
         if(!err){
           console.log('POST SUCCESS id', result.rows[0].id)

@@ -9,6 +9,7 @@ const JoinPrayerGroup = (user) => {
     const [data, setData] = useState([]);
     const [selectedGroup, setSelectedGroup] = useState([]);
     const [joinModalVisible, setJoinModalVisible] = useState(false);
+    const [viewGroupTab, setViewGroupTab] = useState('Public');
 
     const searchGroups = () => {
         setData([]);
@@ -20,6 +21,17 @@ const JoinPrayerGroup = (user) => {
         .catch((error) => console.error(error))
         .finally(() => setLoading(false));
     }
+
+    const searchPrivateGroups = () => {
+      setData([]);
+      console.log('in searchPrivateGroups with text ', text);
+      console.log('in searchPrivateGroups with user ', user);
+      fetch(`${BASE_URL_DEV}/data/searchPrivatePrayerGroups?grouporid=${text}`)
+      .then((resp) => resp.json())
+      .then((json) => setData(json))
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
+  }
 
     const showJoinModal = (group) => {
         console.log('showJoinModal ', group);
@@ -55,27 +67,84 @@ const JoinPrayerGroup = (user) => {
             })
     }
 
+    const setPublicGroup = () => {
+      console.log('PUBLIC click')
+      setData([]);
+      setViewGroupTab('Public');
+    }
+  
+    const setPrivateGroup = () => {
+      console.log('PRIVATE click')
+      setData([]);
+      setViewGroupTab('Private');
+    }
+
     return(
+
         <View>
-            
-            <Text style={styles.nameInputText}>Search for Prayer Group by Name</Text>
-            <TextInput
-                style={{
-                    borderColor: '#113946',
-                    borderWidth: 4,
-                    borderRadius: 30,
-                    width:'80%',
-                    height: '10%',
-                    marginBottom: 40,
-                    marginLeft:10
-                }}
-                onChangeText={newText => setText(newText)}
-                placeholder="    Group Name"
-                value={text}
-            />
-            <Pressable style={styles.circleSubmitNewRequest} onPress={() => searchGroups()}>
-                <MaterialIcons name="search" size={30} color="#EAD7BB" />
-            </Pressable>
+          {viewGroupTab !== "Public" ?
+            <View style={styles.publicOrPrivateButtons}>
+              <Pressable style={styles.publicButtonNotSelected} onPress={() => setPublicGroup()}>
+                <Text style={{color: 'grey',fontSize:20}}>Public Groups</Text>
+              </Pressable>
+              <Pressable style={styles.privateButtonSelected} onPress={() => setPrivateGroup()}>
+                <Text style={{color: '#C56E33', fontSize:20, fontWeight:'bold', marginRight:20}}>Private Groups</Text>
+                <MaterialIcons name="check-circle-outline" size={25} color="green" />
+              </Pressable>
+            </View>
+            :
+            <View style={styles.publicOrPrivateButtons}>
+              <Pressable style={styles.publicButtonSelected} onPress={() => setPublicGroup()}>
+                <Text style={{color: '#C56E33',fontSize:20, fontWeight:'bold', marginRight:20}}>Public Groups</Text>
+                <MaterialIcons name="check-circle-outline" size={25} color="green" />
+              </Pressable>
+              <Pressable style={styles.privateButtonNotSelected} onPress={() => setPrivateGroup()}>
+                <Text style={{color: 'grey',fontSize:20}}>Private Groups</Text>
+              </Pressable>
+            </View>
+          }
+          {viewGroupTab === "Public" ? 
+            <View>
+              <Text style={styles.nameInputText3}>Search for a Public Prayer Group by Name</Text>
+              <TextInput
+                  style={{
+                      borderColor: '#113946',
+                      borderWidth: 4,
+                      borderRadius: 30,
+                      width:'80%',
+                      height: '23%',
+                      // marginBottom: 40,
+                      marginLeft:10
+                  }}
+                  onChangeText={newText => setText(newText)}
+                  placeholder="    Group Name"
+                  value={text}
+              />
+              <Pressable style={styles.circleSubmitNewRequest} onPress={() => searchGroups()}>
+                  <MaterialIcons name="search" size={30} color="#EAD7BB" />
+              </Pressable>
+            </View>
+             : 
+             <View>
+              <Text style={styles.nameInputText3}>Search for a Private Prayer Group by Group Id</Text>
+              <TextInput
+                  style={{
+                      borderColor: '#113946',
+                      borderWidth: 4,
+                      borderRadius: 30,
+                      width:'80%',
+                      height: '23%',
+                      // marginBottom: 40,
+                      marginLeft:10
+                  }}
+                  onChangeText={newText => setText(newText)}
+                  placeholder="    Group Id"
+                  value={text}
+              />
+              <Pressable style={styles.circleSubmitNewRequest} onPress={() => searchPrivateGroups()}>
+                  <MaterialIcons name="search" size={30} color="#EAD7BB" />
+              </Pressable>
+           </View>}  
 
             <SafeAreaView style={styles.flatListStyle}>
                 <FlatList
@@ -139,7 +208,8 @@ const styles = StyleSheet.create({
       shadowRadius: 10,
     },
     flatListStyle:{
-      height:'85%'
+      height:'55%',
+      marginTop:-65
     },
     answeredPrayerBox:{
       marginTop: 10,
@@ -694,6 +764,12 @@ const styles = StyleSheet.create({
         margin:20,
         fontStyle:'italic',
     },
+    nameInputText3:{
+      color: '#C56E33',
+      fontSize: 15,
+      margin:20,
+      // fontStyle:'italic',
+  },
     requestInputText:{
       textAlign: 'left',
       color: '#C56E33'
@@ -708,7 +784,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#113946',
       position: 'absolute',
       right:5,
-      top: 60,
+      top: 50,
       elevation: 15,
       shadowColor: '#000',
       shadowOffset: {
@@ -738,6 +814,85 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
       },
+      publicOrPrivateButtons:{
+        display: 'inline',
+        flexDirection: 'row',
+        width:'100%',
+        // marginLeft:-100,
+        
+        // position: 'absolute',
+        // left:30,
+        // alignItems: 'left',
+      },
+      publicButtonSelected:{
+        display: 'inline',
+        flexDirection: 'row',
+        backgroundColor: '#113946',
+        marginTop: 20,
+        marginRight:0,
+        padding: 15,
+        borderColor:'#113946',
+        borderWidth: 1,
+        width:'50%',
+        elevation: 15,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 2,
+          height: 4,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        // alignItems: 'left',
+      },
+      publicButtonNotSelected:{
+        display: 'inline',
+        flexDirection: 'row',
+        backgroundColor: '#EAD7BB',
+        marginTop: 20,
+        marginRight:0,
+        padding: 15,
+        borderColor:'#113946',
+        borderWidth: 1,
+        width:'50%',
+        fontSize:20,
+        color:'grey'
+        // alignItems: 'left',
+      },
+      privateButtonSelected:{
+        display: 'inline',
+        flexDirection: 'row',
+        backgroundColor: '#113946',
+        marginTop: 20,
+        marginLeft:0,
+        padding: 15,
+        borderColor:'#113946',
+        borderWidth: 1,
+        color: '#C56E33',
+        width:'50%',
+        elevation: 15,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 2,
+          height: 4,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        // alignItems: 'left',
+      },
+      privateButtonNotSelected:{
+        display: 'inline',
+        flexDirection: 'row',
+        backgroundColor: '#EAD7BB',
+        marginTop: 20,
+        marginLeft:0,
+        padding: 15,
+        borderColor:'#113946',
+        borderWidth: 1,
+        width:'50%',
+        fontSize:20,
+        color:'grey'
+        // alignItems: 'left',
+      }
 })
 
 

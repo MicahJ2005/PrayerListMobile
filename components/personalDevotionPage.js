@@ -204,7 +204,8 @@ const personalDevotionPage = (devoTypeselected) => {
                             title: jsonTitle.choices[0].message.content,
                             scripture: jsonScripture.choices[0].message.content,
                             body: jsonDevotion.choices[0].message.content,
-                            userid: devoType.runningUser[0].id
+                            userid: devoType.runningUser[0].id,
+                            searchinput: devoTypeselected.devotionTopicText
                         }),
                       })
                     .then((response) =>{
@@ -228,10 +229,10 @@ const personalDevotionPage = (devoTypeselected) => {
         return(
         
             <View style={[styles.devotionBodyLoadingView]}>
-                <Pressable style={styles.bottomButton} onPress={() => testDevoToDB()}>
+                {/* <Pressable style={styles.bottomButton} onPress={() => testDevoToDB()}>
                     <Text style={styles.bottomButtonText}>Test DEvo To DB</Text>
                 </Pressable>
-                <ActivityIndicator size="large" color="#C56E33" />
+                <ActivityIndicator size="large" color="#C56E33" /> */}
                 
                 <Text >
                     {'\n'}

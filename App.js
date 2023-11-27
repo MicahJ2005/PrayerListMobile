@@ -1,7 +1,8 @@
-import {View, Text, Image, ScrollView, Modal, Pressable, StyleSheet, SafeAreaView, StatusBar, ActivityIndicator} from 'react-native';
+import {View, Text, Image, ScrollView, Modal, Pressable, StyleSheet, SafeAreaView, StatusBar, ActivityIndicator, TouchableHighlight, Button} from 'react-native';
 import NewPrayerRequest from './components/newPrayerRequest';
 import PersonalDevotionPage from './components/personalDevotionPage';
 import PrayerHistoryPage from './components/prayerHistoryPage';
+import GroupPrayerHistoryPage from './components/groupPrayerHistoryPage';
 import AboutPage from './components/aboutPage';
 import ResourcesPage from './components/resourcesPage';
 import PrayerGroup from './components/prayerGroups';
@@ -14,6 +15,10 @@ import { SelectList } from 'react-native-dropdown-select-list';
 import {BASE_URL_DEV} from '@env';
 import axios from 'axios';
 import {TextInput} from 'react-native';
+import * as LocalAuthentication from 'expo-local-authentication';
+// import TouchID from 'react-native-touch-id';
+// import * as LocalAuthentication from 'expo-local-authentication';
+// import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics'
 // import OpenAI from 'openai';
 
 // const openai = new OpenAI({ apiKey: 'JjMjNjAjCj2023!!!!' });
@@ -36,6 +41,11 @@ const data = [
   {key:'Spiritual Growth', value:'Spiritual Growth'},
 ]
 
+// const rnBiometrics = new ReactNativeBiometrics()
+
+// const { biometryType } = await rnBiometrics.isSensorAvailable()
+
+
 
 export default function App() {
   const [page, setPage] = useState('login');
@@ -48,12 +58,148 @@ export default function App() {
   const [runningUser, setRunningUser] = useState('');
   const [loading, setLoading] = useState(false);
   const [devotionTopicText, setDevotionTopicText] = useState('');
+
+  const [facialRecognitionAvailable, setFacialRecognitionAvailable] = React.useState(false);
+  const [fingerprintAvailable, setFingerprintAvailable] = React.useState(false);
+  const [irisAvailable, setIrisAvailable] = React.useState(false);
+  // const [loading, setLoading] = React.useState(false);
+  const [result, setResult] = React.useState('');
+  const [biometrics, setBiometrics] = useState(false);
   
+  // const optionalConfigObject = {
+  //   title: 'Authentication Required', // Android
+  //   imageColor: '#e00606', // Android
+  //   imageErrorColor: '#ff0000', // Android
+  //   sensorDescription: 'Touch sensor', // Android
+  //   sensorErrorDescription: 'Failed', // Android
+  //   cancelText: 'Cancel', // Android
+  //   fallbackLabel: 'Show Passcode', // iOS (if empty, then label is hidden)
+  //   unifiedErrors: false, // use unified error messages (default false)
+  //   passcodeFallback: false, // iOS - allows the device to fall back to using the passcode, if faceid/touch is not available. this does not mean that if touchid/faceid fails the first few times it will revert to passcode, rather that if the former are not enrolled, then it will use the passcode.
+  // };
   
   useEffect(() => {
     console.log('page: ', page);
-    // console.log('APIKEY: ', API_KEY);
+    (async () => {
+      const compatible = await LocalAuthentication.hasHardwareAsync();
+      console.log('compatible: ', compatible);
+      //// BIOMETRICS AT https://instamobile.io/react-native-tutorials/react-native-biometrics-face-id-expo/
+      setBiometrics(compatible);
+    })();
+  
   })
+
+  // const pressHandler = () => {
+    const checkSupportedAuthentication = async () => {
+      const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
+      if (types && types.length) {
+        setFacialRecognitionAvailable(types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION));
+        setFingerprintAvailable(types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT));
+        setIrisAvailable(types.includes(LocalAuthentication.AuthenticationType.IRIS));
+      }
+    };
+  
+    const authenticate = async () => {
+      if (loading) {
+        return;
+      }
+  
+      setLoading(true);
+  
+      try {
+        const results = await LocalAuthentication.authenticateAsync();
+        console.log('results!!', results );
+        if (results.success) {
+          console.log('SUCCESS!!' );
+          setResult('SUCCESS');
+        } else if (results.error === 'unknown') {
+          console.log('DISABLED!!' );
+          setResult('DISABLED');
+        } else if (
+          results.error === 'user_cancel' ||
+          results.error === 'system_cancel' ||
+          results.error === 'app_cancel'
+        ) {
+          console.log('CANCELLED!!' );
+          setResult('CANCELLED');
+        }
+      } catch (error) {
+        console.log('ERROR!!' );
+        setResult('ERROR');
+      }
+  
+      setLoading(false);
+    };
+  
+    // React.useEffect(() => {
+    //   checkSupportedAuthentication();
+    // }, []);
+  
+    let resultMessage;
+    switch (result) {
+      case 'CANCELLED':
+        resultMessage = 'Authentication process has been cancelled';
+        break;
+      case 'DISABLED':
+        resultMessage = 'Biometric authentication has been disabled';
+        break;
+      case 'ERROR':
+        resultMessage = 'There was an error in authentication';
+        break;
+      case 'SUCCESS':
+        resultMessage = 'Successfully authenticated';
+        break;
+      default:
+        resultMessage = '';
+        break;
+    }
+  
+    let description;
+    if (facialRecognitionAvailable && fingerprintAvailable && irisAvailable) {
+      description = 'Authenticate with Face ID, touch ID or iris ID';
+    } else if (facialRecognitionAvailable && fingerprintAvailable) {
+      description = 'Authenticate with Face ID or touch ID';
+    } else if (facialRecognitionAvailable && irisAvailable) {
+      description = 'Authenticate with Face ID or iris ID';
+    } else if (fingerprintAvailable && irisAvailable) {
+      description = 'Authenticate with touch ID or iris ID';
+    } else if (facialRecognitionAvailable) {
+      description = 'Authenticate with Face ID';
+    } else if (fingerprintAvailable) {
+      description = 'Authenticate with touch ID ';
+    } else if (irisAvailable) {
+      description = 'Authenticate with iris ID';
+    } else {
+      description = 'No biometric authentication methods available';
+    }
+    // TouchID.authenticate('to demo this react-native component', optionalConfigObject)
+    //   .then(success => {
+    //     Alert.alert('Authenticated Successfully');
+    //   })
+    //   .catch(error => {
+    //     Alert.alert('Authentication Failed');
+    //   });
+    // TouchID.isSupported().then((biometryType) => {
+    //   console.log('biometryType', biometryType);
+    //   if (biometryType === "FaceID") {
+    //     TouchID.authenticate("")
+    //       .then((success) => {
+    //         navigation.replace("ProtectedScreen");
+    //       })
+    //       .catch((error) => {
+    //         Alert.alert("Authentication Failed", error.message);
+    //       });
+    //   } else {
+    //     TouchID.authenticate("")
+    //       .then((success) => {
+    //         navigation.replace("ProtectedScreen");
+    //       })
+    //       .catch((error) => {
+    //         Alert.alert("Authentication Failed", error.message);
+    //       });
+    //   }
+    // });
+  // }
 
   const openDevoTypeSelector = async () => {
     console.log('IN openDevoTypeSelector ');
@@ -124,6 +270,11 @@ export default function App() {
     setPage('navigateHistory');
   }
 
+  const navigateGroupHistory = () => {
+    console.log('navigateGroupHistory click', );
+    setPage('navigateGroupHistory');
+  }
+
   const navigateAbout = () => {
     console.log('navigateAbout click', );
     setPage('about');
@@ -182,8 +333,6 @@ export default function App() {
       .catch(error => {
         console.error(error);
       });
-        
-      // }
     }
 
 
@@ -324,15 +473,10 @@ else{
                   onChangeText={newPasswordText => setPassword(newPasswordText)}
                   placeholder="    Password"
               />
+
               <Pressable style={styles.myPrayerListPressable} onPress={() => signIn()}>
               <Text style={styles.myPrayerListPressableText}>Login</Text>
             </Pressable>
-            {/* <Pressable style={styles.myDailyDevotionPressable} onPress={() => openDevoTypeSelector()}>
-              <Text style={styles.myDailyDevotionPressableText}>New User</Text>
-            </Pressable>
-            <Pressable style={styles.myDailyDevotionPressable} onPress={() => openDevoTypeSelector()}>
-              <Text style={styles.myDailyDevotionPressableText}>Forgot Password</Text>
-            </Pressable> */}
           </View>
             
             
@@ -347,11 +491,7 @@ else{
         
         <ScrollView style={styles.scrollView}>
           <View style={[styles.homeHeaderIcons]}>
-            {/* <Pressable onPress={() => navigateHome()} >
-                <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
-            </Pressable> */}
             <Pressable onPress={() => openMenu()} >
-                {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
                 <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
             </Pressable>
           </View>
@@ -362,43 +502,15 @@ else{
             />
           </Pressable>
           
-          {/* if(page === 'home'){
-            <Text>home</Text>
-          } */}
-          
           <View style={styles.homeContentView}>
-            <Text>Welcome {runningUser[0].firstname} </Text>
+            <Text style={{fontSize:30, marginBottom:30, fontStyle:'italic', color:'#C56E33'}}>Welcome {runningUser[0].firstname} </Text>
             <Text >
               <Text style={styles.homeText}>
                 And this is eternal life, that they know You, the only true God, and Jesus Christ whom you have sent. John 17:3
               </Text>
-              {'\n'}
-              {'\n'}
-              {'\n'}
-              {'\n'}
-              <Text style={styles.homeText2}>
-                  Devos4Me is designed with you in mind. God desires you to know Him personally. May each day's devotional be a time where God meets you where you are, as you walk this life together
-              </Text>
             
             </Text>
-            {/* <Pressable style={styles.getAIDevoButton} onPress={() => getAIDevo()}>
-              <Text>get devo</Text>
-              
-            </Pressable> */}
-          
           </View>
-          
-          {/* <Text style={styles.homeText}>
-            <Text >
-              And this is eternal life, that they know You, the only true God, and Jesus Christ whom you have sent. John 17:3
-            </Text>
-            {'\n'}
-            {'\n'}
-            <Text style={styles.homeText2}>
-                Devos4Me is designed with you in mind. God desires to "know you" personally. May each day's devotional be a time where God meets you where you are, as you walk this life together
-            </Text>
-          
-          </Text> */}
           <View style={styles.homeButtonContainer}>
             <Pressable style={styles.myDailyDevotionPressable} onPress={() => openDevoTypeSelector()}>
               <Text style={styles.myDailyDevotionPressableText}>My Daily Devotion</Text>
@@ -408,27 +520,18 @@ else{
             </Pressable>
           </View>
           
-          {/* <View style={styles.prayerTypeModalView}> */}
               <View style={styles.centeredView}>
                 <Modal
                   animationType="slide"
                   transparent={true}
                   visible={devoSelectorVisible}
                   onRequestClose={() => {
-                    // Alert.alert('Modal has been closed.');
                     setDevoSelectorVisible(!devoSelectorVisible);
                   }}>
                 <View style={styles.centeredView}>
                   <View style={styles.modalView}>
                     <Text style={styles.modalText}>How can you be encouraged today?</Text>
                     <SafeAreaView style={styles.container}>
-                      {/* <SelectList 
-                          setSelected={(val) => setSelected(val)} 
-                          onSelect={() => setDevoType()}
-                          boxStyles={{width:250}}
-                          data={data} 
-                          save="value"
-                      /> */}
                       <TextInput
                         style={{
                             borderColor: '#113946',
@@ -464,10 +567,6 @@ else{
                 </View>
               </Modal>
             </View>
-            {/* </View> */}
-          {/* <HeaderComp></HeaderComp> */}
-          
-          {/* <NewPrayerRequest></NewPrayerRequest> */}
         
         </ScrollView>
     
@@ -480,10 +579,8 @@ else{
           <View style={[styles.homeHeaderIcons]}>
             <Pressable onPress={() => navigateHome()} >
                 <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
-                {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
             </Pressable>
             <Pressable onPress={() => openMenu()} >
-                {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
                 <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
             </Pressable>
           </View>
@@ -495,12 +592,7 @@ else{
               />
             </Pressable>
             <Text style={[styles.myPrayerClosetText]}>My Daily Bread</Text>
-            {/* <Pressable onPress={() => openMenu()}>
-                <MaterialIcons style={[styles.myDailyBreadMenu]} name="menu" size={0} color="black" />
-            </Pressable> */}
           </View>
-          
-          {/* <Text>Devotion Page</Text> */}
           <PersonalDevotionPage selected={selected} runningUser={runningUser} devotionTopicText={devotionTopicText}></PersonalDevotionPage>
         </View>
       );
@@ -511,10 +603,8 @@ else{
           <View style={[styles.homeHeaderIcons]}>
             <Pressable onPress={() => navigateHome()} >
                 <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
-                {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
             </Pressable>
             <Pressable onPress={() => openMenu()} >
-                {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
                 <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
             </Pressable>
           </View>
@@ -528,9 +618,6 @@ else{
             <Text style={[styles.myPrayerClosetText]}>My Prayer Closet
               
             </Text>
-            {/* <Pressable onPress={() => openMenu()}>
-                <MaterialIcons style={[styles.myPrayerClosetMenu]} name="menu" size={0} color="black" />
-            </Pressable> */}
             
           </View>
           
@@ -545,10 +632,8 @@ else{
           <View style={[styles.homeHeaderIcons]}>
             <Pressable onPress={() => navigateHome()} >
                 <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
-                {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
             </Pressable>
             <Pressable onPress={() => openMenu()} >
-                {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
                 <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
             </Pressable>
           </View>
@@ -562,9 +647,6 @@ else{
             <Text style={[styles.myPrayerClosetText]}>Join A Prayer Group
               
             </Text>
-            {/* <Pressable onPress={() => openMenu()}>
-                <MaterialIcons style={[styles.myPrayerClosetMenu]} name="menu" size={0} color="black" />
-            </Pressable> */}
             
           </View>
           
@@ -579,10 +661,8 @@ else{
           <View style={[styles.homeHeaderIcons]}>
             <Pressable onPress={() => navigateHome()} >
                 <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
-                {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
             </Pressable>
             <Pressable onPress={() => openMenu()} >
-                {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
                 <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
             </Pressable>
           </View>
@@ -596,9 +676,6 @@ else{
             <Text style={[styles.myPrayerClosetText]}>My Prayer Groups
               
             </Text>
-            {/* <Pressable onPress={() => openMenu()}>
-                <MaterialIcons style={[styles.myPrayerClosetMenu]} name="menu" size={0} color="black" />
-            </Pressable> */}
             
           </View>
           
@@ -608,24 +685,11 @@ else{
     }
     else if(page === 'navigation'){
       return (
-        // <Modal
-        //   animationType="slide"
-        //   transparent={true}
-        //   visible={menuModalVisible}
-        //   onRequestClose={() => {
-        //     Alert.alert('Modal has been closed.');
-        //     setMenuModalVisible(!menuModalVisible);
-        //   }}>
-            // <View style={styles.scrollViewNavigation}>
             <View style={styles.scrollView}>
               <View style={[styles.homeHeaderIcons]}>
                 <Pressable onPress={() => navigateHome()} >
                     <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
-                    {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
                 </Pressable>
-                {/* <Pressable onPress={() => openMenu()} >
-                    <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
-                </Pressable> */}
               </View>
               <View style={styles.prayerListHeader}>
                 <Pressable onPress={() => navigateHome()}>
@@ -637,9 +701,6 @@ else{
                 <Text style={[styles.myNavigationMenuText]}>Navigation Menu
                   
                 </Text>
-                {/* <Pressable onPress={() => navigateHome()}>
-                    <MaterialIcons style={[styles.myPrayerClosetMenu]} name="home" size={0} color="black" />
-                </Pressable> */}
               
               </View>
             
@@ -665,6 +726,9 @@ else{
               <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateHistory()}>
                 <Text style={styles.myPrayerListPressableTextNavigation}>My Answered Prayers</Text>
               </Pressable>
+              <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateGroupHistory()}>
+                <Text style={styles.myPrayerListPressableTextNavigation}>Group Answered Prayers</Text>
+              </Pressable>
               <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateResources()}>
                 <Text style={styles.myPrayerListPressableTextNavigation}>Resources</Text>
               </Pressable>
@@ -672,11 +736,6 @@ else{
                 <Text style={styles.myPrayerListPressableTextNavigation}>About</Text>
               </Pressable>
             </ScrollView>
-            
-            
-            {/* <Pressable onPress={() => navigateHistory()}>
-                <MaterialIcons style={[styles.myHistoryMenuNavigation]} name="home" size={40} color="black" />
-            </Pressable> */}
           </View>
           
         
@@ -689,10 +748,8 @@ else{
           <View style={[styles.homeHeaderIcons]}>
             <Pressable onPress={() => navigateHome()} >
                 <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
-                {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
             </Pressable>
             <Pressable onPress={() => openMenu()} >
-                {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
                 <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
             </Pressable>
           </View>
@@ -706,12 +763,36 @@ else{
             <Text style={[styles.myNavigationMenuText]}>Answered Prayers
               
             </Text>
-            {/* <Pressable onPress={() => navigateHome()}>
-                <MaterialIcons style={[styles.myPrayerClosetMenu]} name="home" size={0} color="black" />
-            </Pressable> */}
           
           </View>
           <PrayerHistoryPage runningUser={runningUser}></PrayerHistoryPage>
+        </View>
+      )
+    }
+    else if(page === 'navigateGroupHistory'){
+
+      return(
+        <View style={styles.scrollView}>
+          <View style={[styles.homeHeaderIcons]}>
+            <Pressable onPress={() => navigateHome()} >
+                <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
+            </Pressable>
+            <Pressable onPress={() => openMenu()} >
+                <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
+            </Pressable>
+          </View>
+          <View style={styles.prayerListHeader}>
+            <Pressable onPress={() => navigateHome()}>
+              <Image
+                style={styles.tinyLogoPrayerList}
+                source={logo}
+              />
+            </Pressable>
+            <Text style={[styles.myNavigationMenuText2]}>Group Prayers Answered
+              
+            </Text>
+          </View>
+          <GroupPrayerHistoryPage runningUser={runningUser}></GroupPrayerHistoryPage>
         </View>
       )
     }
@@ -721,14 +802,8 @@ else{
           <View style={[styles.homeHeaderIcons]}>
             <Pressable onPress={() => navigateHome()} >
                 <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
-                {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
             </Pressable>
-            {/* <Image
-              style={styles.tinyLogo2}
-              source={blackAndWhiteLogo}
-            /> */}
             <Pressable onPress={() => openMenu()} >
-                {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
                 <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
             </Pressable>
           </View>
@@ -743,10 +818,6 @@ else{
             <Text style={[styles.myNavigationMenuText]}>Resources
               
             </Text>
-            {/* <Pressable onPress={() => navigateHome()}>
-                <MaterialIcons style={[styles.myPrayerClosetMenu]} name="home" size={0} color="black" />
-            </Pressable> */}
-          
           </View>
           <ResourcesPage></ResourcesPage>
         </View>
@@ -759,18 +830,14 @@ else{
 
       return(
         <ScrollView style={styles.scrollView}>
-          {/* <View style={styles.scrollView}> */}
             <View style={[styles.homeHeaderIcons]}>
               <Pressable onPress={() => navigateHome()} >
                   <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
-                  {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
               </Pressable>
               <Pressable onPress={() => openMenu()} >
-                  {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
                   <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
               </Pressable>
             </View>
-            {/* </View> */}
           <Pressable onPress={() => navigateHome()}>
             <Image
               style={styles.tinyLogo}
@@ -778,130 +845,17 @@ else{
             />
           </Pressable>
           
-          {/* if(page === 'home'){
-            <Text>home</Text>
-          } */}
-          
           <View style={styles.homeContentView}>
-            <Text >About</Text>
             <Text >
-              {/* <Text style={styles.homeText}>
-                And this is eternal life, that they know You, the only true God, and Jesus Christ whom you have sent. John 17:3
-              </Text>
-              {'\n'}
-              {'\n'}
-              {'\n'}
-              {'\n'} */}
               <Text style={styles.homeText2}>
                   Devos4Me is designed with you in mind. God desires you to know Him personally. May each day's devotional be a time where God meets you where you are, as you walk this life together
               </Text>
             
             </Text>
-            {/* <Pressable style={styles.getAIDevoButton} onPress={() => getAIDevo()}>
-              <Text>get devo</Text>
-              
-            </Pressable> */}
           
           </View>
-          
-          {/* <Text style={styles.homeText}>
-            <Text >
-              And this is eternal life, that they know You, the only true God, and Jesus Christ whom you have sent. John 17:3
-            </Text>
-            {'\n'}
-            {'\n'}
-            <Text style={styles.homeText2}>
-                Devos4Me is designed with you in mind. God desires to "know you" personally. May each day's devotional be a time where God meets you where you are, as you walk this life together
-            </Text>
-          
-          </Text> */}
-          {/* <View style={styles.homeButtonContainer}>
-            <Pressable style={styles.myDailyDevotionPressable} onPress={() => openDevoTypeSelector()}>
-              <Text style={styles.myDailyDevotionPressableText}>My Daily Devotion</Text>
-            </Pressable>
-            <Pressable style={styles.myPrayerListPressable} onPress={() => navigateToPrayerList()}>
-              <Text style={styles.myPrayerListPressableText}>My Prayer List</Text>
-            </Pressable>
-          </View> */}
-          
-          {/* <View style={styles.prayerTypeModalView}> */}
-              {/* <View style={styles.centeredView}>
-                <Modal
-                  animationType="slide"
-                  transparent={true}
-                  visible={devoSelectorVisible}
-                  onRequestClose={() => {
-                    // Alert.alert('Modal has been closed.');
-                    setDevoSelectorVisible(!devoSelectorVisible);
-                  }}>
-                <View style={styles.centeredView}>
-                  <View style={styles.modalView}>
-                    <Text style={styles.modalText}>How can you be encouraged today?</Text>
-                    <SafeAreaView style={styles.container}>
-                      <SelectList 
-                          setSelected={(val) => setSelected(val)} 
-                          onSelect={() => setDevoType()}
-                          boxStyles={{width:250}}
-                          data={data} 
-                          save="value"
-                      />
-                    </SafeAreaView>
-                    <Pressable
-                      style={[styles.circleButtonDetailCloseModal]}
-                      onPress={() => devoSelectorModalclose()}>
-                      <MaterialIcons name="close" size={25} color="white" />
-                    </Pressable>
-
-                      {submitDevoButtonDisabled ?
-                        ''
-                        : 
-                        <Pressable
-                          style={[styles.circleSubmitNewRequest]}
-                          onPress={() => getDevo()}
-                          disabled={submitDevoButtonDisabled}
-                        >
-                        <MaterialIcons name="send" size={30} color="#EAD7BB" />
-                      </Pressable>}
-                    
-                  </View>
-                </View>
-              </Modal>
-            </View> */}
-            {/* </View> */}
-          {/* <HeaderComp></HeaderComp> */}
-          
-          {/* <NewPrayerRequest></NewPrayerRequest> */}
         
         </ScrollView>
-        // <View style={styles.scrollView}>
-        //   <View style={[styles.homeHeaderIcons]}>
-        //     <Pressable onPress={() => navigateHome()} >
-        //         <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
-        //         {/* <MaterialIcons style={[styles.homeMenu]} name="menu" size={0} color="black" /> */}
-        //     </Pressable>
-        //     <Pressable onPress={() => openMenu()} >
-        //         {/* <MaterialIcons style={[styles.homeMenuIcon]} name="home" size={30} color="black" /> */}
-        //         <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
-        //     </Pressable>
-        //   </View>
-          
-        //   <View style={styles.prayerListHeader}>
-        //     <Pressable onPress={() => navigateHome()}>
-        //       <Image
-        //         style={styles.tinyLogoPrayerList}
-        //         source={logo}
-        //       />
-        //     </Pressable>
-        //     <Text style={[styles.myNavigationMenuText]}>About
-              
-        //     </Text>
-        //     {/* <Pressable onPress={() => navigateHome()}>
-        //         <MaterialIcons style={[styles.myPrayerClosetMenu]} name="home" size={0} color="black" />
-        //     </Pressable> */}
-          
-        //   </View>
-        //   <AboutPage></AboutPage>
-        // </View>
       )
     }
   }
@@ -1243,6 +1197,15 @@ const styles = StyleSheet.create({
     marginRight:10,
     color: '#C56E33',
     paddingTop: 20,
+    marginBottom: 40
+  },
+  myNavigationMenuText2:{
+    fontSize:22,
+    textAlign:'right',
+    marginLeft:15,
+    // marginRight:10,
+    color: '#C56E33',
+    paddingTop: 25,
     marginBottom: 40
   },
   myPrayerClosetMenu:{

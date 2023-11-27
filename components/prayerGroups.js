@@ -31,6 +31,7 @@ const prayerGroups = (runningUser) => {
   const [groupId, setGroupId] = useState('');
   const [groupName, setGroupName] = useState('');
   const [groupCreatedBy, setGroupCreatedBy] = useState('');
+  const [groupIsPrivate, setGroupIsPrivate] = useState(false);
   const [newPrayerGroupModalVisible, setNewPrayerGroupModalVisible] = useState(false);
   const [removeFromGroupModalVisible, setRemoveFromGroupModalVisible] = useState(false);
   
@@ -64,11 +65,11 @@ const prayerGroups = (runningUser) => {
     console.log('in addNewPrayerGroup');
     console.log('in addNewPrayerGroup as user: ', runningUser.runningUser[0].id);
     setNewPrayerGroupModalVisible(true);
+    setGroupIsPrivate(false);
   }
 
 
   const addName = () => {
-    // console.log(runningUser.runningUser[0].id);
     fetch(`${BASE_URL_DEV}/data/addGroupRequest`, {
       method: "POST",
       headers: {
@@ -229,6 +230,7 @@ const prayerGroups = (runningUser) => {
     setDetails(details);
     // setDetailsModalVisible(false);
     setAnsweredPrayerInputModalOpen(true);
+    // refreshGroupPrayerList();
   }
 
   const closeNewRequest = () => {
@@ -258,11 +260,13 @@ const prayerGroups = (runningUser) => {
     })
       .then((response) =>{
         console.log('response', response);
+        console.log('updateAnsweredPrayer details', details.groupid);
         setModalVisible(false);
         setDetailsModalVisible(false);
         setAnsweredPrayerInputModalOpen(false);
         setDetails('');
         loadData();
+        refreshGroupPrayerList(details.groupid);
         Alert.alert('Praise the Lord!');
         
       })
@@ -284,6 +288,7 @@ const prayerGroups = (runningUser) => {
   const addGroup = () => {
     console.log('In addGroup text', text);
     console.log('In addGroup user', runningUser.runningUser[0].id);
+    console.log('In addGroup groupIsPrivate', groupIsPrivate);
     fetch(`${BASE_URL_DEV}/data/newGroup`, {
         method: "POST",
         headers: {
@@ -293,6 +298,7 @@ const prayerGroups = (runningUser) => {
         body: JSON.stringify({
           groupname: text,
           submittedbyuserid: runningUser.runningUser[0].id,
+          isprivate: groupIsPrivate,
           status: 'active',
         }),
       })
@@ -376,6 +382,16 @@ const prayerGroups = (runningUser) => {
     setRemoveFromGroupModalVisible(false);
   }
 
+  const setPublicGroup = () => {
+    console.log('PUBLIC click')
+    setGroupIsPrivate(false);
+  }
+
+  const setPrivateGroup = () => {
+    console.log('PRIVATE click')
+    setGroupIsPrivate(true);
+  }
+
   if(page == 'groupList'){
     return (
         <View style={styles.centeredViewPrayerList}>
@@ -454,7 +470,7 @@ const prayerGroups = (runningUser) => {
               <Pressable style={styles.circleButtonDetailCloseModal2} onPress={() => closeNewGroupRequest()}>
                 <MaterialIcons name="close" size={25} color="white" />
               </Pressable>
-                <Text style={styles.nameInputText}>Group Name?</Text>
+                <Text style={styles.groupNameHeaderText}>Name Your Group</Text>
                 <TextInput
                     style={{
                         borderColor: '#113946',
@@ -462,12 +478,35 @@ const prayerGroups = (runningUser) => {
                         borderRadius: 30,
                         width:'95%',
                         height: '30%',
-                        marginBottom: 40,
+                        marginBottom: 5,
                     }}
                     onChangeText={newText => setText(newText)}
                     placeholder="    Group Name"
                     value={text}
                 />
+                {groupIsPrivate ?
+                  <View style={styles.publicOrPrivateButtons}>
+                    <Pressable style={styles.publicButtonNotSelected} onPress={() => setPublicGroup()}>
+                      <Text >Public</Text>
+                    </Pressable>
+                    <Pressable style={styles.privateButtonSelected} onPress={() => setPrivateGroup()}>
+                      <Text style={{color: '#C56E33', marginRight:20}}>Private</Text>
+                      <MaterialIcons name="check-circle-outline" size={20} color="green" />
+                    </Pressable>
+                  </View>
+                  :
+                  <View style={styles.publicOrPrivateButtons}>
+                    <Pressable style={styles.publicButtonSelected} onPress={() => setPublicGroup()}>
+                      <Text style={{color: '#C56E33',marginRight:20}}>Public</Text>
+                      <MaterialIcons name="check-circle-outline" size={20} color="green" />
+                    </Pressable>
+                    <Pressable style={styles.privateButtonNotSelected} onPress={() => setPrivateGroup()}>
+                      <Text>Private</Text>
+                    </Pressable>
+                  </View>
+                }
+                  
+                
                 {/* <Text style={styles.requestInputText}>What is the request?</Text>
                 <TextInput
                     style={{
@@ -509,7 +548,18 @@ const prayerGroups = (runningUser) => {
                   <Pressable style={styles.circleButtonRemoveFromGroup} onPress={() => askToRemoveGroup(item)}>
                     <MaterialIcons name="close" size={25} color="white" />
                   </Pressable>
-                    <Text style={styles.item} key={item.id}>{item.groupname}</Text>
+                    <Text style={styles.item} key={item.id}>{item.groupname}
+                    
+                    </Text>
+                    {item.isprivategroup ? 
+                      <View style={styles.lockIcon}>
+                        <MaterialIcons name="lock" size={25} color="#C56E33" />
+                        <Text style={{color:"#C56E33"}}>{item.groupid}</Text>
+                      </View>
+                      
+                    :
+                    ''}
+                  
                 </Pressable>
               }
             />
@@ -1204,6 +1254,13 @@ const styles = StyleSheet.create({
       shadowOpacity: 1,
       shadowRadius: 10,
   },
+  lockIcon:{
+    color:"#BCA37F",
+    // marginLeft:55,
+    position: 'absolute',
+    right:50,
+    top: 35,
+  },
   buttonDelete: {
     borderRadius: 60,
     padding: 10,
@@ -1434,6 +1491,12 @@ const styles = StyleSheet.create({
     color: '#C56E33',
     height:50
   },
+  groupNameHeaderText:{
+    textAlign: 'left',
+    color: '#C56E33',
+    fontSize:30,
+    height:50
+  },
   requestInputText:{
     textAlign: 'left',
     color: '#C56E33'
@@ -1458,7 +1521,65 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
   },
-  
+  publicOrPrivateButtons:{
+    display: 'inline',
+    flexDirection: 'row',
+    // marginLeft:-100,
+    
+    // position: 'absolute',
+    // left:30,
+    // alignItems: 'left',
+  },
+  publicButtonSelected:{
+    display: 'inline',
+    flexDirection: 'row',
+    backgroundColor: '#113946',
+    margin: 20,
+    marginRight:0,
+    padding: 15,
+    width: '40%',
+    borderColor:'#113946',
+    borderWidth: 1,
+    
+    // alignItems: 'left',
+  },
+  publicButtonNotSelected:{
+    display: 'inline',
+    flexDirection: 'row',
+    backgroundColor: '#EAD7BB',
+    margin: 20,
+    marginRight:0,
+    padding: 15,
+    width: '40%',
+    borderColor:'#113946',
+    borderWidth: 1,
+    // alignItems: 'left',
+  },
+  privateButtonSelected:{
+    display: 'inline',
+    flexDirection: 'row',
+    backgroundColor: '#113946',
+    margin: 20,
+    marginLeft:0,
+    padding: 15,
+    width: '40%',
+    borderColor:'#113946',
+    borderWidth: 1,
+    color: '#C56E33',
+    // alignItems: 'left',
+  },
+  privateButtonNotSelected:{
+    display: 'inline',
+    flexDirection: 'row',
+    backgroundColor: '#EAD7BB',
+    margin: 20,
+    marginLeft:0,
+    padding: 15,
+    width: '40%',
+    borderColor:'#113946',
+    borderWidth: 1,
+    // alignItems: 'left',
+  }
 });
 
 export default prayerGroups;
