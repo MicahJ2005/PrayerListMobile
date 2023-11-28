@@ -62,7 +62,7 @@ const depression = [{
     },
   };
 
-const personalDevotionPage = (devoTypeselected) => {
+const FamilyDevotionPage = (devoTypeselected) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [devotionBody, setDevotionBody] = useState('');
@@ -110,7 +110,7 @@ const personalDevotionPage = (devoTypeselected) => {
     console.log('personalDevotionPage getAIDevo.selected= ', devoType.selected);
     console.log('personalDevotionPage devoTypeselected.devotionTopicText= ', devoTypeselected.devotionTopicText);
     console.log('runningUser in getAIDevo:', devoType.runningUser[0]);
-    const response = await fetch(`${BASE_URL_DEV}/data/checktodaysdevo?userid=${devoType.runningUser[0].id}`)
+    const response = await fetch(`${BASE_URL_DEV}/data/checktodaysfamilydevo?userid=${devoType.runningUser[0].id}`)
     const jsonDevotion = await response.json();  
     console.log('jsonDevotion', jsonDevotion);
     console.log('jsonDevotion size', jsonDevotion.length);
@@ -124,7 +124,7 @@ const personalDevotionPage = (devoTypeselected) => {
         console.log('no devo yet today... Generating');
     
         try {
-            let contentToSend = `"Provide just a Bible verse about ${devoType.devotionTopicText}"`;
+            let contentToSend = `"Provide just a Bible verse about ${devoType.devotionTopicText} that can be used for Family Devotions"`;
             const response = await fetch("https://api.openai.com/v1/chat/completions", {
                 method: "POST",
                 headers: {
@@ -167,7 +167,7 @@ const personalDevotionPage = (devoTypeselected) => {
                 console.log("this is the result devotionTitle", jsonTitle.choices[0].message.content);
                 if(jsonTitle.choices[0].message.content != null){
                     console.log("MADE IT TO THE DEVO WRITTING with title: ", jsonTitle.choices[0].message.content);
-                    let contentToSend = `"Write a brief devotional based on the title ${jsonTitle.choices[0].message.content} and scripture ${jsonScripture.choices[0].message.content}"`;
+                    let contentToSend = `"Write a brief family devotional based on the title ${jsonTitle.choices[0].message.content} and scripture ${jsonScripture.choices[0].message.content}"`;
                     const response = await fetch("https://api.openai.com/v1/chat/completions", {
                         method: "POST",
                         headers: {
@@ -194,7 +194,7 @@ const personalDevotionPage = (devoTypeselected) => {
                     console.log('devotion Running UserId: ', devoType.runningUser[0].id);
 
                     ///POST DAILY DEVO TO DB
-                    await fetch(`${BASE_URL_DEV}/data/postdailydevo`, {
+                    await fetch(`${BASE_URL_DEV}/data/postdailyfamilydevo`, {
                         method: "POST",
                         headers: {
                           Accept: "application/json",
@@ -237,7 +237,7 @@ const personalDevotionPage = (devoTypeselected) => {
                 <Text >
                     {'\n'}
                     {'\n'}
-                    Writing your personal devotion... 
+                    Writing your family devotion... 
                     {'\n'}
                     This may take a minute or two...
                 </Text>
@@ -331,4 +331,4 @@ const styles = StyleSheet.create({
     
 })
 
-export default personalDevotionPage;
+export default FamilyDevotionPage;

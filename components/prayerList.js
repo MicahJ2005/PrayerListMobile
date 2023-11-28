@@ -1,6 +1,6 @@
 import React from 'react';
 import {FlatList, StyleSheet, Text, View, Pressable} from 'react-native';
-import NewPrayerRequest from './newPrayerRequest';
+// import NewPrayerRequest from './newPrayerRequest';
 
 const styles = StyleSheet.create({
   container: {

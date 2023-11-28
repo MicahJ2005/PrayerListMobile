@@ -1,6 +1,7 @@
-import {View, Text, Image, ScrollView, Modal, Pressable, StyleSheet, SafeAreaView, StatusBar, ActivityIndicator, TouchableHighlight, Button} from 'react-native';
+import {View, Alert, Text, Image, ScrollView, Modal, Pressable, StyleSheet, SafeAreaView, StatusBar, ActivityIndicator, TouchableHighlight, Button} from 'react-native';
 import NewPrayerRequest from './components/newPrayerRequest';
 import PersonalDevotionPage from './components/personalDevotionPage';
+import FamilyDevotionPage from './components/familyDevotionPage';
 import PrayerHistoryPage from './components/prayerHistoryPage';
 import GroupPrayerHistoryPage from './components/groupPrayerHistoryPage';
 import AboutPage from './components/aboutPage';
@@ -15,20 +16,6 @@ import { SelectList } from 'react-native-dropdown-select-list';
 import {BASE_URL_DEV} from '@env';
 import axios from 'axios';
 import {TextInput} from 'react-native';
-import * as LocalAuthentication from 'expo-local-authentication';
-// import TouchID from 'react-native-touch-id';
-// import * as LocalAuthentication from 'expo-local-authentication';
-// import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics'
-// import OpenAI from 'openai';
-
-// const openai = new OpenAI({ apiKey: 'JjMjNjAjCj2023!!!!' });
-// const instance = axios.create({
-//   baseURL: 'https://api.openai.com/v1/engines/chat/completions',
-//   headers: {
-//     'Content-Type': 'application/json',
-//     'Authorization': ``
-//   }
-// });
 
 const data = [
   {key:'Depression', value:'Depression'},
@@ -41,16 +28,11 @@ const data = [
   {key:'Spiritual Growth', value:'Spiritual Growth'},
 ]
 
-// const rnBiometrics = new ReactNativeBiometrics()
-
-// const { biometryType } = await rnBiometrics.isSensorAvailable()
-
-
-
 export default function App() {
   const [page, setPage] = useState('login');
   const [menuModalVisible, setMenuModalVisible] = useState(false);
   const [devoSelectorVisible, setDevoSelectorVisible] = useState(false);
+  const [familyDevoSelectorVisible, setFamilyDevoSelectorVisible] = useState(false);
   const [selected, setSelected] = React.useState("");
   const [submitDevoButtonDisabled, setSubmitDevoButtonDisabled] = useState(true);
   const [username, setUsername] = useState('');
@@ -58,13 +40,20 @@ export default function App() {
   const [runningUser, setRunningUser] = useState('');
   const [loading, setLoading] = useState(false);
   const [devotionTopicText, setDevotionTopicText] = useState('');
+  const [emailAddress, setEmailAddress] = useState('');
+  const [emailAddressValidated, setEmailAddressValidated] = useState(false);
+  const [newPassword1, setNewPassword1] = useState('');
+  const [newPassword2, setNewPassword2] = useState('');
+  
+  
 
-  const [facialRecognitionAvailable, setFacialRecognitionAvailable] = React.useState(false);
-  const [fingerprintAvailable, setFingerprintAvailable] = React.useState(false);
-  const [irisAvailable, setIrisAvailable] = React.useState(false);
-  // const [loading, setLoading] = React.useState(false);
-  const [result, setResult] = React.useState('');
-  const [biometrics, setBiometrics] = useState(false);
+  // const [facialRecognitionAvailable, setFacialRecognitionAvailable] = React.useState(false);
+  // const [fingerprintAvailable, setFingerprintAvailable] = React.useState(false);
+  // const [irisAvailable, setIrisAvailable] = React.useState(false);
+  // // const [loading, setLoading] = React.useState(false);
+  // const [result, setResult] = React.useState('');
+  // const [biometrics, setBiometrics] = useState(false);
+  // const [renderContent, setRenderContent] = useState();
   
   // const optionalConfigObject = {
   //   title: 'Authentication Required', // Android
@@ -80,98 +69,113 @@ export default function App() {
   
   useEffect(() => {
     console.log('page: ', page);
-    (async () => {
-      const compatible = await LocalAuthentication.hasHardwareAsync();
-      console.log('compatible: ', compatible);
-      //// BIOMETRICS AT https://instamobile.io/react-native-tutorials/react-native-biometrics-face-id-expo/
-      setBiometrics(compatible);
-    })();
-  
-  })
+    // (async () => {
+    //   const compatible = await LocalAuthentication.hasHardwareAsync();
+    //   console.log('compatible: ', compatible);
+    //   //// BIOMETRICS AT https://instamobile.io/react-native-tutorials/react-native-biometrics-face-id-expo/
+    //   setBiometrics(compatible);
+    // })();
+    // let epochTimeSeconds = Math.round((new Date()).getTime() / 1000).toString()
+    // let payload = epochTimeSeconds + 'some message'
+    // rnBiometrics.createSignature({
+    //   promptMessage: 'Sign in',
+    //   payload: '123'
+    // })
+    // .then((resultObject) => {
+    //   const { success, signature } = resultObject
+    
+    //   if (success) {
+    //     console.log(success)
+    //     // verifySignatureWithServer(signature, payload)
+    //   }
+    // })
+  }, [])
 
-  // const pressHandler = () => {
-    const checkSupportedAuthentication = async () => {
-      const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
-      if (types && types.length) {
-        setFacialRecognitionAvailable(types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION));
-        setFingerprintAvailable(types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT));
-        setIrisAvailable(types.includes(LocalAuthentication.AuthenticationType.IRIS));
-      }
-    };
+  // const renderSecureContent = () => setRenderContent(true);
+
+  // // const pressHandler = () => {
+  //   const checkSupportedAuthentication = async () => {
+  //     const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
+  //     if (types && types.length) {
+  //       setFacialRecognitionAvailable(types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION));
+  //       setFingerprintAvailable(types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT));
+  //       setIrisAvailable(types.includes(LocalAuthentication.AuthenticationType.IRIS));
+  //     }
+  //   };
   
-    const authenticate = async () => {
-      if (loading) {
-        return;
-      }
+  //   const authenticate = async () => {
+  //     if (loading) {
+  //       return;
+  //     }
   
-      setLoading(true);
+  //     setLoading(true);
   
-      try {
-        const results = await LocalAuthentication.authenticateAsync();
-        console.log('results!!', results );
-        if (results.success) {
-          console.log('SUCCESS!!' );
-          setResult('SUCCESS');
-        } else if (results.error === 'unknown') {
-          console.log('DISABLED!!' );
-          setResult('DISABLED');
-        } else if (
-          results.error === 'user_cancel' ||
-          results.error === 'system_cancel' ||
-          results.error === 'app_cancel'
-        ) {
-          console.log('CANCELLED!!' );
-          setResult('CANCELLED');
-        }
-      } catch (error) {
-        console.log('ERROR!!' );
-        setResult('ERROR');
-      }
+  //     try {
+  //       const results = await LocalAuthentication.authenticateAsync();
+  //       console.log('results!!', results );
+  //       if (results.success) {
+  //         console.log('SUCCESS!!' );
+  //         setResult('SUCCESS');
+  //       } else if (results.error === 'unknown') {
+  //         console.log('DISABLED!!' );
+  //         setResult('DISABLED');
+  //       } else if (
+  //         results.error === 'user_cancel' ||
+  //         results.error === 'system_cancel' ||
+  //         results.error === 'app_cancel'
+  //       ) {
+  //         console.log('CANCELLED!!' );
+  //         setResult('CANCELLED');
+  //       }
+  //     } catch (error) {
+  //       console.log('ERROR!!' );
+  //       setResult('ERROR');
+  //     }
   
-      setLoading(false);
-    };
+  //     setLoading(false);
+  //   };
   
-    // React.useEffect(() => {
-    //   checkSupportedAuthentication();
-    // }, []);
+  //   // React.useEffect(() => {
+  //   //   checkSupportedAuthentication();
+  //   // }, []);
   
-    let resultMessage;
-    switch (result) {
-      case 'CANCELLED':
-        resultMessage = 'Authentication process has been cancelled';
-        break;
-      case 'DISABLED':
-        resultMessage = 'Biometric authentication has been disabled';
-        break;
-      case 'ERROR':
-        resultMessage = 'There was an error in authentication';
-        break;
-      case 'SUCCESS':
-        resultMessage = 'Successfully authenticated';
-        break;
-      default:
-        resultMessage = '';
-        break;
-    }
+  //   let resultMessage;
+  //   switch (result) {
+  //     case 'CANCELLED':
+  //       resultMessage = 'Authentication process has been cancelled';
+  //       break;
+  //     case 'DISABLED':
+  //       resultMessage = 'Biometric authentication has been disabled';
+  //       break;
+  //     case 'ERROR':
+  //       resultMessage = 'There was an error in authentication';
+  //       break;
+  //     case 'SUCCESS':
+  //       resultMessage = 'Successfully authenticated';
+  //       break;
+  //     default:
+  //       resultMessage = '';
+  //       break;
+  //   }
   
-    let description;
-    if (facialRecognitionAvailable && fingerprintAvailable && irisAvailable) {
-      description = 'Authenticate with Face ID, touch ID or iris ID';
-    } else if (facialRecognitionAvailable && fingerprintAvailable) {
-      description = 'Authenticate with Face ID or touch ID';
-    } else if (facialRecognitionAvailable && irisAvailable) {
-      description = 'Authenticate with Face ID or iris ID';
-    } else if (fingerprintAvailable && irisAvailable) {
-      description = 'Authenticate with touch ID or iris ID';
-    } else if (facialRecognitionAvailable) {
-      description = 'Authenticate with Face ID';
-    } else if (fingerprintAvailable) {
-      description = 'Authenticate with touch ID ';
-    } else if (irisAvailable) {
-      description = 'Authenticate with iris ID';
-    } else {
-      description = 'No biometric authentication methods available';
-    }
+  //   let description;
+  //   if (facialRecognitionAvailable && fingerprintAvailable && irisAvailable) {
+  //     description = 'Authenticate with Face ID, touch ID or iris ID';
+  //   } else if (facialRecognitionAvailable && fingerprintAvailable) {
+  //     description = 'Authenticate with Face ID or touch ID';
+  //   } else if (facialRecognitionAvailable && irisAvailable) {
+  //     description = 'Authenticate with Face ID or iris ID';
+  //   } else if (fingerprintAvailable && irisAvailable) {
+  //     description = 'Authenticate with touch ID or iris ID';
+  //   } else if (facialRecognitionAvailable) {
+  //     description = 'Authenticate with Face ID';
+  //   } else if (fingerprintAvailable) {
+  //     description = 'Authenticate with touch ID ';
+  //   } else if (irisAvailable) {
+  //     description = 'Authenticate with iris ID';
+  //   } else {
+  //     description = 'No biometric authentication methods available';
+  //   }
     // TouchID.authenticate('to demo this react-native component', optionalConfigObject)
     //   .then(success => {
     //     Alert.alert('Authenticated Successfully');
@@ -224,6 +228,23 @@ export default function App() {
   const openFamilyDevoTypeSelector = async () => {
     console.log('IN openFamilyDevoTypeSelector ');
     console.log('runningUser ', runningUser);
+    console.log('IN openDevoTypeSelector ');
+    console.log('runningUser ', runningUser);
+    setLoading(true);
+    const response = await fetch(`${BASE_URL_DEV}/data/checktodaysfamilydevo?userid=${runningUser[0].id}`)
+    const jsonDevotion = await response.json();  
+    console.log('jsonDevotion', jsonDevotion);
+    console.log('jsonDevotion size', jsonDevotion.length);
+    if(jsonDevotion.length > 0){
+      setPage('familyDevotions');
+      setLoading(false);
+      setFamilyDevoSelectorVisible(false);
+    }
+    else{
+      setLoading(false);
+      setPage('home');
+      setFamilyDevoSelectorVisible(true);
+    }
   }
 
   const navigateToDevotions = () => {
@@ -255,6 +276,7 @@ export default function App() {
     setSubmitDevoButtonDisabled(true);
     setSelected('');
     setDevoSelectorVisible(false);
+    setFamilyDevoSelectorVisible(false);
     setPage('home');
   }
 
@@ -289,9 +311,18 @@ export default function App() {
     // this will initiate the callout to get a new devo based on the "selected" devot type
     console.log('getDevo click', selected);
     console.log('getDevo click devotionTopicText', devotionTopicText);
-    devotionTopicText
+    // devotionTopicText
     // setSubmitDevoButtonDisabled(true);
     setPage('devotion');
+  }
+
+  const getFamilyDevo = () => {
+    // this will initiate the callout to get a new devo based on the "selected" devot type
+    console.log('getFamilyDevo click', selected);
+    console.log('getFamilyDevo click devotionTopicText', devotionTopicText);
+    // devotionTopicText
+    // setSubmitDevoButtonDisabled(true);
+    setPage('familyDevotions');
   }
 
   const devoSelectorModalclose = () => {
@@ -300,6 +331,14 @@ export default function App() {
     setSelected('');
     // setDevoType('');
     setDevoSelectorVisible(false);
+  }
+
+  const familyDevoSelectorModalclose = () => {
+    console.log('devoSelectorModalclose click');
+    setSubmitDevoButtonDisabled(true);
+    setSelected('');
+    // setDevoType('');
+    setFamilyDevoSelectorVisible(false);
   }
 
   const navigateResources = () =>{
@@ -335,7 +374,89 @@ export default function App() {
       });
     }
 
+    const logout = () => {
+      setUsername('');
+      setPassword('');
+      setPage('login');
+      setEmailAddressValidated(false);
+      setEmailAddress('')
+    }
 
+    const forgotPassword = () => {
+      console.log('In forgotPassword');
+      setPage('forgotPassword');
+    }
+
+    const register = () => {
+      console.log('In register');
+      setPage('register');
+    }
+
+    const validateEmail = async () => {
+      console.log('IN Validate Email Click')
+      console.log('IN Validate Email address', emailAddress);
+      const response = await fetch(`${BASE_URL_DEV}/data/validateemail?username=${emailAddress}`)
+      .then(response => response.json())
+      .then(json => {
+        console.log('user response', json[0].count);
+        if(json[0].count > 0){
+          setEmailAddressValidated(true);
+        }
+        else{
+          setEmailAddressValidated(false);
+          Alert.alert('Your email is not tied to a registered user. Please register as a new user!');
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    }
+
+  const setNewPassword = async () => {
+    console.log('In setNewPassword');
+    console.log('In password1', newPassword1);
+    console.log('In password2', newPassword2);
+
+    if(newPassword1 == newPassword2){
+      console.log('Matching Passwords!');
+      // const response = await fetch(`${BASE_URL_DEV}/data/setnewpassword?username=${emailAddress}&password=${newPassword1}`)
+      // .then(response => response.json())
+      // .then(json => {
+      //   console.log('user response', json);
+      //   // if(json[0].count > 0){
+      //   //   setEmailAddressValidated(true);
+      //   // }
+      //   // else{
+      //   //   setEmailAddressValidated(false);
+      //   //   Alert.alert('Your email is not tied to a registered user. Please register as a new user!');
+      //   // }
+      // })
+      // .catch(error => {
+      //   console.error(error);
+      // });
+      await fetch(`${BASE_URL_DEV}/data/setnewpassword`, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: emailAddress,
+          password: newPassword1
+        }),
+      })
+      .then((response) =>{
+        console.log('response', response.json());
+    //   loadData();
+          Alert.alert('Password Successfully Changed!');
+          logout();
+    })
+    }else{
+      console.log(' Passwords Don\'t match!');
+      Alert.alert('Passwords Don\'t Match!');
+    }
+  }
+    // }
   // const getAIDevo = async (message) => {
   //   try {
   //     const response = await instance.post('', {
@@ -433,7 +554,7 @@ else{
   if(page === 'login'){
       return (
         
-        <ScrollView style={styles.scrollView}>
+        <View style={styles.scrollView}>
           <View style={[styles.homeHeaderIcons]}>
             
           </View>
@@ -444,7 +565,7 @@ else{
             />
           </Pressable>
           
-          <View style={styles.homeContentView}>
+          <View style={styles.homeContentView2}>
           <Text style={styles.nameInputText}>User Email</Text>
               <TextInput
                   style={{
@@ -473,15 +594,133 @@ else{
                   onChangeText={newPasswordText => setPassword(newPasswordText)}
                   placeholder="    Password"
               />
-
+            {/* <View style={styles.container}>
+              <Text>
+                {biometrics
+                  ? 'Your device is compatible with Biometrics'
+                  : 'Face or Fingerprint scanner is available on this device'}
+              </Text>
+              {renderContent && <SecureFile />}
+              <Button title='Display Content' onPress={renderSecureContent} />
+            </View> */}
               <Pressable style={styles.myPrayerListPressable} onPress={() => signIn()}>
               <Text style={styles.myPrayerListPressableText}>Login</Text>
             </Pressable>
           </View>
-            
-            
-        
-        </ScrollView>
+          <View style={styles.loginPageLoginButtons}>
+            <Pressable style={styles.forgotPasswordPressable} onPress={() => forgotPassword()}>
+              <Text style={styles.forgotPasswordPressableText}>Forgot Password?</Text>
+            </Pressable>
+            <Pressable style={styles.registerPressable} onPress={() => register()}>
+              <Text style={styles.registerPressableText}>Register</Text>
+            </Pressable>
+          </View> 
+        </View>
+    
+      );
+    
+    }
+    else if(page === 'register'){
+      return (
+        <View>
+          <View style={[styles.homeHeaderIcons]}>
+          <Pressable onPress={() => logout()} >
+                <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
+            </Pressable>
+            </View>
+            <Pressable onPress={() => logout()}>
+              <Image
+                style={styles.tinyLogo}
+                source={logo}
+              />
+            </Pressable>
+          <View>
+          <Text>Register Page</Text>
+        </View>
+      </View>
+    
+      );
+    
+    }
+    else if(page === 'forgotPassword'){
+      
+      return (
+        <View style={[styles.forgotPasswordScreen]}>
+          <View style={[styles.homeHeaderIcons]}>
+            <Pressable onPress={() => logout()} >
+                <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
+            </Pressable>
+            </View>
+            <Pressable onPress={() => logout()}>
+              <Image
+                style={styles.tinyLogo}
+                source={logo}
+              />
+            </Pressable>
+          <View>
+          {!emailAddressValidated ? 
+            <View style={[styles.forgotPasswordScreenBody]}>
+              
+              <Text style={[styles.forgotPasswordEmailText]}>Please enter the email address for your account</Text>
+              <TextInput
+                          style={{
+                              borderColor: '#113946',
+                              borderWidth: 4,
+                              borderRadius: 30,
+                              width:'80%',
+                              height: '7%',
+                              marginLeft:'10%'
+                              // marginBottom: 40,
+                          }}
+                          onChangeText={newUsernameText => setEmailAddress(newUsernameText)}
+                          // onEndEditing={() => setDevoType()}
+                          placeholder="    Email Address"
+                      />
+
+              <Pressable style={[styles.validateEmailPressable]} onPress={() => validateEmail()}>
+                <Text style={[styles.validateEmailPressableText]}>Validate Email</Text>
+              </Pressable>
+            </View>
+            :
+            <View style={[styles.forgotPasswordScreenBody]}>
+              
+              <Text style={[styles.forgotPasswordEmailText]}>Email {emailAddress} Validated!</Text>
+              <TextInput
+                          style={{
+                              borderColor: '#113946',
+                              borderWidth: 4,
+                              borderRadius: 30,
+                              width:'80%',
+                              height: '7%',
+                              marginLeft:'10%'
+                              // marginBottom: 40,
+                          }}
+                          onChangeText={newUsernameText => setNewPassword1(newUsernameText)}
+                          // onEndEditing={() => setDevoType()}
+                          placeholder="    New Password"
+                      />
+              <TextInput
+                          style={{
+                              borderColor: '#113946',
+                              borderWidth: 4,
+                              borderRadius: 30,
+                              marginTop:10,
+                              width:'80%',
+                              height: '7%',
+                              marginLeft:'10%'
+                              // marginBottom: 40,
+                          }}
+                          onChangeText={newUsernameText => setNewPassword2(newUsernameText)}
+                          // onEndEditing={() => setDevoType()}
+                          placeholder="   Confirm New Password"
+                      />
+              <Pressable style={[styles.validateEmailPressable]} onPress={() => setNewPassword()}>
+                <Text style={[styles.validateEmailPressableText]}>Set New Password</Text>
+              </Pressable>
+            </View>
+            }
+        </View>
+      </View>
     
       );
     
@@ -503,12 +742,18 @@ else{
           </Pressable>
           
           <View style={styles.homeContentView}>
-            <Text style={{fontSize:30, marginBottom:30, fontStyle:'italic', color:'#C56E33'}}>Welcome {runningUser[0].firstname} </Text>
+            <Text style={{fontSize:30, marginBottom:30, fontStyle:'italic', color:'#113946'}}>Welcome {runningUser[0].firstname} </Text>
             <Text >
               <Text style={styles.homeText}>
                 And this is eternal life, that they know You, the only true God, and Jesus Christ whom you have sent. John 17:3
               </Text>
-            
+              {'\n'}
+              {'\n'}
+              {'\n'}
+              <Text style={styles.homeText2}>
+                {runningUser[0].firstname}, may God richly bless you as you grow in your walk with Him
+              </Text>
+              {'\n'}
             </Text>
           </View>
           <View style={styles.homeButtonContainer}>
@@ -537,9 +782,9 @@ else{
                             borderColor: '#113946',
                             borderWidth: 4,
                             borderRadius: 30,
-                            width:'95%',
-                            height: '15%',
-                            marginBottom: 40,
+                            width:250,
+                            height: '55%',
+                            // marginBottom: 40,
                         }}
                         onChangeText={newUsernameText => setDevotionTopicText(newUsernameText)}
                         onEndEditing={() => setDevoType()}
@@ -558,6 +803,53 @@ else{
                         <Pressable
                           style={[styles.circleSubmitNewRequest]}
                           onPress={() => getDevo()}
+                          disabled={submitDevoButtonDisabled}
+                        >
+                        <MaterialIcons name="send" size={30} color="#EAD7BB" />
+                      </Pressable>}
+                    
+                  </View>
+                </View>
+              </Modal>
+
+              {/* Family Devo Modal */}
+              <Modal
+                  animationType="slide"
+                  transparent={true}
+                  visible={familyDevoSelectorVisible}
+                  onRequestClose={() => {
+                    setFamilyDevoSelectorVisible(!familyDevoSelectorVisible);
+                  }}>
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    <Text style={styles.modalText}>How can you be encouraged today?</Text>
+                    <SafeAreaView style={styles.container}>
+                      <TextInput
+                        style={{
+                            borderColor: '#113946',
+                            borderWidth: 4,
+                            borderRadius: 30,
+                            width:250,
+                            height: '55%',
+                            // marginBottom: 40,
+                        }}
+                        onChangeText={newUsernameText => setDevotionTopicText(newUsernameText)}
+                        onEndEditing={() => setDevoType()}
+                        placeholder="    Devotion Topic"
+                    />
+                    </SafeAreaView>
+                    <Pressable
+                      style={[styles.circleButtonDetailCloseModal]}
+                      onPress={() => familyDevoSelectorModalclose()}>
+                      <MaterialIcons name="close" size={25} color="white" />
+                    </Pressable>
+
+                      {submitDevoButtonDisabled ?
+                        ''
+                        : 
+                        <Pressable
+                          style={[styles.circleSubmitNewRequest]}
+                          onPress={() => getFamilyDevo()}
                           disabled={submitDevoButtonDisabled}
                         >
                         <MaterialIcons name="send" size={30} color="#EAD7BB" />
@@ -594,6 +886,30 @@ else{
             <Text style={[styles.myPrayerClosetText]}>My Daily Bread</Text>
           </View>
           <PersonalDevotionPage selected={selected} runningUser={runningUser} devotionTopicText={devotionTopicText}></PersonalDevotionPage>
+        </View>
+      );
+    }
+    else if(page === 'familyDevotions'){
+      return (
+        <View style={styles.scrollView}>
+          <View style={[styles.homeHeaderIcons]}>
+            <Pressable onPress={() => navigateHome()} >
+                <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
+            </Pressable>
+            <Pressable onPress={() => openMenu()} >
+                <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
+            </Pressable>
+          </View>
+          <View style={styles.prayerListHeader}>
+            <Pressable onPress={() => navigateHome()}>
+              <Image
+                style={styles.tinyLogoDevotions}
+                source={logo}
+              />
+            </Pressable>
+            <Text style={[styles.myPrayerClosetText]}>Family Devotions</Text>
+          </View>
+          <FamilyDevotionPage selected={selected} runningUser={runningUser} devotionTopicText={devotionTopicText}></FamilyDevotionPage>
         </View>
       );
     }
@@ -734,6 +1050,9 @@ else{
               </Pressable>
               <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateAbout()}>
                 <Text style={styles.myPrayerListPressableTextNavigation}>About</Text>
+              </Pressable>
+              <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => logout()}>
+                <Text style={styles.myPrayerListPressableTextNavigation}>Logout</Text>
               </Pressable>
             </ScrollView>
           </View>
@@ -932,7 +1251,7 @@ const styles = StyleSheet.create({
   },
   modalView: {
     width: '80%',
-    height: '90%',
+    height: '40%',
     margin: 20,
     backgroundColor: '#FFF2D8',
     borderRadius: 20,
@@ -972,13 +1291,13 @@ const styles = StyleSheet.create({
   },
 
   myDailyDevotionPressableNavigation:{
-    width: '100%',
-    // borderRadius: 10,
+    width: '90%',
+    borderRadius: 42,
     backgroundColor: '#113946',
     padding: 20,
     elevation: 2,
     // width:'45%',
-    // marginEnd: '10%',
+    marginLeft: '5%',
     marginBottom:10,
     shadowOffset: {
       width: 0,
@@ -989,17 +1308,17 @@ const styles = StyleSheet.create({
     color: '#EAD7BB',
     backgroundColor: '#113946',
     textAlign: 'center',
-    fontSize: 30,
+    fontSize: 25,
   },
   myPrayerListPressableNavigation:{
-    width: '100%',
-    // borderRadius: 10,
+    width: '90%',
+    borderRadius: 42,
     backgroundColor: '#113946',
     padding: 20,
     elevation: 2,
     marginBottom:10,
     // width:'45%',
-    // marginEnd: '10%',
+    marginLeft: '5%',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -1010,7 +1329,7 @@ const styles = StyleSheet.create({
     color: '#EAD7BB',
     backgroundColor: '#113946',
     textAlign: 'center',
-    fontSize: 30,
+    fontSize: 25,
   },
   scrollView: {
     flex: 2,
@@ -1038,8 +1357,8 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   container: {
-    paddingTop: 50,
-    paddingLeft: 50,
+    // paddingTop: 50,
+    // paddingLeft: 50,
   },
   tinyLogo: {
     width: 400,
@@ -1173,6 +1492,30 @@ const styles = StyleSheet.create({
     borderRadius: 0,
     padding: 35,
     alignItems: 'center',
+    height: '45%'
+    // shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 4,
+    // elevation: 10,
+  },
+  homeContentView2: {
+    fontSize:25,
+    fontStyle:'italic',
+    color: '#113946',
+    margin: 5,
+    marginTop: 25,
+    borderStyle: 'solid',
+    borderColor: '#113946',
+    borderWidth:4,
+    backgroundColor: '#BCA37F',
+    borderRadius: 0,
+    padding: 35,
+    alignItems: 'center',
+    height: '50%'
     // shadowColor: '#000',
     // shadowOffset: {
     //   width: 0,
@@ -1234,11 +1577,11 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
     // margin: 20,
   },
-  container: {
-    flex: 1,
-    paddingTop: StatusBar.currentHeight,
-    marginHorizontal: 10,
-  },
+  // container: {
+  //   flex: 1,
+  //   paddingTop: StatusBar.currentHeight,
+  //   marginHorizontal: 10,
+  // },
   item: {
     backgroundColor: '#EAD7BB',
     padding: 20,
@@ -1291,6 +1634,84 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 22,
     backgroundColor: '#BCA37F',
+  },
+  loginPageLoginButtons:{
+    display: 'inline',
+    flexDirection: 'row',
+  },
+  registerPressable: {
+    backgroundColor: '#113946',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position:'absolute',
+    right:5,
+    padding:10,
+    bottom:-50,
+    borderRadius:30,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  registerPressableText: {
+    color: '#BCA37F'
+  },
+  forgotPasswordPressable: {
+    backgroundColor: '#113946',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position:'absolute',
+    borderRadius:30,
+    left:5,
+    padding:10,
+    bottom:-50,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  forgotPasswordPressableText: {
+    color: '#BCA37F'
+  },
+  forgotPasswordScreen:{
+    marginTop:30,
+    backgroundColor:'#BCA37F'
+  },
+  forgotPasswordScreenBody:{
+    height:'100%',
+  },
+  forgotPasswordEmailText:{
+    marginTop: 20,
+    marginBottom: 20,
+    textAlign:"center",
+    color: '#C56E33',
+    fontSize:15
+  },
+  validateEmailPressable:{
+    marginLeft:'25%',
+    height: '5%',
+    width: '50%',
+    marginTop:'5%',
+    backgroundColor:'#113946',
+    borderRadius: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  validateEmailPressableText:{
+    color: '#C56E33'
   }
 });
 

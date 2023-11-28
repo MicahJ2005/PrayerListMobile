@@ -60,6 +60,43 @@ app.get('/data/signIn', (req, res)=>{
   client.end;
 })
 
+app.get('/data/validateemail', (req, res)=>{
+  console.log('req.query.username ',req.query.username);
+  client.query(`Select COUNT(id) from users WHERE username = '${req.query.username}' `, (err, result)=>{
+      if(!err){
+        console.log('result.rows', result.rows);
+          res.send(result.rows);
+      }
+      if(err){
+        console.log('err', err);
+    }
+  });
+  client.end;
+})
+
+app.put('/data/setnewpassword', (req, res)=>{
+  console.log('req.body.username ',req.body.username);
+  console.log('req.querbodyy.password ',req.body.password);
+  
+  if(req.body.username != null){
+    let insertQuery = `update users 
+                        set 
+                        password = '${req.body.password}'
+                        where username = '${req.body.username}' RETURNING *`
+
+    client.query(insertQuery, (err, result)=>{
+    if(!err){
+      console.log('PUT setnewpassword SUCCESS', result)
+      res.send(insertQuery)
+    }
+      else{ console.log('ERROR', err.message) }
+    })
+    client.end;
+  }
+  else{ console.log('ERROR', err.message) }
+  
+})
+
 app.get('/data/searchPrayerGroups', (req, res)=>{
   console.log('searchPrayerGroups group', req.query.grouporid)
   // let queryString = req.query.grouporid.toString;
@@ -210,6 +247,35 @@ app.get('/data/checktodaysdevo', (req, res)=>{
     client.end;
   })
 
+  app.get('/data/checktodaysfamilydevo', (req, res)=>{
+    console.log('aiDevo req.body',req.body);
+    console.log('req.query.userId ',req.query.userid);
+    let objectDate = new Date();
+  
+  
+    let day = objectDate.getDate();
+    console.log(day); // 23
+  
+    let month = objectDate.getMonth() + 1;
+    console.log(month + 1); // 8
+  
+    let year = objectDate.getFullYear();
+    console.log(year); // 2022
+  
+    let DateToSend = year+'-'+month+'-'+day;
+    console.log("DateToSend", DateToSend);
+    client.query(`Select * from familydevotions WHERE userid = ${req.query.userid} AND devodate = '${DateToSend}'`, (err, result)=>{
+      if(!err){
+        console.log('result.rows', result.rows);
+          res.send(result.rows);
+      }
+      if(err){
+        console.log('err', err);
+    }
+    });
+      client.end;
+    })
+
 app.post('/data/postdailydevo', (req, res)=>{
   console.log('POST req.body',req.body);
   console.log('POST req.body.title',req.body.title);
@@ -248,6 +314,7 @@ app.post('/data/postdailydevo', (req, res)=>{
   let replacedBody = body.replaceAll("'","''")
   let replacedTitle = title.replaceAll("'","''")
   let replacedScripture = scripture.replaceAll("'","''")
+  let replacedSearchInput = searchinput.replaceAll("'","''")
 
   let day = objectDate.getDate();
   console.log(day); // 23
@@ -261,7 +328,70 @@ app.post('/data/postdailydevo', (req, res)=>{
   let DateToSend = year+'-'+month+'-'+day;
   console.log("DateToSend", DateToSend);
   let insertQuery = `insert into devotions(title, scripture, body, userid, devodate, searchinput) 
-                     values('${replacedTitle}', '${replacedScripture}', '${replacedBody}', ${userid}, '${DateToSend}', '${searchinput}')`
+                     values('${replacedTitle}', '${replacedScripture}', '${replacedBody}', ${userid}, '${DateToSend}', '${replacedSearchInput}')`
+    client.query(insertQuery, (err, result)=>{
+        if(!err){
+          console.log('POST SUCCESS', result)
+            res.send('Insertion was successful')
+        }
+        else{ console.log('ERROR', err.message) }
+    })
+    client.end;
+})
+
+app.post('/data/postdailyfamilydevo', (req, res)=>{
+  console.log('POST req.body',req.body);
+  console.log('POST req.body.title',req.body.title);
+  // console.log('POST req.body.scripture',req.body.scripture);
+  // console.log('POST req.body.body',req.body.body);
+  // console.log('POST req.body.userid',req.body.userid);
+  let objectDate = new Date();
+
+  let title = req.body.title;
+  let scripture = req.body.scripture;
+  let body = req.body.body;
+  let userid = req.body.userid;
+  let searchinput = req.body.searchinput;
+  // let title = '"Embracing Divine Guidance"';
+  // let scripture = '"But grow in the grace and knowledge of our Lord and Savior Jesus Christ. To him be glory both now and forever! Amen." - 2 Peter 3:18';
+  // let body = 'Title: Embracing Divine Guidance\n' +
+  // '\n' +
+  // 'Scripture: "But grow in the grace and knowledge of our Lord and Savior Jesus Christ. To him be glory both now and forever! Amen." - 2 Peter 3:18\n' +
+  // '\n' +
+  // 'Devotional:\n' +
+  // '\n' +
+  // 'In our journey of faith, we often find ourselves seeking guidance and direction. We long to know the path we should take, the decisions we should make, and the purpose we should fulfill. In our quest for divine guidance, we must remember that it is through growing in the grace and knowledge of our Lord and Savior Jesus Christ that we find the answers we seek.\n' +
+  // '\n' +
+  // 'The Scripture in 2 Peter 3:18 reminds us of the importance of continuous growth in our relationship with Christ. It is not a one-time event, but rather a lifelong process of deepening our understanding and experiencing His grace. When we intentionally seek to know Him more, we position ourselves to receive divine guidance.\n' +
+  // '\n' +
+  // "To embrace divine guidance, we must first embrace God's grace. It is through His grace that we are forgiven, redeemed, and made new. We must acknowledge our need for His grace and surrender our lives to Him completely. As we do so, the Holy Spirit empowers us to walk in His ways and align our desires with His.\n" +
+  // '\n' +
+  // "Secondly, we must embrace the knowledge of our Lord and Savior Jesus Christ. This knowledge comes through reading, studying, and meditating on His Word. The Bible is the lamp that illuminates our path and reveals God's heart and will. As we immerse ourselves in the Scriptures, we gain wisdom, discernment, and understanding of His ways.\n" +
+  // '\n' +
+  // 'As we grow in grace and knowledge, we become more attuned to the voice of God. We recognize His leading and guidance in our lives. His still, small voice becomes clearer amidst the noise of the world. Through prayer and seeking His presence, we open ourselves to receive divine wisdom, direction, and comfort.\n' +
+  // '\n' +
+  // "Embracing divine guidance requires humility and trust. We must acknowledge that God's ways are higher than our ways and His thoughts are higher than our thoughts (Isaiah 55:9). We surrender our own plans and desires, trusting that His plan is perfect and His timing is flawless.\n" +
+  // '\n' +
+  // 'Let us commit ourselves to daily growth in the grace and knowledge of our Lord and Savior Jesus Christ. May we seek His guidance in all aspects of our lives, knowing that as we embrace His divine leading, we will experience His peace, purpose, and abundant blessings';
+
+  let replacedBody = body.replaceAll("'","''")
+  let replacedTitle = title.replaceAll("'","''")
+  let replacedScripture = scripture.replaceAll("'","''")
+  let replacedSearchInput = searchinput.replaceAll("'","''")
+
+  let day = objectDate.getDate();
+  console.log(day); // 23
+
+  let month = objectDate.getMonth() + 1;
+  console.log(month + 1); // 8
+
+  let year = objectDate.getFullYear();
+  console.log(year); // 2022
+
+  let DateToSend = year+'-'+month+'-'+day;
+  console.log("DateToSend", DateToSend);
+  let insertQuery = `insert into familydevotions(title, scripture, body, userid, devodate, searchinput) 
+                     values('${replacedTitle}', '${replacedScripture}', '${replacedBody}', ${userid}, '${DateToSend}', '${replacedSearchInput}')`
     client.query(insertQuery, (err, result)=>{
         if(!err){
           console.log('POST SUCCESS', result)

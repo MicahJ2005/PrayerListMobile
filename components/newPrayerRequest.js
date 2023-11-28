@@ -5,8 +5,8 @@ import {View, Text, Modal, SafeAreaView, ScrollView, TextInput, Button, StyleShe
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import PrayerList from './prayerList';
-import axios from "axios";
+// import PrayerList from './prayerList';
+// import axios from "axios";
 import {BASE_URL_DEV} from '@env';
 
 let initialData = [];
