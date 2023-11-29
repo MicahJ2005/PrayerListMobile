@@ -48,7 +48,7 @@ client.connect();
 app.get('/data/signIn', (req, res)=>{
   console.log('req.query.username ',req.query.username);
   console.log('req.query.password',req.query.password);
-  client.query(`Select * from users WHERE username = '${req.query.username}' AND password = '${req.query.password}' `, (err, result)=>{
+  client.query(`Select * from users WHERE username = '${req.query.username}' AND password = '${req.query.password}' AND active = true`, (err, result)=>{
       if(!err){
         console.log('result.rows', result.rows);
           res.send(result.rows);
@@ -62,7 +62,7 @@ app.get('/data/signIn', (req, res)=>{
 
 app.get('/data/validateemail', (req, res)=>{
   console.log('req.query.username ',req.query.username);
-  client.query(`Select COUNT(id) from users WHERE username = '${req.query.username}' `, (err, result)=>{
+  client.query(`Select COUNT(id) from users WHERE username = '${req.query.username} AND active = true' `, (err, result)=>{
       if(!err){
         console.log('result.rows', result.rows);
           res.send(result.rows);
@@ -82,7 +82,7 @@ app.put('/data/setnewpassword', (req, res)=>{
     let insertQuery = `update users 
                         set 
                         password = '${req.body.password}'
-                        where username = '${req.body.username}' RETURNING *`
+                        where username = '${req.body.username}' AND active = true RETURNING *`
 
     client.query(insertQuery, (err, result)=>{
     if(!err){
@@ -337,6 +337,48 @@ app.post('/data/postdailydevo', (req, res)=>{
         else{ console.log('ERROR', err.message) }
     })
     client.end;
+})
+
+app.post('/data/createnewaccount', (req, res)=>{
+  console.log('POST createnewaccount req.body',req.body);
+  // console.log('POST req.body.title',req.body.title);
+  // console.log('POST req.body.scripture',req.body.scripture);
+  // console.log('POST req.body.body',req.body.body);
+  // console.log('POST req.body.userid',req.body.userid);
+  // let objectDate = new Date();
+
+  // let title = req.body.title;
+  // let scripture = req.body.scripture;
+  // let body = req.body.body;
+  // let userid = req.body.userid;
+  // let searchinput = req.body.searchinput;
+
+  // let replacedBody = body.replaceAll("'","''")
+  // let replacedTitle = title.replaceAll("'","''")
+  // let replacedScripture = scripture.replaceAll("'","''")
+  // let replacedSearchInput = searchinput.replaceAll("'","''")
+
+  // let day = objectDate.getDate();
+  // console.log(day); // 23
+
+  // let month = objectDate.getMonth() + 1;
+  // console.log(month + 1); // 8
+
+  // let year = objectDate.getFullYear();
+  // console.log(year); // 2022
+
+  // let DateToSend = year+'-'+month+'-'+day;
+  // console.log("DateToSend", DateToSend);
+  // let insertQuery = `insert into devotions(title, scripture, body, userid, devodate, searchinput) 
+  //                    values('${replacedTitle}', '${replacedScripture}', '${replacedBody}', ${userid}, '${DateToSend}', '${replacedSearchInput}')`
+  //   client.query(insertQuery, (err, result)=>{
+  //       if(!err){
+  //         console.log('POST SUCCESS', result)
+  //           res.send('Insertion was successful')
+  //       }
+  //       else{ console.log('ERROR', err.message) }
+  //   })
+  //   client.end;
 })
 
 app.post('/data/postdailyfamilydevo', (req, res)=>{

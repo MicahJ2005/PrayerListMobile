@@ -116,8 +116,9 @@ const JoinPrayerGroup = (user) => {
                       // marginBottom: 40,
                       marginLeft:10
                   }}
+                  textAlign='center'
                   onChangeText={newText => setText(newText)}
-                  placeholder="    Group Name"
+                  placeholder="Group Name"
                   value={text}
               />
               <Pressable style={styles.circleSubmitNewRequest} onPress={() => searchGroups()}>
@@ -137,8 +138,9 @@ const JoinPrayerGroup = (user) => {
                       // marginBottom: 40,
                       marginLeft:10
                   }}
+                  textAlign='center'
                   onChangeText={newText => setText(newText)}
-                  placeholder="    Group Id"
+                  placeholder="Group Id"
                   value={text}
               />
               <Pressable style={styles.circleSubmitNewRequest} onPress={() => searchPrivateGroups()}>

@@ -263,8 +263,9 @@ const newPrayerRequest = (runningUser) => {
                     height: '15%',
                     marginBottom: 40,
                 }}
+                textAlign='center'
                 onChangeText={newText => setText(newText)}
-                placeholder="    Subject"
+                placeholder="Subject"
                 value={text}
             />
             <Text style={styles.requestInputText}>What is the request?</Text>
@@ -279,8 +280,9 @@ const newPrayerRequest = (runningUser) => {
                     marginBottom: 40,
                     
                 }}
+                textAlign='center'
                 onChangeText={newDetailText => setDetails(newDetailText)}
-                placeholder="    Prayer Request"
+                placeholder="Prayer Request"
                 value={details}
             />
             {!showEditButton ? 
@@ -369,8 +371,9 @@ const newPrayerRequest = (runningUser) => {
                     marginBottom: 40,
                     
                 }}
+                textAlign='center'
                 onChangeText={newAnswerText => setAnsweredPrayerText(newAnswerText)}
-                placeholder="    Answer..."
+                placeholder="Answer..."
                 // value={details}
             />
             

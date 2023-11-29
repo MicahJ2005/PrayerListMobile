@@ -77,6 +77,7 @@ const submitPrayerRequestButton = (props) => {
                 borderColor: 'gray',
                 borderWidth: 1,
             }}
+            textAlign='center'
             onChangeText={newText => setText(newText)}
             placeholder="Request Here"
         />

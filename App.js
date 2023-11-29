@@ -16,6 +16,7 @@ import { SelectList } from 'react-native-dropdown-select-list';
 import {BASE_URL_DEV} from '@env';
 import axios from 'axios';
 import {TextInput} from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const data = [
   {key:'Depression', value:'Depression'},
@@ -44,7 +45,18 @@ export default function App() {
   const [emailAddressValidated, setEmailAddressValidated] = useState(false);
   const [newPassword1, setNewPassword1] = useState('');
   const [newPassword2, setNewPassword2] = useState('');
-  
+  const [date, setDate] = useState('09-10-2021');
+
+  ///FOR NEW ACCOUNTS
+  const [registerEmailAddress, setRegisterEmailAddress] = useState('');
+  const [registerFirstName, setRegisterFirstName] = useState('');
+  const [registerLastName, setRegisterLastName] = useState('');
+  const [registerBirthdate, setRegisterBirthdate] = useState('');
+  const [registerPhone, setRegisterPhone] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [registerSecurityQuestion, setRegisterSecurityQuestion] = useState('');
+  const [registerSecurityAnswer, setRegisterSecurityAnswer] = useState('');
+  const [openCalendarBoolean, setOpenCalendarBoolean] = useState(false);
   
 
   // const [facialRecognitionAvailable, setFacialRecognitionAvailable] = React.useState(false);
@@ -380,6 +392,7 @@ export default function App() {
       setPage('login');
       setEmailAddressValidated(false);
       setEmailAddress('')
+      setOpenCalendarBoolean(false);
     }
 
     const forgotPassword = () => {
@@ -455,6 +468,56 @@ export default function App() {
       console.log(' Passwords Don\'t match!');
       Alert.alert('Passwords Don\'t Match!');
     }
+  }
+
+  const createNewAccount = async () => {
+    console.log('register email', registerEmailAddress);
+    console.log('register Fname', registerFirstName);
+    console.log('register Lname', registerLastName);
+    console.log('register BDay', registerBirthdate);
+    console.log('register Phone', registerPhone);
+    console.log('register PW', registerPassword);
+    console.log('register Security Q', registerSecurityQuestion);
+    console.log('register Security A', registerSecurityAnswer);
+
+    await fetch(`${BASE_URL_DEV}/data/createnewaccount`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        registerEmailAddress: registerEmailAddress,
+        registerFirstName: registerFirstName,
+        registerLastName: registerLastName,
+        registerBirthdate: registerBirthdate,
+        registerPhone: registerPhone,
+        registerPassword: registerPassword,
+        registerSecurityQuestion: registerSecurityQuestion,
+        registerSecurityAnswer: registerSecurityAnswer
+      }),
+    })
+    .then((response) =>{
+      console.log('response', response.json());
+  //   loadData();
+        Alert.alert('Password Successfully Changed!');
+        logout();
+  })
+  // }else{
+  //   console.log(' Passwords Don\'t match!');
+  //   Alert.alert('Passwords Don\'t Match!');
+  // }
+  }
+
+  const openCalendar = () => {
+    console.log('openCalendar click');
+    setOpenCalendarBoolean(true);
+  }
+
+  const setBirthdate = (event, date) => {
+    console.log('setBirthdate event', event);
+    console.log('setBirthdate Date', date);
+    setRegisterBirthdate(new Date(date));
   }
     // }
   // const getAIDevo = async (message) => {
@@ -576,8 +639,9 @@ else{
                       height: '15%',
                       marginBottom: 40,
                   }}
+                  textAlign='center'
                   onChangeText={newUsernameText => setUsername(newUsernameText)}
-                  placeholder="    Email"
+                  placeholder="someone@blessings.com"
               />
               <Text style={styles.requestInputText}>Password</Text>
               <TextInput
@@ -591,8 +655,9 @@ else{
                       marginBottom: 40,
                       
                   }}
+                  textAlign='center'
                   onChangeText={newPasswordText => setPassword(newPasswordText)}
-                  placeholder="    Password"
+                  placeholder="******"
               />
             {/* <View style={styles.container}>
               <Text>
@@ -612,7 +677,7 @@ else{
               <Text style={styles.forgotPasswordPressableText}>Forgot Password?</Text>
             </Pressable>
             <Pressable style={styles.registerPressable} onPress={() => register()}>
-              <Text style={styles.registerPressableText}>Register</Text>
+              <Text style={styles.registerPressableText}>New Account</Text>
             </Pressable>
           </View> 
         </View>
@@ -622,21 +687,261 @@ else{
     }
     else if(page === 'register'){
       return (
-        <View>
-          <View style={[styles.homeHeaderIcons]}>
+        <View style={[styles.registerPageHeader]}>
+          <View style={[styles.registerHeaderIcons]}>
           <Pressable onPress={() => logout()} >
                 <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
             </Pressable>
-            </View>
             <Pressable onPress={() => logout()}>
               <Image
-                style={styles.tinyLogo}
+                style={styles.tinyLogoRegister}
                 source={logo}
               />
             </Pressable>
-          <View>
-          <Text>Register Page</Text>
-        </View>
+          </View>
+          <ScrollView style={[styles.registerScreenBody]}>
+              
+              <Text style={[styles.forgotPasswordEmailText]}>Please complete all information for your new account</Text>
+              <TextInput
+                          style={{
+                              borderColor: '#113946',
+                              borderWidth: 4,
+                              borderRadius: 30,
+                              width:'80%',
+                              height: 50,
+                              marginLeft:'10%',
+                              marginBottom: 10,
+                          }}
+                          textAlign='center'
+                          onChangeText={newEmailText => setRegisterEmailAddress(newEmailText)}
+                          // onEndEditing={() => setDevoType()}
+                          placeholder="Email Address"
+                      />
+              <TextInput
+                          style={{
+                              borderColor: '#113946',
+                              borderWidth: 4,
+                              borderRadius: 30,
+                              width:'80%',
+                              height: 50,
+                              marginLeft:'10%',
+                              marginBottom: 10,
+                          }}
+                          textAlign='center'
+                          onChangeText={newFirstNameText => setRegisterFirstName(newFirstNameText)}
+                          // onEndEditing={() => setDevoType()}
+                          placeholder="First Name"
+                      />
+
+                      <TextInput
+                          style={{
+                              borderColor: '#113946',
+                              borderWidth: 4,
+                              borderRadius: 30,
+                              width:'80%',
+                              height: 50,
+                              marginLeft:'10%',
+                              marginBottom: 10,
+                          }}
+                          textAlign='center'
+                          onChangeText={newLastNameText => setRegisterLastName(newLastNameText)}
+                          // onEndEditing={() => setDevoType()}
+                          placeholder="Last Name"
+                      />
+                      <Pressable style={{
+                              borderColor: '#113946',
+                              borderWidth: 4,
+                              borderRadius: 30,
+                              width:'80%',
+                              height: 50,
+                              marginLeft:'10%',
+                              marginBottom: 10,
+                          }} onPress={() => openCalendar()}>
+                        <Text style={{
+                              textAlign:'center',
+                              padding:10,
+                              color:'grey'
+                          }}>
+                          {registerBirthdate !== '' ?
+                            {registerBirthdate}
+                            :
+                            'Birthdate'
+                          }
+                            
+                          </Text>
+                      </Pressable>
+                      {/* <TextInput
+                          style={{
+                              borderColor: '#113946',
+                              borderWidth: 4,
+                              borderRadius: 30,
+                              width:'80%',
+                              height: 50,
+                              marginLeft:'10%',
+                              marginBottom: 10,
+                          }}
+                          textAlign='center'
+                          mode='date'
+                          // onBlur
+                          // onChangeText={newBirthdateText => setRegisterBirthdate(newBirthdateText)}
+                          // onEndEditing={() => setDevoType()}
+                          placeholder="Birthdate"
+                      /> */}
+                      {openCalendarBoolean ? 
+                      <DateTimePicker
+                        style={{
+                          borderColor: '#113946',
+                          borderWidth: 4,
+                          borderRadius: 30,
+                          width:'80%',
+                          height: 50,
+                          marginLeft:'10%',
+                          marginBottom: 10,
+                      }}
+                        value={new Date()}
+                        mode='date'
+                        // placeholder="select date"
+                        // format="DD/MM/YYYY"
+                        // minDate="01-01-1900"
+                        // maxDate="01-01-2000"
+                        // confirmBtnText="Confirm"
+                        // cancelBtnText="Cancel"
+                        // customStyles={{
+                        //   dateIcon: {
+                        //     position: 'absolute',
+                        //     right: -5,
+                        //     top: 4,
+                        //     marginLeft: 0,
+                        //   },
+                        //   dateInput: {
+                        //     borderColor : "gray",
+                        //     alignItems: "flex-start",
+                        //     borderWidth: 0,
+                        //     // borderBottomWidth: 1,
+                        //   },
+                        //   placeholderText: {
+                        //     fontSize: 17,
+                        //     color: "gray"
+                        //   },
+                        //   dateText: {
+                        //     fontSize: 17,
+                        //   }
+                        // }}
+                        onChange={(event, date) => {
+                          setBirthdate(event, date);
+                        }}
+                      />
+                      :
+                      '' 
+                    }
+                      {/* <DateTimePicker
+                        style={{
+                          borderColor: '#113946',
+                          borderWidth: 4,
+                          borderRadius: 30,
+                          width:'80%',
+                          height: 50,
+                          marginLeft:'10%',
+                          marginBottom: 10,
+                      }}
+                        value={new Date()}
+                        mode="date"
+                        placeholder="select date"
+                        format="DD/MM/YYYY"
+                        minDate="01-01-1900"
+                        maxDate="01-01-2000"
+                        confirmBtnText="Confirm"
+                        cancelBtnText="Cancel"
+                        customStyles={{
+                          dateIcon: {
+                            position: 'absolute',
+                            right: -5,
+                            top: 4,
+                            marginLeft: 0,
+                          },
+                          dateInput: {
+                            borderColor : "gray",
+                            alignItems: "flex-start",
+                            borderWidth: 0,
+                            // borderBottomWidth: 1,
+                          },
+                          placeholderText: {
+                            fontSize: 17,
+                            color: "gray"
+                          },
+                          dateText: {
+                            fontSize: 17,
+                          }
+                        }}
+                        onDateChange={(date) => {
+                          setRegisterBirthdate(date);
+                        }}
+                      /> */}
+                      <TextInput
+                          style={{
+                              borderColor: '#113946',
+                              borderWidth: 4,
+                              borderRadius: 30,
+                              width:'80%',
+                              height: 50,
+                              marginLeft:'10%',
+                              marginBottom: 10,
+                          }}
+                          textAlign='center'
+                          keyboardType="number-pad"
+                          onChangeText={newPhoneText => setRegisterPhone(newPhoneText)}
+                          // onEndEditing={() => setDevoType()}
+                          placeholder="Phone #"
+                      />
+                      <TextInput
+                          style={{
+                              borderColor: '#113946',
+                              borderWidth: 4,
+                              borderRadius: 30,
+                              width:'80%',
+                              height: 50,
+                              marginLeft:'10%',
+                              marginBottom: 10,
+                          }}
+                          textAlign='center'
+                          onChangeText={newPasswordText => setRegisterPassword(newPasswordText)}
+                          // onEndEditing={() => setDevoType()}
+                          placeholder="Password"
+                      />
+                      <TextInput
+                          style={{
+                              borderColor: '#113946',
+                              borderWidth: 4,
+                              borderRadius: 30,
+                              width:'80%',
+                              height: 50,
+                              marginLeft:'10%',
+                              marginBottom: 10,
+                          }}
+                          textAlign='center'
+                          onChangeText={newSecurityQuestionText => setRegisterSecurityQuestion(newSecurityQuestionText)}
+                          // onEndEditing={() => setDevoType()}
+                          placeholder="Security Question"
+                      />
+                      <TextInput
+                          style={{
+                              borderColor: '#113946',
+                              borderWidth: 4,
+                              borderRadius: 30,
+                              width:'80%',
+                              height: 50,
+                              marginLeft:'10%',
+                              marginBottom: 30,
+                          }}
+                          textAlign='center'
+                          onChangeText={newSecurityAnswerText => setRegisterSecurityAnswer(newSecurityAnswerText)}
+                          // onEndEditing={() => setDevoType()}
+                          placeholder="Security Answer"
+                      />
+              <Pressable style={[styles.registerPressable2]} onPress={() => createNewAccount()}>
+                <Text style={[styles.registerPressableText2]}>Create Account</Text>
+              </Pressable>
+            </ScrollView>
       </View>
     
       );
@@ -672,9 +977,10 @@ else{
                               marginLeft:'10%'
                               // marginBottom: 40,
                           }}
+                          textAlign='center'
                           onChangeText={newUsernameText => setEmailAddress(newUsernameText)}
                           // onEndEditing={() => setDevoType()}
-                          placeholder="    Email Address"
+                          placeholder="someone@blessings.com"
                       />
 
               <Pressable style={[styles.validateEmailPressable]} onPress={() => validateEmail()}>
@@ -695,9 +1001,10 @@ else{
                               marginLeft:'10%'
                               // marginBottom: 40,
                           }}
+                          textAlign='center'
                           onChangeText={newUsernameText => setNewPassword1(newUsernameText)}
                           // onEndEditing={() => setDevoType()}
-                          placeholder="    New Password"
+                          placeholder="New Password"
                       />
               <TextInput
                           style={{
@@ -710,9 +1017,10 @@ else{
                               marginLeft:'10%'
                               // marginBottom: 40,
                           }}
+                          textAlign='center'
                           onChangeText={newUsernameText => setNewPassword2(newUsernameText)}
                           // onEndEditing={() => setDevoType()}
-                          placeholder="   Confirm New Password"
+                          placeholder="Confirm New Password"
                       />
               <Pressable style={[styles.validateEmailPressable]} onPress={() => setNewPassword()}>
                 <Text style={[styles.validateEmailPressableText]}>Set New Password</Text>
@@ -786,9 +1094,10 @@ else{
                             height: '55%',
                             // marginBottom: 40,
                         }}
+                        textAlign='center'
                         onChangeText={newUsernameText => setDevotionTopicText(newUsernameText)}
                         onEndEditing={() => setDevoType()}
-                        placeholder="    Devotion Topic"
+                        placeholder="Devotion Topic"
                     />
                     </SafeAreaView>
                     <Pressable
@@ -822,7 +1131,7 @@ else{
                   }}>
                 <View style={styles.centeredView}>
                   <View style={styles.modalView}>
-                    <Text style={styles.modalText}>How can you be encouraged today?</Text>
+                    <Text style={styles.modalText}>How can your family be encouraged today?</Text>
                     <SafeAreaView style={styles.container}>
                       <TextInput
                         style={{
@@ -833,9 +1142,10 @@ else{
                             height: '55%',
                             // marginBottom: 40,
                         }}
+                        textAlign='center'
                         onChangeText={newUsernameText => setDevotionTopicText(newUsernameText)}
                         onEndEditing={() => setDevoType()}
-                        placeholder="    Devotion Topic"
+                        placeholder="Family Devotion Topic"
                     />
                     </SafeAreaView>
                     <Pressable
@@ -1357,6 +1667,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   container: {
+    // height:'100%'
     // paddingTop: 50,
     // paddingLeft: 50,
   },
@@ -1364,6 +1675,13 @@ const styles = StyleSheet.create({
     width: 400,
     height: 170,
     marginTop: 15,
+    marginLeft: 5,
+    // position: 'absolute'
+  },
+  tinyLogoRegister: {
+    width: 400,
+    height: 170,
+    marginTop: 55,
     marginLeft: 5,
     // position: 'absolute'
   },
@@ -1602,6 +1920,14 @@ const styles = StyleSheet.create({
     padding:5,
     width:'100%'
   },
+  registerHeaderIcons:{
+    // display: 'inline',
+    backgroundColor: '#113946',
+    // flexDirection:'row',
+    height: 50,
+    padding:5,
+    width:'100%'
+  },
   homeIcon: {
     fontSize: 40,
     backgroundColor: '#113946',
@@ -1657,7 +1983,11 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   registerPressableText: {
-    color: '#BCA37F'
+    color: '#BCA37F',
+  },
+  registerPressableText2: {
+    color: '#C56E33',
+    fontSize:25,
   },
   forgotPasswordPressable: {
     backgroundColor: '#113946',
@@ -1712,6 +2042,55 @@ const styles = StyleSheet.create({
   },
   validateEmailPressableText:{
     color: '#C56E33'
+  },
+  // registerPressable:{
+  //   height: '10%',
+  //   width: '10%',
+  //   marginLeft: '10%',
+  //   marginTop:'5%',
+  //   marginBottom:60,
+  //   backgroundColor:'#113946',
+  //   borderRadius: 42,
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  //   shadowOffset: {
+  //     width: 0,
+  //     height: 2,
+  //   },
+  //   shadowOpacity: 0.25,
+  //   shadowRadius: 4,
+  //   elevation: 5,
+  // },
+  registerPressable2:{
+    height: '10%',
+    width: '80%',
+    marginLeft: '10%',
+    // marginTop:'5%',
+    marginBottom:60,
+    backgroundColor:'#113946',
+    borderRadius: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  registerScreenBody:{
+    marginTop:'45%',
+    marginBottom:10,
+    height:'65%',
+    // flex: 2
+  },
+  containerBody:{
+    height:'100%',
+    // flex: 3,
+  },
+  registerPageHeader:{
+    marginTop:30,
   }
 });
 
