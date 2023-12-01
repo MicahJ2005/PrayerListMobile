@@ -209,7 +209,7 @@ const personalDevotionPage = (devoTypeselected) => {
                         }),
                       })
                     .then((response) =>{
-                        console.log('response', response.json());
+                        console.log('response', response);
                     //   loadData();
                     //   Alert.alert('Prayer Request Submitted!');
                     //   setModalVisible(false);

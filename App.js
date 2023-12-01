@@ -51,7 +51,7 @@ export default function App() {
   const [registerEmailAddress, setRegisterEmailAddress] = useState('');
   const [registerFirstName, setRegisterFirstName] = useState('');
   const [registerLastName, setRegisterLastName] = useState('');
-  const [registerBirthdate, setRegisterBirthdate] = useState('');
+  const [registerBirthdate, setRegisterBirthdate] = useState('09-10-2021');
   const [registerPhone, setRegisterPhone] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [registerSecurityQuestion, setRegisterSecurityQuestion] = useState('');
@@ -368,11 +368,11 @@ export default function App() {
     //     .finally(() => setLoading(false));
 
     ////FOR TESTING
-    setUsername('micahj2005@hotmail.com');
-    setPassword('1234');
+    setUsername(username);
+    setPassword(password);
       
-    let username = 'micahj2005@hotmail.com';
-    let password = '1234';
+    // let username = 'micahj2005@hotmail.com';
+    // let password = '1234';
 
     const response = await fetch(`${BASE_URL_DEV}/data/signIn?username=${username}&password=${password}`)
       .then(response => response.json())
@@ -393,6 +393,7 @@ export default function App() {
       setEmailAddressValidated(false);
       setEmailAddress('')
       setOpenCalendarBoolean(false);
+      setRegisterBirthdate('');
     }
 
     const forgotPassword = () => {
@@ -479,30 +480,46 @@ export default function App() {
     console.log('register PW', registerPassword);
     console.log('register Security Q', registerSecurityQuestion);
     console.log('register Security A', registerSecurityAnswer);
+    const response = await fetch(`${BASE_URL_DEV}/data/validateemail?username=${registerEmailAddress}`)
+      .then(response => response.json())
+      .then(json => {
+        console.log('user response', json[0].count);
+        if(json[0].count > 0){
+          // setEmailAddressValidated(true);
+          Alert.alert('This email address is already registered!');
+        }
+        else{
+          fetch(`${BASE_URL_DEV}/data/createnewaccount`, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              registerEmailAddress: registerEmailAddress,
+              registerFirstName: registerFirstName,
+              registerLastName: registerLastName,
+              registerBirthdate: registerBirthdate,
+              registerPhone: registerPhone,
+              registerPassword: registerPassword,
+              registerSecurityQuestion: registerSecurityQuestion,
+              registerSecurityAnswer: registerSecurityAnswer
+            }),
+          })
+          .then((response) =>{
+            console.log('response', response.json());
+        //   loadData();
+              Alert.alert('Your New Account is Ready!');
+              logout();
+        })
+          
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
 
-    await fetch(`${BASE_URL_DEV}/data/createnewaccount`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        registerEmailAddress: registerEmailAddress,
-        registerFirstName: registerFirstName,
-        registerLastName: registerLastName,
-        registerBirthdate: registerBirthdate,
-        registerPhone: registerPhone,
-        registerPassword: registerPassword,
-        registerSecurityQuestion: registerSecurityQuestion,
-        registerSecurityAnswer: registerSecurityAnswer
-      }),
-    })
-    .then((response) =>{
-      console.log('response', response.json());
-  //   loadData();
-        Alert.alert('Password Successfully Changed!');
-        logout();
-  })
+    
   // }else{
   //   console.log(' Passwords Don\'t match!');
   //   Alert.alert('Passwords Don\'t Match!');
@@ -517,7 +534,20 @@ export default function App() {
   const setBirthdate = (event, date) => {
     console.log('setBirthdate event', event);
     console.log('setBirthdate Date', date);
-    setRegisterBirthdate(new Date(date));
+    let newDate = new Date(date);
+    console.log('Day', newDate.getDate());
+    console.log('Month', newDate.getMonth());
+    console.log('Year', newDate.getFullYear());
+    let reformattedDate = newDate.getFullYear() +'-'+ newDate.getMonth() +'-'+ newDate.getDate();
+    console.log('reformattedDate', reformattedDate);
+    if(event.type == 'set'){
+      setOpenCalendarBoolean(false);
+      setRegisterBirthdate(reformattedDate);
+    }
+    else{
+      console.log('type: ', event.type);
+    }
+    
   }
     // }
   // const getAIDevo = async (message) => {
@@ -748,6 +778,7 @@ else{
                           // onEndEditing={() => setDevoType()}
                           placeholder="Last Name"
                       />
+                      
                       <Pressable style={{
                               borderColor: '#113946',
                               borderWidth: 4,
@@ -762,14 +793,18 @@ else{
                               padding:10,
                               color:'grey'
                           }}>
-                          {registerBirthdate !== '' ?
-                            {registerBirthdate}
+                    
+                          {registerBirthdate.toString() !== '' ?
+                            
+                            <Text>{registerBirthdate}</Text>
+                            // ''
                             :
                             'Birthdate'
                           }
                             
                           </Text>
                       </Pressable>
+                      
                       {/* <TextInput
                           style={{
                               borderColor: '#113946',
@@ -788,19 +823,19 @@ else{
                           placeholder="Birthdate"
                       /> */}
                       {openCalendarBoolean ? 
-                      <DateTimePicker
-                        style={{
-                          borderColor: '#113946',
-                          borderWidth: 4,
-                          borderRadius: 30,
-                          width:'80%',
-                          height: 50,
-                          marginLeft:'10%',
-                          marginBottom: 10,
-                      }}
-                        value={new Date()}
-                        mode='date'
-                        // placeholder="select date"
+                        <DateTimePicker
+                          style={{
+                            borderColor: '#113946',
+                            borderWidth: 4,
+                            borderRadius: 30,
+                            width:'80%',
+                            height: 50,
+                            marginLeft:'10%',
+                            marginBottom: 10,
+                        }}
+                          value={new Date('01-01-2000')}
+                          mode='date'
+                          placeholder="select date"
                         // format="DD/MM/YYYY"
                         // minDate="01-01-1900"
                         // maxDate="01-01-2000"
@@ -832,7 +867,7 @@ else{
                         }}
                       />
                       :
-                      '' 
+                      ''
                     }
                       {/* <DateTimePicker
                         style={{

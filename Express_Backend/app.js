@@ -62,7 +62,7 @@ app.get('/data/signIn', (req, res)=>{
 
 app.get('/data/validateemail', (req, res)=>{
   console.log('req.query.username ',req.query.username);
-  client.query(`Select COUNT(id) from users WHERE username = '${req.query.username} AND active = true' `, (err, result)=>{
+  client.query(`Select COUNT(id) from users WHERE username = '${req.query.username}' AND active = 'true' `, (err, result)=>{
       if(!err){
         console.log('result.rows', result.rows);
           res.send(result.rows);
@@ -357,28 +357,36 @@ app.post('/data/createnewaccount', (req, res)=>{
   // let replacedTitle = title.replaceAll("'","''")
   // let replacedScripture = scripture.replaceAll("'","''")
   // let replacedSearchInput = searchinput.replaceAll("'","''")
+  // let birthdateToSend = new Date(req.body.registerBirthdate)
+  // let newDate = new Date(req.body.registerBirthdate);
+  // console.log('Day', newDate.getDate());
+  // console.log('Month', newDate.getMonth());
+  // console.log('Year', newDate.getFullYear());
+  // let reformattedDate = newDate.getFullYear() +'-'+ newDate.getMonth() +'-'+ newDate.getDate();
+  // console.log('reformattedDate', reformattedDate);
 
-  // let day = objectDate.getDate();
-  // console.log(day); // 23
+  let objectDate = new Date();
+  let day = objectDate.getDate();
+  console.log(day); // 23
 
-  // let month = objectDate.getMonth() + 1;
-  // console.log(month + 1); // 8
+  let month = objectDate.getMonth() + 1;
+  console.log(month + 1); // 8
 
-  // let year = objectDate.getFullYear();
-  // console.log(year); // 2022
+  let year = objectDate.getFullYear();
+  console.log(year); // 2022
 
-  // let DateToSend = year+'-'+month+'-'+day;
-  // console.log("DateToSend", DateToSend);
-  // let insertQuery = `insert into devotions(title, scripture, body, userid, devodate, searchinput) 
-  //                    values('${replacedTitle}', '${replacedScripture}', '${replacedBody}', ${userid}, '${DateToSend}', '${replacedSearchInput}')`
-  //   client.query(insertQuery, (err, result)=>{
-  //       if(!err){
-  //         console.log('POST SUCCESS', result)
-  //           res.send('Insertion was successful')
-  //       }
-  //       else{ console.log('ERROR', err.message) }
-  //   })
-  //   client.end;
+  let DateToSend = year+'-'+month+'-'+day;
+  console.log("DateToSend", DateToSend);
+  let insertQuery = `insert into users(username, firstname, lastname, birthday, phone, password, securityquestion, securityanswer, createddate, active) 
+                     values('${req.body.registerEmailAddress}', '${req.body.registerFirstName}', '${req.body.registerLastName}', '${req.body.registerBirthdate}', '${req.body.registerPhone}', '${req.body.registerPassword}', '${req.body.registerSecurityQuestion}', '${req.body.registerSecurityAnswer}', '${DateToSend}', 'true')`
+    client.query(insertQuery, (err, result)=>{
+        if(!err){
+          console.log('POST SUCCESS', result)
+            res.send('Insertion was successful')
+        }
+        else{ console.log('ERROR', err.message) }
+    })
+    client.end;
 })
 
 app.post('/data/postdailyfamilydevo', (req, res)=>{
