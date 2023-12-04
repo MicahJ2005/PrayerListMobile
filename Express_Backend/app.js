@@ -188,6 +188,69 @@ app.get('/data/prayerhistory', (req, res)=>{
   client.end;
 })
 
+app.get('/data/devotionhistory', (req, res)=>{
+  console.log('req.body',req.body);
+  console.log('req.query.userId ',req.query.userId);
+  client.query(`Select id, userid, devodate from devotions WHERE userid = ${req.query.userId} ORDER BY devodate DESC `, (err, result)=>{
+      if(!err){
+        console.log('result.rows', result.rows);
+          res.send(result.rows);
+      }
+      if(err){
+        console.log('err', err);
+    }
+  });
+  client.end;
+})
+
+app.get('/data/familydevotionhistory', (req, res)=>{
+  console.log('req.body',req.body);
+  console.log('req.query.userId ',req.query.userId);
+  client.query(`Select id, userid, devodate from familydevotions WHERE userid = ${req.query.userId} ORDER BY devodate DESC `, (err, result)=>{
+      if(!err){
+        console.log('result.rows', result.rows);
+          res.send(result.rows);
+      }
+      if(err){
+        console.log('err', err);
+    }
+  });
+  client.end;
+})
+
+
+app.get('/data/getdevobyuseranddate', (req, res)=>{
+  console.log('req.body',req.body);
+  console.log('req.query.userId ',req.query.userId);
+  console.log('req.query.devoid ',req.query.devoid);
+  client.query(`Select * from devotions WHERE userid = ${req.query.userid} AND id = ${req.query.devoid} ORDER BY devodate DESC `, (err, result)=>{
+      if(!err){
+        console.log('result.rows', result.rows);
+          res.send(result.rows);
+      }
+      if(err){
+        console.log('err', err);
+    }
+  });
+  client.end;
+})
+
+app.get('/data/getfamilydevobyuseranddate', (req, res)=>{
+  console.log('req.body',req.body);
+  console.log('req.query.userId ',req.query.userId);
+  console.log('req.query.devoid ',req.query.devoid);
+  client.query(`Select * from familydevotions WHERE userid = ${req.query.userid} AND id = ${req.query.devoid} ORDER BY devodate DESC `, (err, result)=>{
+      if(!err){
+        console.log('result.rows', result.rows);
+          res.send(result.rows);
+      }
+      if(err){
+        console.log('err', err);
+    }
+  });
+  client.end;
+})
+
 app.get('/data/groupPrayerhistory', (req, res)=>{
   console.log('req.body',req.body);
   console.log('req.query.userId ',req.query.userId);
@@ -564,6 +627,42 @@ app.post('/data', (req, res)=>{
 //   client.end;
 // })
 
+app.put('/data/removeGroupPrayerRequest', (req, res)=>{
+  console.log('PUT update to INACTIVE request req.body',req.body);
+  let objectDate = new Date();
+
+
+  let day = objectDate.getDate();
+  console.log(day); // 23
+
+  let month = objectDate.getMonth() + 1;
+  console.log(month + 1); // 8
+
+  let year = objectDate.getFullYear();
+  console.log(year); // 2022
+
+  let DateToSend = year+'-'+month+'-'+day;
+  console.log("DateToSend", DateToSend);
+  if(req.body.id != null){
+    let insertQuery = `update groupprayerrequests 
+                        set 
+                        updatedat = '${DateToSend}',
+                        status = 'inactive'
+                        where id = '${req.body.id}'`
+
+    client.query(insertQuery, (err, result)=>{
+    if(!err){
+      console.log('PUT removeGroupPrayerRequest SUCCESS', result)
+      res.send('Insertion was successful')
+    }
+      else{ console.log('ERROR', err.message) }
+    })
+    client.end;
+  }
+  else{ console.log('ERROR', err.message) }
+  
+})
+
 app.delete('/data/removeUserFromGroup', (req, res)=>{
   console.log('DELETE req.body',req.body);
   client.query(`delete from groupstousersjunction where userid=${req.body.userid} AND groupid=${req.body.groupid}`, (err, result)=>{
@@ -604,7 +703,7 @@ app.put('/data/removePrayerRequest', (req, res)=>{
 
     client.query(insertQuery, (err, result)=>{
     if(!err){
-      console.log('PUT TIMESPRAYED SUCCESS', result)
+      console.log('PUT removePrayerRequest SUCCESS', result)
       res.send('Insertion was successful')
     }
       else{ console.log('ERROR', err.message) }
@@ -616,7 +715,7 @@ app.put('/data/removePrayerRequest', (req, res)=>{
 })
 
 app.put('/data', (req, res)=>{
-  console.log('PUT req.body',req.body);
+  console.log('PUT PRAYER REQUEST UPDATE req.body',req.body);
   let objectDate = new Date();
 
 
@@ -631,12 +730,14 @@ app.put('/data', (req, res)=>{
 
   let DateToSend = year+'-'+month+'-'+day;
   console.log("DateToSend", DateToSend);
-  
+  let refineddetails = req.body.details.replaceAll("'","''");
+  let refinedname = req.body.nama.replaceAll("'","''");
+
   if(req.body.id != null){
     let insertQuery = `update prayerrequests 
                         set 
-                        nama = '${req.body.nama}',
-                        details = '${req.body.details}',
+                        nama = '${refinedname}',
+                        details = '${refineddetails}',
                         updatedat = '${DateToSend}',
                         status = 'Praying'
                         where id = '${req.body.id}'`
@@ -748,7 +849,7 @@ app.put('/data/timesprayedgroup', (req, res)=>{
 
     client.query(insertQuery, (err, result)=>{
     if(!err){
-      console.log('PUT TIMESPRAYED SUCCESS', result)
+      console.log('PUT timesprayedgroup SUCCESS', result)
       res.send('Insertion was successful')
     }
       else{ console.log('ERROR', err.message) }
@@ -822,7 +923,7 @@ app.put('/data/answeredprayer', (req, res)=>{
 
     client.query(insertQuery, (err, result)=>{
     if(!err){
-      console.log('PUT TIMESPRAYED SUCCESS', result)
+      console.log('PUT answeredprayer SUCCESS', result)
       res.send('Insertion was successful')
     }
       else{ console.log('ERROR', err.message) }
@@ -861,7 +962,7 @@ app.put('/data/answeredgroupprayer', (req, res)=>{
 
     client.query(insertQuery, (err, result)=>{
     if(!err){
-      console.log('PUT TIMESPRAYED SUCCESS', result)
+      console.log('PUT answeredgroupprayer SUCCESS', result)
       res.send('Insertion was successful')
     }
       else{ console.log('ERROR', err.message) }
@@ -871,6 +972,50 @@ app.put('/data/answeredgroupprayer', (req, res)=>{
   else{ console.log('ERROR', err.message) }
   
 })
+
+app.put('/data/updateGroupPrayerRequest', (req, res)=>{
+  console.log('PUT answeredgroupprayer req.body',req.body);
+  let objectDate = new Date();
+
+
+  let day = objectDate.getDate();
+  console.log(day); // 23
+
+  let month = objectDate.getMonth() + 1;
+  console.log(month + 1); // 8
+
+  let year = objectDate.getFullYear();
+  console.log(year); // 2022
+
+  let DateToSend = year+'-'+month+'-'+day;
+  console.log("DateToSend", DateToSend);
+
+  let refineddetails = req.body.details.replaceAll("'","''");
+  let refinedname = req.body.nama.replaceAll("'","''");
+  if(req.body.id != null){
+    let insertQuery = `update groupprayerrequests 
+                        set 
+                        nama = '${refinedname}',
+                        details = '${refineddetails}',
+                        updatedat = '${DateToSend}',
+                        status = 'Praying'
+                        where id = '${req.body.id}'`
+
+
+    client.query(insertQuery, (err, result)=>{
+    if(!err){
+      console.log('PUT updateGroupPrayerRequest SUCCESS', result)
+      res.send('Insertion was successful')
+    }
+      else{ console.log('ERROR', err.message) }
+    })
+    client.end;
+  }
+  else{ console.log('ERROR', err.message) }
+  
+})
+
+
 ///for my phone
 // app.listen(3210, ()=>{
 //   console.log('Server @port 3210 gan!')

@@ -55,21 +55,14 @@ const PrayerHistoryPage = (runningUser) => {
         transparent={true}
         visible={detailsModalVisible}
         onRequestClose={() => {
-        //   Alert.alert('Modal has been closed.');
           setDetailsModalVisible(!detailsModalVisible);
         }}>
         <View style={styles.centeredViewRequestDetails}>
           
           <View style={styles.modalViewDetails}>
-          {/* <Pressable style={styles.circleButtonDetailEditModal} onPress={() => openEditDetail(details)}>
-            <MaterialIcons name="edit" size={25} color="black" />
-          </Pressable> */}
           <Pressable style={styles.circleButtonDetailCloseModal} onPress={() => closeDetails()}>
             <MaterialIcons name="close" size={25} color="white" />
           </Pressable>
-          {/* <Pressable style={styles.circleButtonDetailDeleteModal} onPress={() => deleteFunction(details)}>
-            <MaterialIcons name="delete" size={25} color="white" />
-          </Pressable> */}
             <Text style={[styles.requestNameText]}>
               {details.nama}
             </Text>
@@ -81,34 +74,11 @@ const PrayerHistoryPage = (runningUser) => {
                 </Text>
               </ScrollView>
             </SafeAreaView>
-
-            {/* <Text style={[styles.prayingForText2]}></Text> */}
-            {/* <SafeAreaView style={styles.safeAreaContainer2}> */}
-              {/* <ScrollView style={styles.requestDetailsScrollView2}> */}
               <View style={[styles.prayerSummaryView]}>
                 <Text style={[styles.requestDetailsText2]}>
                   You prayed for {details.nama} {details.timesprayed} time(s) and God answered this prayer on {detailsDate}
                 </Text>
               </View>
-                
-              {/* </ScrollView>
-            </SafeAreaView> */}
-            {/* <View style={styles.detailButtonGroup}> */}
-              
-              {/* <Pressable
-                style={[styles.answeredPrayer]}
-                onPress={() => answeredPrayer()}>
-                <MaterialCommunityIcons name="human-handsup" size={30} color="#BCA37F" />
-                <Text style={styles.textStylePrayerRequest}>Answered</Text>
-              </Pressable> */}
-
-            {/* <Pressable
-                style={[styles.prayedCircleButton]}
-                onPress={() => incermentTimesPrayed()}>
-                
-                <FontAwesome5 name="pray" size={34} color="#BCA37F" />
-                <Text style={styles.textStylePrayed}>Prayed</Text>
-              </Pressable> */}
           </View>
         </View>
       </Modal>
@@ -121,24 +91,14 @@ const PrayerHistoryPage = (runningUser) => {
         renderItem={({item}) => 
           <Pressable style={[styles.buttonShowDetail]} 
                                   onPress={() => showDetails(item)}>
-            {/* <View style={[styles.nameView]}> */}
                 <View>
                     <Text style={[styles.timesPrayedBubble]}>{item.timesprayed}
                     <View>
                       <Text style={[styles.timesPrayedBubbleText]}>Answered</Text>
                     </View>
                     </Text>
-                    
                 </View>
-                
-                
-                <Text style={styles.item} key={item.id}>{item.nama}
-                
-                </Text>
-                
-                
-            {/* </View> */}
-            
+                <Text style={styles.item} key={item.id}>{item.nama}</Text>
           </Pressable>
         }
       />

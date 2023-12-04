@@ -167,7 +167,7 @@ const FamilyDevotionPage = (devoTypeselected) => {
                 console.log("this is the result devotionTitle", jsonTitle.choices[0].message.content);
                 if(jsonTitle.choices[0].message.content != null){
                     console.log("MADE IT TO THE DEVO WRITTING with title: ", jsonTitle.choices[0].message.content);
-                    let contentToSend = `"Write a brief family devotional based on the title ${jsonTitle.choices[0].message.content} and scripture ${jsonScripture.choices[0].message.content}"`;
+                    let contentToSend = `"Write a brief family devotional for the ${devoType.runningUser[0].lastname} family, based on the title ${jsonTitle.choices[0].message.content} and scripture ${jsonScripture.choices[0].message.content}"`;
                     const response = await fetch("https://api.openai.com/v1/chat/completions", {
                         method: "POST",
                         headers: {
@@ -231,8 +231,8 @@ const FamilyDevotionPage = (devoTypeselected) => {
             <View style={[styles.devotionBodyLoadingView]}>
                 {/* <Pressable style={styles.bottomButton} onPress={() => testDevoToDB()}>
                     <Text style={styles.bottomButtonText}>Test DEvo To DB</Text>
-                </Pressable>
-                <ActivityIndicator size="large" color="#C56E33" /> */}
+                </Pressable> */}
+                <ActivityIndicator size="large" color="#C56E33" />
                 
                 <Text >
                     {'\n'}

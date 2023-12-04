@@ -165,7 +165,6 @@ const JoinPrayerGroup = (user) => {
             transparent={true}
             visible={joinModalVisible}
             onRequestClose={() => {
-            //   Alert.alert('Modal has been closed.');
               setJoinModalVisible(!joinModalVisible);
             }}>
             <View style={styles.centeredView}>

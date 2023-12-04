@@ -1,12 +1,8 @@
 import React, {useState, useEffect} from 'react';
-// import { StatusBar } from 'expo-status-bar';
 import {View, Text, Modal, SafeAreaView, ScrollView, TextInput, Button, StyleSheet, Pressable, Alert,FlatList, KeyboardAvoidingView } from 'react-native';
-// import SubmitPrayer from './submitPrayerRequestButton';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
-// import PrayerList from './prayerList';
-// import axios from "axios";
 import {BASE_URL_DEV} from '@env';
 
 let initialData = [];
@@ -15,6 +11,7 @@ const prayerGroups = (runningUser) => {
   console.log('runningUser in prayerGroups:', runningUser);
   const [modalVisible, setModalVisible] = useState(false);
   const [deleteGroupModalVisible, setDeleteGroupModalVisible] = useState(false);
+  const [deletePrayerRequestModalVisible, setDeletePrayerRequestModalVisible] = useState(false);
   const [text, setText] = useState('');
   const [count, setCount] = useState(-1);
   const [data, setData] = useState([]);
@@ -92,22 +89,32 @@ const prayerGroups = (runningUser) => {
       })
   }
 
-  const deleteFunction = (item) => {
-    console.log('deleteFunction item', item);
-    fetch(`${BASE_URL_DEV}/data`, {
-      method: "DELETE",
+  const openDeleteRequestModal = (item) => {
+    console.log('openDeleteRequestModal item', item);
+    setDeletePrayerRequestModalVisible(true);
+  }
+
+  const closeDeleteRequestModal = () => {
+    setDeletePrayerRequestModalVisible(false);
+  }
+
+  const deleteFunction = () => {
+    console.log('deleteFunction details id', details);
+    fetch(`${BASE_URL_DEV}/data/removeGroupPrayerRequest`, {
+      method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: item.id,
-        nama: text,
-        details: details,
+        id: details.id,
       }),
     })
       .then((response) =>{
         console.log('response', response);
+        setDeletePrayerRequestModalVisible(false);
+        refreshGroupPrayerList(details.groupid)
+        setDetailsModalVisible(false);
       })
   }
 
@@ -116,15 +123,19 @@ const prayerGroups = (runningUser) => {
     setId(details.id);
     setDetails(details.details);
     setText(details.nama);
+    setGroupId(details.groupid);
     setTimesPrayed(details.timesprayed);
     setShowEditButton(true);
     setDetailsModalVisible(false);
     setModalVisible(true);
   }
 
-  const editDetails = (id) => {
+  const editDetails = () => {
     console.log('editDetails Id', id);
-    fetch(`${BASE_URL_DEV}/data`, {
+    console.log('editDetails details', details);
+    console.log('editDetails text', text);
+    console.log('editDetails groupId', groupId);
+    fetch(`${BASE_URL_DEV}/data/updateGroupPrayerRequest`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -138,7 +149,7 @@ const prayerGroups = (runningUser) => {
     })
       .then((response) =>{
         console.log('response', response);
-        loadData();
+        refreshGroupPrayerList(groupId);
         Alert.alert('Prayer Request Updated!');
         setModalVisible(false);
       })
@@ -167,6 +178,7 @@ const prayerGroups = (runningUser) => {
         details.timesprayed = newtimesPrayed;
         setDetails(details);
         loadData();
+        
         Alert.alert('Thank you for Praying!');
         setModalVisible(false);
         setDetailsModalVisible(false)
@@ -183,7 +195,6 @@ const prayerGroups = (runningUser) => {
       .then(response => response.json())
       .then(json => {
         console.log('showGroupPrayerList response', json)
-        // setRunningUser(json);
         setRequestData(json);
         setPage('groupRequests');
       })
@@ -195,14 +206,10 @@ const prayerGroups = (runningUser) => {
 
   const refreshGroupPrayerList = async (groupid) => {
     console.log('showGroupPrayerList groupId', groupid);
-    // setGroupId(group.groupid);
-    // setGroupName(group.groupname);
-    // setGroupCreatedBy(group.createdbyid)
     const response = await fetch(`${BASE_URL_DEV}/data/groupprayerrequests?groupid=${groupid}`)
       .then(response => response.json())
       .then(json => {
         console.log('showGroupPrayerList response', json)
-        // setRunningUser(json);
         setRequestData(json);
         setPage('groupRequests');
       })
@@ -228,9 +235,7 @@ const prayerGroups = (runningUser) => {
   const answeredPrayer = () => {
     console.log('answeredPrayer', details);
     setDetails(details);
-    // setDetailsModalVisible(false);
     setAnsweredPrayerInputModalOpen(true);
-    // refreshGroupPrayerList();
   }
 
   const closeNewRequest = () => {
@@ -244,8 +249,6 @@ const prayerGroups = (runningUser) => {
   const updateAnsweredPrayer = () => {
     console.log('updateAnsweredPrayer details', details);
     console.log('updateAnsweredPrayer answeredPrayerText', answeredPrayerText);
-    // setDetails(details);
-    // setDetailsModalVisible(false);
     fetch(`${BASE_URL_DEV}/data/answeredgroupprayer`, {
       method: "PUT",
       headers: {
@@ -313,7 +316,7 @@ const prayerGroups = (runningUser) => {
   }
 
   const deactivateGroup = () => {
-    console.log('In GROUP DELETE', details);
+    console.log('In GROUP Deactivate', details);
     fetch(`${BASE_URL_DEV}/data/deativateprayergroup`, {
         method: "PUT",
         headers: {
@@ -322,8 +325,6 @@ const prayerGroups = (runningUser) => {
         },
         body: JSON.stringify({
           groupid: groupId,
-        //   status: 'Answered',
-        //   answerednote: answeredPrayerText,
         }),
       })
         .then((response) =>{
@@ -401,57 +402,23 @@ const prayerGroups = (runningUser) => {
             transparent={true}
             visible={removeFromGroupModalVisible}
             onRequestClose={() => {
-              // Alert.alert('Modal has been closed.');
               setRemoveFromGroupModalVisible(!removeFromGroupModalVisible);
             }}>
-            {/* <View style={styles.centeredViewRequestDetails}> */}
               
               <View style={styles.modalViewDetails}>
-              {/* <Pressable style={styles.circleButtonDetailEditModal} onPress={() => openEditDetail(details)}>
-                <MaterialIcons name="edit" size={25} color="black" />
-              </Pressable>
-              <Pressable style={styles.circleButtonDetailCloseModal} onPress={() => closeDetails()}>
-                <MaterialIcons name="close" size={25} color="white" />
-              </Pressable>
-              <Pressable style={styles.circleButtonDetailDeleteModal} onPress={() => deleteFunction(details)}>
-                <MaterialIcons name="delete" size={25} color="white" />
-              </Pressable> */}
                 <Text style={[styles.requestNameText]}>
                   Do you want to leave {groupName} Prayer Group?
                 </Text>
-                {/* <Text style={[styles.requestNameText]}>
-                  Note: All users will no longer have visibility to this group
-                </Text> */}
-                {/* <Text style={[styles.prayingForText]}>Praying for...</Text>
-                <SafeAreaView style={styles.safeAreaContainer}>
-                  <ScrollView style={styles.requestDetailsScrollView}>
-                    <Text style={[styles.requestDetailsText]}>
-                      {details.details}
-                    </Text>
-                  </ScrollView>
-                </SafeAreaView>
-                <View style={styles.detailButtonGroup}> */}
                    <Pressable
                     style={[styles.closeDeleteModal]}
                     onPress={() => cancelRemoveFromGroup()}>
-                    {/* <MaterialCommunityIcons name="human-handsup" size={30} color="#BCA37F" /> */}
                     <Text style={styles.textStylePrayerRequest}>Cancel</Text>
                   </Pressable>
                   <Pressable
                     style={[styles.deactivateGroupButton]}
                     onPress={() => removeFromGroup()}>
-                    {/* <MaterialCommunityIcons name="human-handsup" size={30} color="#BCA37F" /> */}
-                    <Text style={styles.textStylePrayerRequest}>OK</Text>
+                    <Text style={styles.textStylePrayerRequest}>Leave</Text>
                   </Pressable>
-    
-                {/* <Pressable
-                    style={[styles.prayedCircleButton]}
-                    onPress={() => incermentTimesPrayed()}>
-                    
-                    <FontAwesome5 name="pray" size={34} color="#BCA37F" />
-                    <Text style={styles.textStylePrayed}>Prayed</Text>
-                  </Pressable> */}
-              {/* </View> */}
             </View>
           </Modal> 
           {/* end Leave Group Modal */}
@@ -462,7 +429,6 @@ const prayerGroups = (runningUser) => {
             transparent={true}
             visible={newPrayerGroupModalVisible}
             onRequestClose={() => {
-              Alert.alert('Modal has been closed.');
               setNewPrayerGroupModalVisible(!newPrayerGroupModalVisible);
             }}>
             <View style={styles.centeredView}>
@@ -507,34 +473,9 @@ const prayerGroups = (runningUser) => {
                   </View>
                 }
                   
-                
-                {/* <Text style={styles.requestInputText}>What is the request?</Text>
-                <TextInput
-                    style={{
-                        // height: 100,
-                        borderColor: '#113946',
-                        borderWidth: 4,
-                        borderRadius: 30,
-                        width:'95%',
-                        height: '64%',
-                        marginBottom: 40,
-                        
-                    }}
-                    onChangeText={newDetailText => setDetails(newDetailText)}
-                    placeholder="    Prayer Request"
-                    value={details}
-                /> */}
-                {/* {!showEditButton ?  */}
                   <Pressable style={styles.circleSubmitNewRequest} onPress={() => addGroup()} visible={!showEditButton}>
                     <MaterialIcons name="send" size={30} color="#EAD7BB" />
                   </Pressable>
-                {/* //   :
-                //   <Pressable style={styles.circleSubmitNewRequest} onPress={() => editDetails(id)} visible={showEditButton}>
-                //     <MaterialIcons name="update" size={30} color="#EAD7BB" />
-                //   </Pressable>
-                // } */}
-              
-              
               </View>
             </View>
           </Modal>
@@ -568,16 +509,34 @@ const prayerGroups = (runningUser) => {
           <Pressable style={styles.bottomButton} onPress={() => addNewPrayerGroup()}>
             <Text style={styles.bottomButtonText}>New Prayer Group</Text>
           </Pressable>
-          {/* <Pressable style={styles.bottomButton} onPress={() => addNewPrayerGroup()}>
-            <Text style={styles.bottomButtonText}>Join Prayer Group</Text>
-          </Pressable> */}
         </View>
       );
   }
   else if(page == 'groupRequests'){
     return (
         <View style={styles.centeredViewPrayerList}>
-          
+          {/* START validate Delete Prayer Request Modal */}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={deletePrayerRequestModalVisible}
+            onRequestClose={() => {
+              setDeletePrayerRequestModalVisible(!deletePrayerRequestModalVisible);
+            }}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalAnsweredPrayerView}>
+              <Pressable style={styles.circleButtonAnsweredPrayerCloseModal} onPress={() => closeDeleteRequestModal()}>
+                <MaterialIcons name="close" size={25} color="white" />
+              </Pressable>
+                <Text style={styles.answeredPrayerText}>Are you sure you want to remove this Prayer Request?</Text>
+                
+                <Pressable style={styles.circleSubmitNewRequest} onPress={() => deleteFunction()} >
+                  <MaterialIcons name="delete" size={30} color="#EAD7BB" />
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
+          {/* END validate Delete Prayer Request Modal */}
 
               {/* start Delete Group Modal */}
           <Modal
@@ -585,57 +544,25 @@ const prayerGroups = (runningUser) => {
             transparent={true}
             visible={deleteGroupModalVisible}
             onRequestClose={() => {
-              Alert.alert('Modal has been closed.');
               setDeleteGroupModalVisible(!deleteGroupModalVisible);
             }}>
-            {/* <View style={styles.centeredViewRequestDetails}> */}
-              
               <View style={styles.modalViewDetails}>
-              {/* <Pressable style={styles.circleButtonDetailEditModal} onPress={() => openEditDetail(details)}>
-                <MaterialIcons name="edit" size={25} color="black" />
-              </Pressable>
-              <Pressable style={styles.circleButtonDetailCloseModal} onPress={() => closeDetails()}>
-                <MaterialIcons name="close" size={25} color="white" />
-              </Pressable>
-              <Pressable style={styles.circleButtonDetailDeleteModal} onPress={() => deleteFunction(details)}>
-                <MaterialIcons name="delete" size={25} color="white" />
-              </Pressable> */}
                 <Text style={[styles.requestNameText]}>
                   Do you want to remove this Prayer Group and all the Prayer Requests tied to it?
                 </Text>
                 <Text style={[styles.requestNameText]}>
                   Note: All users will no longer have visibility to this group
                 </Text>
-                {/* <Text style={[styles.prayingForText]}>Praying for...</Text>
-                <SafeAreaView style={styles.safeAreaContainer}>
-                  <ScrollView style={styles.requestDetailsScrollView}>
-                    <Text style={[styles.requestDetailsText]}>
-                      {details.details}
-                    </Text>
-                  </ScrollView>
-                </SafeAreaView>
-                <View style={styles.detailButtonGroup}> */}
                    <Pressable
                     style={[styles.closeDeleteModal]}
                     onPress={() => closeDeleteModal()}>
-                    {/* <MaterialCommunityIcons name="human-handsup" size={30} color="#BCA37F" /> */}
                     <Text style={styles.textStylePrayerRequest}>Cancel</Text>
                   </Pressable>
                   <Pressable
                     style={[styles.deactivateGroupButton]}
                     onPress={() => deactivateGroup()}>
-                    {/* <MaterialCommunityIcons name="human-handsup" size={30} color="#BCA37F" /> */}
-                    <Text style={styles.textStylePrayerRequest}>OK</Text>
+                    <Text style={styles.textStylePrayerRequest}>Remove</Text>
                   </Pressable>
-    
-                {/* <Pressable
-                    style={[styles.prayedCircleButton]}
-                    onPress={() => incermentTimesPrayed()}>
-                    
-                    <FontAwesome5 name="pray" size={34} color="#BCA37F" />
-                    <Text style={styles.textStylePrayed}>Prayed</Text>
-                  </Pressable> */}
-              {/* </View> */}
             </View>
           </Modal> 
           {/* end Delete Group Modal */}
@@ -648,7 +575,6 @@ const prayerGroups = (runningUser) => {
             transparent={true}
             visible={modalVisible}
             onRequestClose={() => {
-              // Alert.alert('Modal has been closed.');
               setModalVisible(!modalVisible);
             }}>
             <View style={styles.centeredView}>
@@ -693,12 +619,10 @@ const prayerGroups = (runningUser) => {
                     <MaterialIcons name="send" size={30} color="#EAD7BB" />
                   </Pressable>
                   :
-                  <Pressable style={styles.circleSubmitNewRequest} onPress={() => editDetails(id)} visible={showEditButton}>
+                  <Pressable style={styles.circleSubmitNewRequest} onPress={() => editDetails()} visible={showEditButton}>
                     <MaterialIcons name="update" size={30} color="#EAD7BB" />
                   </Pressable>
                 }
-              
-              
               </View>
             </View>
           </Modal>
@@ -710,7 +634,6 @@ const prayerGroups = (runningUser) => {
             transparent={true}
             visible={answeredPrayerInputModalOpen}
             onRequestClose={() => {
-              Alert.alert('Modal has been closed.');
               setAnsweredPrayerInputModalOpen(!answeredPrayerInputModalOpen);
             }}>
             <View style={styles.centeredView}>
@@ -725,20 +648,6 @@ const prayerGroups = (runningUser) => {
                   <Text style={styles.answeredPrayerDetailText}>Details: </Text>
                   <Text style={styles.answeredPrayerDetailText2}>{details.details}</Text>
                 </View>
-                
-                {/* <TextInput
-                    style={{
-                        borderColor: '#113946',
-                        borderWidth: 4,
-                        borderRadius: 30,
-                        width:'95%',
-                        height: '15%',
-                        marginBottom: 40,
-                    }}
-                    onChangeText={newText => setText(newText)}
-                    placeholder="    Subject"
-                    value={text}
-                /> */}
                 <Text style={styles.requestInputText}>How has God answered your prayers?</Text>
                 <TextInput
                     style={{
@@ -754,15 +663,11 @@ const prayerGroups = (runningUser) => {
                     textAlign='center'
                     onChangeText={newAnswerText => setAnsweredPrayerText(newAnswerText)}
                     placeholder="Answer..."
-                    // value={details}
                 />
                 
                   <Pressable style={styles.circleSubmitNewRequest} onPress={() => updateAnsweredPrayer()} >
                     <MaterialIcons name="send" size={30} color="#EAD7BB" />
                   </Pressable>
-                  
-              
-              
               </View>
             </View>
           </Modal>
@@ -774,7 +679,6 @@ const prayerGroups = (runningUser) => {
             transparent={true}
             visible={detailsModalVisible}
             onRequestClose={() => {
-              Alert.alert('Modal has been closed.');
               setDetailsModalVisible(!detailsModalVisible);
             }}>
             <View style={styles.centeredViewRequestDetails}>
@@ -791,10 +695,8 @@ const prayerGroups = (runningUser) => {
               <Pressable style={styles.circleButtonDetailCloseModal} onPress={() => closeDetails()}>
                 <MaterialIcons name="close" size={25} color="white" />
               </Pressable>
-              {/* <Text>running user: {runningUser.runningUser[0].id}</Text>
-              <Text>submitted by user: {details.submittedbyuserid}</Text> */}
             {runningUser.runningUser[0].id == details.submittedbyuserid ? 
-                 <Pressable style={styles.circleButtonDetailDeleteModal} onPress={() => deleteFunction(details)}>
+                 <Pressable style={styles.circleButtonDetailDeleteModal} onPress={() => openDeleteRequestModal(details)}>
                  <MaterialIcons name="delete" size={25} color="white" />
                </Pressable> 
                :
@@ -812,7 +714,6 @@ const prayerGroups = (runningUser) => {
                     </Text>
                   </ScrollView>
                 </SafeAreaView>
-                {/* <View style={styles.detailButtonGroup}> */}
                 {runningUser.runningUser[0].id == details.submittedbyuserid ? 
                     <Pressable
                         style={[styles.answeredPrayer]}
@@ -837,19 +738,16 @@ const prayerGroups = (runningUser) => {
           {/* end prayer request details Modal */}
           
           <Pressable onPress={() => returnToGroups()}>
-            {/* <View style={styles.groupNameAndBack}> */}
-                <Text style={styles.backburger}>
-                    <Ionicons name="md-return-up-back" size={50} color="#BCA37F" />
-                    {/* <MaterialCommunityIcons name="backburger" size={40} color="#BCA37F"/> */}
+            <Text style={styles.backburger}>
+                <Ionicons name="md-return-up-back" size={50} color="#BCA37F" />
+            </Text>
+            <Text style={styles.groupText}>
+                
+                <Text>
+                    Group: {groupName} 
                 </Text>
-                <Text style={styles.groupText}>
-                    
-                    <Text>
-                        Group: {groupName} 
-                    </Text>
-                    
-                </Text>
-            {/* </View> */}
+                
+            </Text>
             
           </Pressable>
           {runningUser.runningUser[0].id == groupCreatedBy ? 
@@ -1036,7 +934,7 @@ const styles = StyleSheet.create({
   },
   closeDeleteModal:{
     width:120,
-    height: 120,
+    height: 80,
     margin:10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -1058,7 +956,7 @@ const styles = StyleSheet.create({
   },
   deactivateGroupButton:{
     width:120,
-    height: 120,
+    height: 80,
     margin:10,
     justifyContent: 'center',
     alignItems: 'center',

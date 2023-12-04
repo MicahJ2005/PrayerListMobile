@@ -1,4 +1,4 @@
-import {View, Alert, Text, Image, ScrollView, Modal, Pressable, StyleSheet, SafeAreaView, StatusBar, ActivityIndicator, TouchableHighlight, Button} from 'react-native';
+import {View, Alert, Text, Image, ScrollView, Modal, Pressable, StyleSheet, SafeAreaView, StatusBar, ActivityIndicator, KeyboardAvoidingView, Button} from 'react-native';
 import NewPrayerRequest from './components/newPrayerRequest';
 import PersonalDevotionPage from './components/personalDevotionPage';
 import FamilyDevotionPage from './components/familyDevotionPage';
@@ -8,6 +8,7 @@ import AboutPage from './components/aboutPage';
 import ResourcesPage from './components/resourcesPage';
 import PrayerGroup from './components/prayerGroups';
 import JoinAPrayerGroup from './components/joinAPrayerGroupPage';
+import DevotionHistoryPage from './components/devotionHistoryPage';
 import React, {useState, useEffect} from 'react';
 import logo from './assets/logo-no-background.png';
 import blackAndWhiteLogo from './assets/devos4me-high-resolution-logo-white-transparent.png';
@@ -81,6 +82,7 @@ export default function App() {
   
   useEffect(() => {
     console.log('page: ', page);
+    
     // (async () => {
     //   const compatible = await LocalAuthentication.hasHardwareAsync();
     //   console.log('compatible: ', compatible);
@@ -302,6 +304,10 @@ export default function App() {
   const navigateHistory = () => {
     console.log('navigateHistory click', );
     setPage('navigateHistory');
+  }
+
+  const navigateToDevotionHistory = () => {
+    setPage('navigateDevotionHistory');
   }
 
   const navigateGroupHistory = () => {
@@ -549,84 +555,16 @@ export default function App() {
     }
     
   }
-    // }
-  // const getAIDevo = async (message) => {
-  //   try {
-  //     const response = await instance.post('', {
-  //       prompt: 'Write a short Bible based devotional about spiritual growth and format it as a JSON object with HTML markdown',
-  //       max_tokens: 60
-  //     });
-  //     console.log('AI Response', response);
-  //     // return response.data.choices[0].text;
-  //   } catch (error) {
-  //     console.error(error);
-  //     return '';
-  //   }
-  // }
- 
-  // const getAIDevo = async () => {
-  //   console.log('getAIDevo click');
-    // fetch('http://10.0.0.13:3210/data/aiDevo')
-    //       .then((resp) => resp.json())
-    //       .then((json) => setData(json))
-    //       .catch((error) => console.error(error))
-    //       .finally(() => setLoading(false));
-    // try {
-    //   const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    //     method: "POST",
-    //     headers: {
-    //       'Accept': 'application/json',
-    //       "Content-type": "application/json",
-    //       "Authorization": ""
-    //     },
-    //     body: JSON.stringify({
-    //       model: "gpt-3.5-turbo",
-    //       messages: [{"role": "user", "content": "Write a short Bible based devotional about spiritual growth and format it as a JSON object with the elements of a Title, Scripture, Devotional, Prayer and with HTML markdown embedded"}],
-    //       max_tokens: 100,
-    //       temperature: 0.7,
-    //     }),
-    //   // '{'+
-    //   //   '"model": "gpt-3.5-turbo",'+
-    //   //   '"messages": [{"role": "user", "content": "Write a short Bible based devotional about spiritual growth and format it as a JSON object with the elements of a Title, Scripture, Devotional, Prayer and with HTML markdown embedded"}],'+
-    //   //   '"temperature": 0.7 '+
-    //   // '}',
-      
-    //   })
-    //   // .then(res => console.log(res.json().choices[0].text))
-    //   const json = await response.json();  
-    //   console.log("this is the result", json.choices[0].message.content)
-    // } catch (error) {
-    //   console.error("this is the result", error);
-    // }
-    // .then((json) => console.log('AI JSON choices',json.choices));
-    
 
-    // regular JSON returned
-    // {"choices": [{"finish_reason": "stop", "index": 0, "message": [Object]}], "created": 1698958749, "id": "chatcmpl-8GZ4PcWFvSiZxo3cGj8RJ0eMMdHdC", "model": "gpt-3.5-turbo-0613", "object": "chat.completion", "usage": {"completion_tokens": 544, "prompt_tokens": 27, "total_tokens": 571}}
+  const textBoxSelected = () => {
+    console.log('textBoxSelected')
+  }
 
-    // json.choices response 
-    // rsponseChoice = '{"choices": [{"finish_reason": "stop", "index": 0, "message": {"content": "{'+
-    //     '\"Title\": \"Growing in the Spirit\",'+
-    //     '\"Scripture\": \"But grow in the grace and knowledge of our Lord and Savior Jesus Christ. To him be the glory both now and to the day of eternity. Amen.\" (2 Peter 3:18),'+
-    //     '\"Devotional\": \"As followers of Christ, our journey does not end with salvation. Rather, it is just the beginning of a beautiful process of spiritual growth. Just as a seed planted in the ground requires nurturing, watering, and sunlight to grow, our faith also needs intentional care and attention in order to flourish. God desires for us to continually grow in our understanding of His grace and the knowledge of His Son, Jesus Christ. \\n\\nSpiritual growth involves a commitment to daily seek God and His Word, to develop a deeper relationship with Him through prayer, and to allow the Holy Spirit to transform us from the inside out. It requires surrendering our desires and aligning ourselves with God\'s will. It means consistently choosing to love and serve others, developing the fruit of the Spirit in our lives.\\n\\nJust as physical growth takes time, spiritual growth is a lifelong process. It is not about striving for perfection but about allowing God to mold and shape us into His image. Let us be encouraged knowing that God is faithful to complete the work He began in us (Philippians 1:6). He is the one who provides the necessary nourishment for our souls, helping us to grow in faith, love, and wisdom.\\n\\nToday, let us commit to intentionally invest in our spiritual growth. Let us hunger for more of God and His presence. May we continually seek His guidance, trusting that as we grow spiritually, we will bear much fruit for His glory.\",'+
-    //     '\"Prayer\": \"Heavenly Father, thank you for the gift of salvation and for the opportunity to grow in faith. Help us to prioritize our spiritual growth and to daily seek you with all our hearts. Guide us in your ways, and help us to surrender our lives to your will. We invite your Holy Spirit to transform us and to mold us into the image of your Son, Jesus Christ. May our lives bear much fruit for your glory. In Jesus\' name, Amen.\"'+
-    //   '}", "role": "assistant"}}], "created": 1698958749, "id": "chatcmpl-8GZ4PcWFvSiZxo3cGj8RJ0eMMdHdC", "model": "gpt-3.5-turbo-0613", "object": "chat.completion", "usage": {"completion_tokens": 544, "prompt_tokens": 27, "total_tokens": 571}}'
+  const textBoxUnSelected = () => {
+    console.log('textBoxUnSelected')
+  }
 
-    //   let rsponseChoiceTrim = JSON.stringify(rsponseChoice);
-    //   console.log(rsponseChoiceTrim);
-    // }
-    // async function main() {
-    //   const completion = await openai.chat.completions.create({
-    //     messages: [{ role: "system", content: "You are a helpful assistant." }],
-    //     model: "gpt-3.5-turbo",
-    //   });
-    
-    //   console.log('AI Completion choices', completion.choices[0]);
-    // }
-    
-    // main();
-  
-  // }
+
   if(loading){
     return(
     
@@ -647,7 +585,7 @@ else{
   if(page === 'login'){
       return (
         
-        <View style={styles.scrollView}>
+        <ScrollView style={styles.scrollViewLogin}>
           <View style={[styles.homeHeaderIcons]}>
             
           </View>
@@ -657,7 +595,8 @@ else{
               source={logo}
             />
           </Pressable>
-          
+          {/* <KeyboardAvoidingView behavior='padding'
+                              style={styles.container}> */}
           <View style={styles.homeContentView2}>
           <Text style={styles.nameInputText}>User Email</Text>
               <TextInput
@@ -672,6 +611,8 @@ else{
                   textAlign='center'
                   onChangeText={newUsernameText => setUsername(newUsernameText)}
                   placeholder="someone@blessings.com"
+                  // onPressIn={( )=>textBoxSelected()}
+                  // onPressOut={() => textBoxUnSelected()}
               />
               <Text style={styles.requestInputText}>Password</Text>
               <TextInput
@@ -688,6 +629,8 @@ else{
                   textAlign='center'
                   onChangeText={newPasswordText => setPassword(newPasswordText)}
                   placeholder="******"
+                  // onPressIn={( )=>textBoxSelected()}
+                  // onPressOut={() => textBoxUnSelected()}
               />
             {/* <View style={styles.container}>
               <Text>
@@ -702,6 +645,7 @@ else{
               <Text style={styles.myPrayerListPressableText}>Login</Text>
             </Pressable>
           </View>
+          {/* </KeyboardAvoidingView> */}
           <View style={styles.loginPageLoginButtons}>
             <Pressable style={styles.forgotPasswordPressable} onPress={() => forgotPassword()}>
               <Text style={styles.forgotPasswordPressableText}>Forgot Password?</Text>
@@ -710,8 +654,8 @@ else{
               <Text style={styles.registerPressableText}>New Account</Text>
             </Pressable>
           </View> 
-        </View>
-    
+        </ScrollView>
+        
       );
     
     }
@@ -744,7 +688,7 @@ else{
                           }}
                           textAlign='center'
                           onChangeText={newEmailText => setRegisterEmailAddress(newEmailText)}
-                          // onEndEditing={() => setDevoType()}
+                          
                           placeholder="Email Address"
                       />
               <TextInput
@@ -1118,7 +1062,7 @@ else{
                   }}>
                 <View style={styles.centeredView}>
                   <View style={styles.modalView}>
-                    <Text style={styles.modalText}>How can you be encouraged today?</Text>
+                    <Text style={styles.modalText}>Enter a devotion topic for today</Text>
                     <SafeAreaView style={styles.container}>
                       <TextInput
                         style={{
@@ -1166,7 +1110,7 @@ else{
                   }}>
                 <View style={styles.centeredView}>
                   <View style={styles.modalView}>
-                    <Text style={styles.modalText}>How can your family be encouraged today?</Text>
+                    <Text style={styles.modalText}>Enter a topic for family devotions</Text>
                     <SafeAreaView style={styles.container}>
                       <TextInput
                         style={{
@@ -1260,7 +1204,7 @@ else{
     }
     else if(page === 'prayerList'){
       return (
-        <View style={styles.scrollView}>
+        <View style={styles.scrollViewPrayerList}>
           <View style={[styles.homeHeaderIcons]}>
             <Pressable onPress={() => navigateHome()} >
                 <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
@@ -1375,6 +1319,9 @@ else{
               <Pressable style={styles.myDailyDevotionPressableNavigation} onPress={() => openFamilyDevoTypeSelector()}>
                 <Text style={styles.myDailyDevotionPressableTextNavigation}>Family Devotion</Text>
               </Pressable>
+              <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateToDevotionHistory()}>
+                <Text style={styles.myPrayerListPressableTextNavigation}>Previous Devotions</Text>
+              </Pressable>
               <Pressable style={styles.myPrayerListPressableNavigation} onPress={() => navigateToPrayerList()}>
                 <Text style={styles.myPrayerListPressableTextNavigation}>My Prayer List</Text>
               </Pressable>
@@ -1430,6 +1377,34 @@ else{
           
           </View>
           <PrayerHistoryPage runningUser={runningUser}></PrayerHistoryPage>
+        </View>
+      )
+    }
+    else if(page === 'navigateDevotionHistory'){
+
+      return(
+        <View style={styles.scrollView}>
+          <View style={[styles.homeHeaderIcons]}>
+            <Pressable onPress={() => navigateHome()} >
+                <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
+            </Pressable>
+            <Pressable onPress={() => openMenu()} >
+                <MaterialIcons style={[styles.homeMenuIcon]} name="menu" size={0} color="black" />
+            </Pressable>
+          </View>
+          <View style={styles.prayerListHeader}>
+            <Pressable onPress={() => navigateHome()}>
+              <Image
+                style={styles.tinyLogoPrayerList}
+                source={logo}
+              />
+            </Pressable>
+            <Text style={[styles.myNavigationMenuText]}>Devotions History
+              
+            </Text>
+          
+          </View>
+          <DevotionHistoryPage runningUser={runningUser}></DevotionHistoryPage>
         </View>
       )
     }
@@ -1677,9 +1652,23 @@ const styles = StyleSheet.create({
     fontSize: 25,
   },
   scrollView: {
-    flex: 2,
     // justifyContent: 'center',
     // alignItems: 'center',
+    flex: 2,
+    marginTop: 30,
+    backgroundColor: '#BCA37F',
+  },
+  scrollViewLogin: {
+    // flex: 1,
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    height: '100%',
+    marginTop: 30,
+    backgroundColor: '#BCA37F',
+  },
+  scrollViewPrayerList:{
+    // height: '100%',
+    flex: 2,
     marginTop: 30,
     backgroundColor: '#BCA37F',
   },
@@ -1702,6 +1691,8 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   container: {
+    // flex:1,
+    // zIndex:1
     // height:'100%'
     // paddingTop: 50,
     // paddingLeft: 50,
@@ -1999,6 +1990,7 @@ const styles = StyleSheet.create({
   loginPageLoginButtons:{
     display: 'inline',
     flexDirection: 'row',
+    marginBottom:50,
   },
   registerPressable: {
     backgroundColor: '#113946',

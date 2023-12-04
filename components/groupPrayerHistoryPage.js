@@ -55,7 +55,6 @@ const GroupPrayerHistoryPage = (runningUser) => {
         transparent={true}
         visible={detailsModalVisible}
         onRequestClose={() => {
-        //   Alert.alert('Modal has been closed.');
           setDetailsModalVisible(!detailsModalVisible);
         }}>
         <View style={styles.centeredViewRequestDetails}>

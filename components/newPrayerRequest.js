@@ -245,7 +245,6 @@ const newPrayerRequest = (runningUser) => {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
           setModalVisible(!modalVisible);
         }}>
         <View style={styles.centeredView}>
@@ -330,7 +329,6 @@ const newPrayerRequest = (runningUser) => {
         transparent={true}
         visible={answeredPrayerInputModalOpen}
         onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
           setAnsweredPrayerInputModalOpen(!answeredPrayerInputModalOpen);
         }}>
         <View style={styles.centeredView}>
@@ -394,7 +392,6 @@ const newPrayerRequest = (runningUser) => {
         transparent={true}
         visible={detailsModalVisible}
         onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
           setDetailsModalVisible(!detailsModalVisible);
         }}>
         <View style={styles.centeredViewRequestDetails}>
