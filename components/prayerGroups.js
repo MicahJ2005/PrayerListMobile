@@ -440,8 +440,9 @@ const prayerGroups = (runningUser) => {
                 <TextInput
                     style={{
                         borderColor: '#113946',
-                        borderWidth: 4,
-                        borderRadius: 30,
+                        // borderWidth: 4,
+                        // borderRadius: 30,
+                        borderBottomWidth: 4,
                         width:'95%',
                         height: '30%',
                         marginBottom: 5,
@@ -586,8 +587,9 @@ const prayerGroups = (runningUser) => {
                 <TextInput
                     style={{
                         borderColor: '#113946',
-                        borderWidth: 4,
-                        borderRadius: 30,
+                        // borderWidth: 4,
+                        // borderRadius: 30,
+                        borderBottomWidth: 4,
                         width:'95%',
                         height: '15%',
                         marginBottom: 40,
@@ -602,8 +604,9 @@ const prayerGroups = (runningUser) => {
                     style={{
                         // height: 100,
                         borderColor: '#113946',
-                        borderWidth: 4,
-                        borderRadius: 30,
+                        // borderWidth: 4,
+                        // borderRadius: 30,
+                        borderBottomWidth: 4,
                         width:'95%',
                         height: '55%',
                         marginBottom: 40,
@@ -653,8 +656,9 @@ const prayerGroups = (runningUser) => {
                     style={{
                         // height: 100,
                         borderColor: '#113946',
-                        borderWidth: 4,
-                        borderRadius: 30,
+                        // borderWidth: 4,
+                        // borderRadius: 30,
+                        borderBottomWidth: 4,
                         width:'95%',
                         height: '30%',
                         marginBottom: 40,

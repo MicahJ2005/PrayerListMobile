@@ -75,11 +75,16 @@ const GroupPrayerHistoryPage = (runningUser) => {
             <Text style={[styles.requestGroupText]}>
               Prayer Group: {details.groupname}
             </Text>
-            <Text style={[styles.prayingForText]}>Prayed for...</Text>
+            {/* <Text style={[styles.prayingForText]}>Prayed for...</Text> */}
             <SafeAreaView style={styles.safeAreaContainer}>
               <ScrollView style={styles.requestDetailsScrollView}>
+              <Text style={[styles.prayingForText]}>Prayed for...</Text>
                 <Text style={[styles.requestDetailsText]}>
                   {details.details}
+                </Text>
+                <Text style={[styles.requestAnsweredNoteText]}>Answered Note:</Text>
+                <Text style={[styles.requestAnsweredNote]}>
+                   {details.answerednote}
                 </Text>
               </ScrollView>
             </SafeAreaView>
@@ -247,17 +252,30 @@ const styles = StyleSheet.create({
     // },
     
     safeAreaContainer:{
-      height: 150,
+      height: 350,
     },
     prayingForText:{
       marginTop: 20,
       color: '#113946',
       fontSize:20,
+      textAlign:'center'
+    },
+    requestAnsweredNoteText:{
+      marginTop: 20,
+      color: '#113946',
+      fontSize:20,
+      textAlign:'center'
+    },
+    requestAnsweredNote:{
+      fontSize: 30,
+      color: '#C56E33',
+      marginTop: 30,
+      textAlign:'center'
     },
     requestNameText:{
       marginTop: 20,
       fontSize: 40,
-      color: '#C56E33',
+      color: '#113946',
     },
     requestGroupText:{
         marginTop: 20,

@@ -58,6 +58,10 @@ export default function App() {
   const [registerSecurityQuestion, setRegisterSecurityQuestion] = useState('');
   const [registerSecurityAnswer, setRegisterSecurityAnswer] = useState('');
   const [openCalendarBoolean, setOpenCalendarBoolean] = useState(false);
+
+  const [securityAnswerValidation, setSecurityAnswerValidation] = useState('');
+  const [currentSecurityAnswer, setCurrentSecurityAnswer] = useState('');
+  const [currentSecurityQuestion, setCurrentSecurityQuestion] = useState('');
   
 
   // const [facialRecognitionAvailable, setFacialRecognitionAvailable] = React.useState(false);
@@ -384,8 +388,14 @@ export default function App() {
       .then(response => response.json())
       .then(json => {
         console.log('user response', json)
-        setRunningUser(json);
-        setPage('home');
+        if(json.length > 0){
+          setRunningUser(json);
+          setPage('home');
+        }
+        else{
+          Alert.alert('Login issue. Please try again.')
+          setPage('login');
+        }
       })
       .catch(error => {
         console.error(error);
@@ -418,8 +428,10 @@ export default function App() {
       const response = await fetch(`${BASE_URL_DEV}/data/validateemail?username=${emailAddress}`)
       .then(response => response.json())
       .then(json => {
-        console.log('user response', json[0].count);
-        if(json[0].count > 0){
+        console.log('user response', json[0].id);
+        if(json[0].id != null){
+          setCurrentSecurityQuestion(json[0].securityquestion);
+          setCurrentSecurityAnswer(json[0].securityanswer)
           setEmailAddressValidated(true);
         }
         else{
@@ -436,44 +448,36 @@ export default function App() {
     console.log('In setNewPassword');
     console.log('In password1', newPassword1);
     console.log('In password2', newPassword2);
+    if(currentSecurityAnswer == securityAnswerValidation){
+      console.log('Matching Answers!')
+    
 
-    if(newPassword1 == newPassword2){
-      console.log('Matching Passwords!');
-      // const response = await fetch(`${BASE_URL_DEV}/data/setnewpassword?username=${emailAddress}&password=${newPassword1}`)
-      // .then(response => response.json())
-      // .then(json => {
-      //   console.log('user response', json);
-      //   // if(json[0].count > 0){
-      //   //   setEmailAddressValidated(true);
-      //   // }
-      //   // else{
-      //   //   setEmailAddressValidated(false);
-      //   //   Alert.alert('Your email is not tied to a registered user. Please register as a new user!');
-      //   // }
-      // })
-      // .catch(error => {
-      //   console.error(error);
-      // });
-      await fetch(`${BASE_URL_DEV}/data/setnewpassword`, {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: emailAddress,
-          password: newPassword1
-        }),
+      if(newPassword1 == newPassword2){
+        console.log('Matching Passwords!');
+        await fetch(`${BASE_URL_DEV}/data/setnewpassword`, {
+          method: "PUT",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: emailAddress,
+            password: newPassword1
+          }),
+        })
+        .then((response) =>{
+          console.log('response', response.json());
+      //   loadData();
+            Alert.alert('Password Successfully Changed!');
+            logout();
       })
-      .then((response) =>{
-        console.log('response', response.json());
-    //   loadData();
-          Alert.alert('Password Successfully Changed!');
-          logout();
-    })
-    }else{
-      console.log(' Passwords Don\'t match!');
-      Alert.alert('Passwords Don\'t Match!');
+      }else{
+        console.log(' Passwords Don\'t match!');
+        Alert.alert('Passwords Don\'t Match!');
+      }
+    }
+    else{
+      Alert.alert('Security Answer Incorrect!');
     }
   }
 
@@ -602,8 +606,9 @@ else{
               <TextInput
                   style={{
                       borderColor: '#113946',
-                      borderWidth: 4,
-                      borderRadius: 30,
+                      // borderWidth: 4,
+                      // borderRadius: 30,
+                      borderBottomWidth: 4,
                       width:'95%',
                       height: '15%',
                       marginBottom: 40,
@@ -619,8 +624,9 @@ else{
                   style={{
                       // height: 100,
                       borderColor: '#113946',
-                      borderWidth: 4,
-                      borderRadius: 30,
+                      // borderWidth: 4,
+                      // borderRadius: 30,
+                      borderBottomWidth: 4,
                       width:'95%',
                       height: '15%',
                       marginBottom: 40,
@@ -679,8 +685,9 @@ else{
               <TextInput
                           style={{
                               borderColor: '#113946',
-                              borderWidth: 4,
-                              borderRadius: 30,
+                              // borderWidth: 4,
+                              // borderRadius: 30,
+                              borderBottomWidth: 4,
                               width:'80%',
                               height: 50,
                               marginLeft:'10%',
@@ -694,8 +701,9 @@ else{
               <TextInput
                           style={{
                               borderColor: '#113946',
-                              borderWidth: 4,
-                              borderRadius: 30,
+                              // borderWidth: 4,
+                              // borderRadius: 30,
+                              borderBottomWidth: 4,
                               width:'80%',
                               height: 50,
                               marginLeft:'10%',
@@ -710,8 +718,9 @@ else{
                       <TextInput
                           style={{
                               borderColor: '#113946',
-                              borderWidth: 4,
-                              borderRadius: 30,
+                              // borderWidth: 4,
+                              // borderRadius: 30,
+                              borderBottomWidth: 4,
                               width:'80%',
                               height: 50,
                               marginLeft:'10%',
@@ -859,8 +868,9 @@ else{
                       <TextInput
                           style={{
                               borderColor: '#113946',
-                              borderWidth: 4,
-                              borderRadius: 30,
+                              // borderWidth: 4,
+                              // borderRadius: 30,
+                              borderBottomWidth: 4,
                               width:'80%',
                               height: 50,
                               marginLeft:'10%',
@@ -875,8 +885,9 @@ else{
                       <TextInput
                           style={{
                               borderColor: '#113946',
-                              borderWidth: 4,
-                              borderRadius: 30,
+                              // borderWidth: 4,
+                              // borderRadius: 30,
+                              borderBottomWidth: 4,
                               width:'80%',
                               height: 50,
                               marginLeft:'10%',
@@ -890,8 +901,9 @@ else{
                       <TextInput
                           style={{
                               borderColor: '#113946',
-                              borderWidth: 4,
-                              borderRadius: 30,
+                              // borderWidth: 4,
+                              // borderRadius: 30,
+                              borderBottomWidth: 4,
                               width:'80%',
                               height: 50,
                               marginLeft:'10%',
@@ -905,8 +917,9 @@ else{
                       <TextInput
                           style={{
                               borderColor: '#113946',
-                              borderWidth: 4,
-                              borderRadius: 30,
+                              // borderWidth: 4,
+                              // borderRadius: 30,
+                              borderBottomWidth: 4,
                               width:'80%',
                               height: 50,
                               marginLeft:'10%',
@@ -929,19 +942,19 @@ else{
     else if(page === 'forgotPassword'){
       
       return (
-        <View style={[styles.forgotPasswordScreen]}>
+        <ScrollView style={[styles.forgotPasswordScreen]}>
           <View style={[styles.homeHeaderIcons]}>
             <Pressable onPress={() => logout()} >
                 <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
             </Pressable>
-            </View>
+          </View>
             <Pressable onPress={() => logout()}>
               <Image
                 style={styles.tinyLogo}
                 source={logo}
               />
             </Pressable>
-          <View>
+          <View >
           {!emailAddressValidated ? 
             <View style={[styles.forgotPasswordScreenBody]}>
               
@@ -949,10 +962,11 @@ else{
               <TextInput
                           style={{
                               borderColor: '#113946',
-                              borderWidth: 4,
-                              borderRadius: 30,
+                              // borderWidth: 4,
+                              // borderRadius: 30,
+                              borderBottomWidth: 4,
                               width:'80%',
-                              height: '7%',
+                              height: '15%',
                               marginLeft:'10%'
                               // marginBottom: 40,
                           }}
@@ -970,14 +984,34 @@ else{
             <View style={[styles.forgotPasswordScreenBody]}>
               
               <Text style={[styles.forgotPasswordEmailText]}>Email {emailAddress} Validated!</Text>
+
+              <Text style={[styles.forgotPasswordEmailText]}>Security Question: {currentSecurityQuestion}</Text>
+              <TextInput
+                    style={{
+                        borderColor: '#113946',
+                        // borderWidth: 4,
+                        // borderRadius: 30,
+                        borderBottomWidth: 4,
+                        width:'80%',
+                        height: '7%',
+                        marginLeft:'10%'
+                        // marginBottom: 40,
+                    }}
+                    textAlign='center'
+                    onChangeText={newUsernameText => setSecurityAnswerValidation(newUsernameText)}
+                    // onEndEditing={() => setDevoType()}
+                    placeholder="Security Question Answer"
+                />
               <TextInput
                           style={{
                               borderColor: '#113946',
-                              borderWidth: 4,
-                              borderRadius: 30,
+                              // borderWidth: 4,
+                              // borderRadius: 30,
+                              borderBottomWidth: 4,
                               width:'80%',
                               height: '7%',
-                              marginLeft:'10%'
+                              marginLeft:'10%',
+                              marginTop:10,
                               // marginBottom: 40,
                           }}
                           textAlign='center'
@@ -988,8 +1022,9 @@ else{
               <TextInput
                           style={{
                               borderColor: '#113946',
-                              borderWidth: 4,
-                              borderRadius: 30,
+                              // borderWidth: 4,
+                              // borderRadius: 30,
+                              borderBottomWidth: 4,
                               marginTop:10,
                               width:'80%',
                               height: '7%',
@@ -1001,13 +1036,13 @@ else{
                           // onEndEditing={() => setDevoType()}
                           placeholder="Confirm New Password"
                       />
-              <Pressable style={[styles.validateEmailPressable]} onPress={() => setNewPassword()}>
+              <Pressable style={[styles.setNewPasswordPressable]} onPress={() => setNewPassword()}>
                 <Text style={[styles.validateEmailPressableText]}>Set New Password</Text>
               </Pressable>
             </View>
             }
         </View>
-      </View>
+      </ScrollView>
     
       );
     
@@ -1052,7 +1087,7 @@ else{
             </Pressable>
           </View>
           
-              <View style={styles.centeredView}>
+              <View style={styles.centeredViewFamilyDevo}>
                 <Modal
                   animationType="slide"
                   transparent={true}
@@ -1060,15 +1095,16 @@ else{
                   onRequestClose={() => {
                     setDevoSelectorVisible(!devoSelectorVisible);
                   }}>
-                <View style={styles.centeredView}>
-                  <View style={styles.modalView}>
+                <View style={styles.centeredViewFamilyDevo2}>
+                  <View style={styles.modalViewFamilyDevo}>
                     <Text style={styles.modalText}>Enter a devotion topic for today</Text>
                     <SafeAreaView style={styles.container}>
                       <TextInput
                         style={{
                             borderColor: '#113946',
-                            borderWidth: 4,
-                            borderRadius: 30,
+                            // borderWidth: 4,
+                            // borderRadius: 30,
+                            borderBottomWidth: 4,
                             width:250,
                             height: '55%',
                             // marginBottom: 40,
@@ -1108,15 +1144,16 @@ else{
                   onRequestClose={() => {
                     setFamilyDevoSelectorVisible(!familyDevoSelectorVisible);
                   }}>
-                <View style={styles.centeredView}>
-                  <View style={styles.modalView}>
+                <View style={styles.centeredViewFamilyDevo}>
+                  <View style={styles.modalViewFamilyDevo}>
                     <Text style={styles.modalText}>Enter a topic for family devotions</Text>
                     <SafeAreaView style={styles.container}>
                       <TextInput
                         style={{
                             borderColor: '#113946',
-                            borderWidth: 4,
-                            borderRadius: 30,
+                            // borderWidth: 4,
+                            // borderRadius: 30,
+                            borderBottomWidth: 4,
                             width:250,
                             height: '55%',
                             // marginBottom: 40,
@@ -1309,7 +1346,7 @@ else{
               
               </View>
             
-            <ScrollView>
+            <ScrollView style={styles.scrollViewNavigation}>
               <Pressable style={styles.myDailyDevotionPressableNavigation} onPress={() => navigateHome()}>
                 <Text style={styles.myDailyDevotionPressableTextNavigation}>Home</Text>
               </Pressable>
@@ -1564,14 +1601,43 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   centeredView: {
-    flex: 1,
+    // flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 22,
   },
+  centeredViewFamilyDevo:{
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+    height: '80%',
+  },
+  centeredViewFamilyDevo2:{
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+    // height: '80%',
+  },
   modalView: {
     width: '80%',
     height: '40%',
+    margin: 20,
+    backgroundColor: '#FFF2D8',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalViewFamilyDevo:{
+    width: '80%',
+    height: '60%',
     margin: 20,
     backgroundColor: '#FFF2D8',
     borderRadius: 20,
@@ -1667,28 +1733,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#BCA37F',
   },
   scrollViewPrayerList:{
-    // height: '100%',
+    // height: '96%',
     flex: 2,
     marginTop: 30,
     backgroundColor: '#BCA37F',
   },
   scrollViewNavigation:{
-    margin: 0,
-    height:'100%',
-    width: '100%',
-    // marginLeft: '50%',
+    marginTop: 5,
     backgroundColor: '#BCA37F',
-    // borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    height:'77%'
   },
   container: {
     // flex:1,
@@ -1981,7 +2034,7 @@ const styles = StyleSheet.create({
     // marginBottom:-10
   },
   devotionBodyLoadingView: {
-    flex: 1,
+    // flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 22,
@@ -2038,7 +2091,14 @@ const styles = StyleSheet.create({
   },
   forgotPasswordScreen:{
     marginTop:30,
-    backgroundColor:'#BCA37F'
+    backgroundColor:'#BCA37F',
+    height:'100%',
+    // marginBottom: 30,
+  },
+  forgotPasswordScreenScroll:{
+    // marginTop:30,
+    backgroundColor:'#BCA37F',
+    height:'100%',
   },
   forgotPasswordScreenBody:{
     height:'100%',
@@ -2050,9 +2110,9 @@ const styles = StyleSheet.create({
     color: '#C56E33',
     fontSize:15
   },
-  validateEmailPressable:{
+  setNewPasswordPressable:{
     marginLeft:'25%',
-    height: '5%',
+    height: '10%',
     width: '50%',
     marginTop:'5%',
     backgroundColor:'#113946',
@@ -2066,6 +2126,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    marginBottom:60,
+  },
+  validateEmailPressable:{
+    marginLeft:'25%',
+    height: '15%',
+    width: '50%',
+    marginTop:'5%',
+    backgroundColor:'#113946',
+    borderRadius: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    marginBottom:100,
   },
   validateEmailPressableText:{
     color: '#C56E33'

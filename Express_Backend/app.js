@@ -62,7 +62,7 @@ app.get('/data/signIn', (req, res)=>{
 
 app.get('/data/validateemail', (req, res)=>{
   console.log('req.query.username ',req.query.username);
-  client.query(`Select COUNT(id) from users WHERE username = '${req.query.username}' AND active = 'true' `, (err, result)=>{
+  client.query(`Select * from users WHERE username = '${req.query.username}' AND active = 'true' `, (err, result)=>{
       if(!err){
         console.log('result.rows', result.rows);
           res.send(result.rows);

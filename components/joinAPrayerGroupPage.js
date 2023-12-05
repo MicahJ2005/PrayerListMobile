@@ -109,8 +109,9 @@ const JoinPrayerGroup = (user) => {
               <TextInput
                   style={{
                       borderColor: '#113946',
-                      borderWidth: 4,
-                      borderRadius: 30,
+                      // borderWidth: 4,
+                      // borderRadius: 30,
+                      borderBottomWidth: 4,
                       width:'80%',
                       height: '23%',
                       // marginBottom: 40,
@@ -131,8 +132,9 @@ const JoinPrayerGroup = (user) => {
               <TextInput
                   style={{
                       borderColor: '#113946',
-                      borderWidth: 4,
-                      borderRadius: 30,
+                      // borderWidth: 4,
+                      // borderRadius: 30,
+                      borderBottomWidth: 4,
                       width:'80%',
                       height: '23%',
                       // marginBottom: 40,
