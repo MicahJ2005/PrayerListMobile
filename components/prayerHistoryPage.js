@@ -240,6 +240,7 @@ const styles = StyleSheet.create({
       fontSize: 30,
       color: '#C56E33',
       marginTop: 30,
+      textAlign:'center'
     },
     requestDetailsText2:{
         borderColor: '#113946',

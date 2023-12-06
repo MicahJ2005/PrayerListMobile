@@ -332,8 +332,10 @@ const prayerGroups = (runningUser) => {
           setModalVisible(false);
           setDetailsModalVisible(false);
           setAnsweredPrayerInputModalOpen(false);
+          setDeleteGroupModalVisible(false)
           setDetails('');
           loadData();
+          setDeleteGroupModalVisible(false)
           setPage('groupList');
           Alert.alert('Prayer Group is removed!');
           
