@@ -1,11 +1,14 @@
-const {Client} = require('pg')
-
-const client = new Client({
-  host: "localhost",
-  user: "postgres",
-  port: 5432,
-  password: "JjMj2011",
-  database: "postgres"
-})
-
-module.exports = client
+module.exports = {
+  HOST: process.env.POSTGRESQL_DB_HOST,
+  USER: process.env.POSTGRESQL_DB_USER,
+  PASSWORD: process.env.POSTGRESQL_DB_PASSWORD,
+  DB: process.env.POSTGRESQL_DB,
+  dialect: "postgres",
+  // declaring pool is optional
+  // pool: {
+//   max: 5,
+//   min: 0,
+//   acquire: 30000,
+//   idle: 10000
+// }
+};

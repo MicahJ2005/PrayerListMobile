@@ -1721,7 +1721,7 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     // alignItems: 'center',
     flex: 2,
-    marginTop: 30,
+    // marginTop: 30,
     backgroundColor: '#BCA37F',
   },
   scrollViewLogin: {
@@ -1729,13 +1729,13 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     // alignItems: 'center',
     height: '100%',
-    marginTop: 30,
+    // marginTop: 30,
     backgroundColor: '#BCA37F',
   },
   scrollViewPrayerList:{
     // height: '96%',
     flex: 2,
-    marginTop: 30,
+    // marginTop: 30,
     backgroundColor: '#BCA37F',
   },
   scrollViewNavigation:{

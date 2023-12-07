@@ -5,7 +5,30 @@ const cors = require('cors');
 app.use(bodyParser.json());
 app.use(cors());
 const {Client} = require('pg');
-const axios = require('axios');  
+const axios = require('axios'); 
+// const dbConfig = require("../connectdb/config/db.config.js");
+
+// const Sequelize = require("sequelize");
+// const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
+//   host: dbConfig.HOST,
+//   dialect: dbConfig.dialect,
+//   // declaring pool is optional
+//   // pool: {
+// //   max: dbConfig.pool.max,
+// //   min: dbConfig.pool.min,
+// //   acquire: dbConfig.pool.acquire,
+// //   idle: dbConfig.pool.idle
+// // }
+// });
+
+// const db = {};
+
+// db.Sequelize = Sequelize;
+// db.sequelize = sequelize;
+
+// // db.blog = require("./blog.model.js")(sequelize, Sequelize);
+
+// module.exports = db; 
 const client = new Client({
   host: "localhost",
   user: "postgres",
@@ -14,6 +37,8 @@ const client = new Client({
   database: "dojo"
 })
 client.connect();
+
+// const Sequelize = require("sequelize");
 
 app.get('/data/signIn', (req, res)=>{
   console.log('req.query.username ',req.query.username);

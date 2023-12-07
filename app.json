@@ -3,7 +3,7 @@
     "name": "prayerApp",
     "slug": "prayerApp",
     "version": "1.0.0",
-    "orientation": "",
+    "orientation": "default",
     "icon": "./assets/logo-color.png",
     "userInterfaceStyle": "light",
     "splash": {
@@ -21,10 +21,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo-color.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.jjmjnjajcj2023.prayerApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "af44bc14-2216-411a-8683-35ad0db07437"
+      }
     }
   }
 }
