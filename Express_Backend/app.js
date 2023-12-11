@@ -6,6 +6,7 @@ app.use(bodyParser.json());
 app.use(cors());
 const {Client} = require('pg');
 const axios = require('axios'); 
+require('dotenv').config();
 // const dbConfig = require("../connectdb/config/db.config.js");
 
 // const Sequelize = require("sequelize");
@@ -29,21 +30,38 @@ const axios = require('axios');
 // // db.blog = require("./blog.model.js")(sequelize, Sequelize);
 
 // module.exports = db; 
-const client = new Client({
-  host: "localhost",
-  user: "postgres",
-  port: 5432,
-  password: "JjMj2011",
-  database: "dojo"
-})
-client.connect();
+// const client = new Client({
+//   host: "localhost",
+//   user: "postgres",
+//   port: 5432,
+//   password: "JjMj2011",
+//   database: "dojo"
+// })
+// client.connect();
+
+const DATABASE_URL2 = process.env;
+console.log('DATABASE_URL2: ' , DATABASE_URL2);
+const DATABASE_URL = "postgresql://micah:VqI83odLC98QwcCQAiHgug@devo-app-cluster-12913.7tt.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full";
+const client = new Client(DATABASE_URL);
+
+(async () => {
+  await client.connect();
+  try {
+    const results = await client.query("SELECT NOW()");
+    console.log('Successully connected to Database at: ',results);
+  } catch (err) {
+    console.error("error connecting to database:", err);
+  } finally {
+    // client.end();
+  }
+})();
 
 // const Sequelize = require("sequelize");
 
 app.get('/data/signIn', (req, res)=>{
   console.log('req.query.username ',req.query.username);
   console.log('req.query.password',req.query.password);
-  client.query(`Select * from users WHERE username = '${req.query.username}' AND password = '${req.query.password}' AND active = true`, (err, result)=>{
+  client.query(`SELECT * FROM users WHERE username = '${req.query.username}' AND password = '${req.query.password}' AND active = true`, (err, result)=>{
       if(!err){
         console.log('result.rows', result.rows);
           res.send(result.rows);
@@ -332,6 +350,7 @@ app.get('/data/checktodaysdevo', (req, res)=>{
 
 app.post('/data/postdailydevo', (req, res)=>{
   console.log('POST req.body',req.body);
+  let randomId = Math.floor((Math.random() * 100000) + 1);
   let objectDate = new Date();
 
   let title = req.body.title;
@@ -355,8 +374,8 @@ app.post('/data/postdailydevo', (req, res)=>{
 
   let DateToSend = year+'-'+month+'-'+day;
   console.log("DateToSend", DateToSend);
-  let insertQuery = `insert into devotions(title, scripture, body, userid, devodate, searchinput) 
-                     values('${replacedTitle}', '${replacedScripture}', '${replacedBody}', ${userid}, '${DateToSend}', '${replacedSearchInput}')`
+  let insertQuery = `insert into devotions(id, title, scripture, body, userid, devodate, searchinput) 
+                     values(${randomId},'${replacedTitle}', '${replacedScripture}', '${replacedBody}', ${userid}, '${DateToSend}', '${replacedSearchInput}')`
     client.query(insertQuery, (err, result)=>{
         if(!err){
           console.log('POST SUCCESS', result)
@@ -369,6 +388,7 @@ app.post('/data/postdailydevo', (req, res)=>{
 
 app.post('/data/createnewaccount', (req, res)=>{
   console.log('POST createnewaccount req.body',req.body);
+  let randomId = Math.floor((Math.random() * 100000) + 1);
   let objectDate = new Date();
   let day = objectDate.getDate();
   console.log(day); // 23
@@ -381,8 +401,8 @@ app.post('/data/createnewaccount', (req, res)=>{
 
   let DateToSend = year+'-'+month+'-'+day;
   console.log("DateToSend", DateToSend);
-  let insertQuery = `insert into users(username, firstname, lastname, birthday, phone, password, securityquestion, securityanswer, createddate, active) 
-                     values('${req.body.registerEmailAddress}', '${req.body.registerFirstName}', '${req.body.registerLastName}', '${req.body.registerBirthdate}', '${req.body.registerPhone}', '${req.body.registerPassword}', '${req.body.registerSecurityQuestion}', '${req.body.registerSecurityAnswer}', '${DateToSend}', 'true')`
+  let insertQuery = `insert into users(id, username, firstname, lastname, birthday, phone, password, securityquestion, securityanswer, createddate, active) 
+                     values(${randomId},'${req.body.registerEmailAddress}', '${req.body.registerFirstName}', '${req.body.registerLastName}', '${req.body.registerBirthdate}', '${req.body.registerPhone}', '${req.body.registerPassword}', '${req.body.registerSecurityQuestion}', '${req.body.registerSecurityAnswer}', '${DateToSend}', 'true')`
     client.query(insertQuery, (err, result)=>{
         if(!err){
           console.log('POST SUCCESS', result)
@@ -395,6 +415,7 @@ app.post('/data/createnewaccount', (req, res)=>{
 
 app.post('/data/postdailyfamilydevo', (req, res)=>{
   console.log('POST req.body',req.body);
+  let randomId = Math.floor((Math.random() * 100000) + 1);
   let objectDate = new Date();
 
   let title = req.body.title;
@@ -419,8 +440,8 @@ app.post('/data/postdailyfamilydevo', (req, res)=>{
 
   let DateToSend = year+'-'+month+'-'+day;
   console.log("DateToSend", DateToSend);
-  let insertQuery = `insert into familydevotions(title, scripture, body, userid, devodate, searchinput) 
-                     values('${replacedTitle}', '${replacedScripture}', '${replacedBody}', ${userid}, '${DateToSend}', '${replacedSearchInput}')`
+  let insertQuery = `insert into familydevotions(id, title, scripture, body, userid, devodate, searchinput) 
+                     values(${randomId},'${replacedTitle}', '${replacedScripture}', '${replacedBody}', ${userid}, '${DateToSend}', '${replacedSearchInput}')`
     client.query(insertQuery, (err, result)=>{
         if(!err){
           console.log('POST SUCCESS', result)
@@ -433,16 +454,18 @@ app.post('/data/postdailyfamilydevo', (req, res)=>{
 
 app.post('/data/newGroup', (req, res)=>{
   console.log('POST req.body',req.body);
+  let randomId = Math.floor((Math.random() * 100000) + 1);
   let groupNameRefined = req.body.groupname.replaceAll("'","''");
 
-  let insertQuery = `insert into prayergroups(groupname, createdbyid, status, isprivategroup) 
-                     values('${groupNameRefined}', '${req.body.submittedbyuserid}', '${req.body.status}', '${req.body.isprivate}') RETURNING id`
+  let insertQuery = `insert into prayergroups(id, groupname, createdbyid, status, isprivategroup) 
+                     values(${randomId}, '${groupNameRefined}', '${req.body.submittedbyuserid}', '${req.body.status}', '${req.body.isprivate}') RETURNING id`
     client.query(insertQuery, (err, result)=>{
         if(!err){
           console.log('POST SUCCESS id', result.rows[0].id)
             // res.send('Insertion was successful')
-            let insertQuery2 = `insert into groupstousersjunction(groupid, userid) 
-                                values('${ result.rows[0].id}', '${req.body.submittedbyuserid}') RETURNING id`
+            let randomGroupId = Math.floor((Math.random() * 100000) + 1);
+            let insertQuery2 = `insert into groupstousersjunction(id, groupid, userid) 
+                                values(${randomGroupId},'${ result.rows[0].id}', '${req.body.submittedbyuserid}') RETURNING id`
             client.query(insertQuery2, (err, result2) => {
                 if(!err){
                   console.log('POST SUCCESS', result2)
@@ -461,8 +484,9 @@ app.post('/data/newGroup', (req, res)=>{
 
 app.post('/data/joinPrayerGroup', (req, res)=>{
   console.log('POST req.body',req.body);
-  let insertQuery = `insert into groupstousersjunction(groupid, userid) 
-                     values('${req.body.groupid}', '${req.body.userid}')`
+  let randomId = Math.floor((Math.random() * 100000) + 1);
+  let insertQuery = `insert into groupstousersjunction(id, groupid, userid) 
+                     values(${randomId}',${req.body.groupid}', '${req.body.userid}')`
     client.query(insertQuery, (err, result)=>{
         if(!err){
           // console.log('POST SUCCESS id', result.rows[0].id)
@@ -479,6 +503,9 @@ app.post('/data/joinPrayerGroup', (req, res)=>{
 
 app.post('/data', (req, res)=>{
   console.log('POST req.body',req.body);
+
+  let randomId = Math.floor((Math.random() * 100000) + 1);
+  console.log('random id', randomId);
   let objectDate = new Date();
 
 
@@ -497,8 +524,8 @@ app.post('/data', (req, res)=>{
   let nameRefined = req.body.nama.replaceAll("'","''");
   let detailsRefined = req.body.details.replaceAll("'","''");
 
-  let insertQuery = `insert into prayerrequests(nama, details, createdat, updatedat, status, timesprayed, submittedbyuserid) 
-                     values('${nameRefined}', '${detailsRefined}', '${DateToSend}', '${DateToSend}', '${req.body.status}', 0, '${req.body.submittedbyuserid}' )`
+  let insertQuery = `insert into prayerrequests(id, nama, details, createdat, updatedat, status, timesprayed, submittedbyuserid) 
+                     values(${randomId},'${nameRefined}', '${detailsRefined}', '${DateToSend}', '${DateToSend}', '${req.body.status}', 0, '${req.body.submittedbyuserid}' )`
     client.query(insertQuery, (err, result)=>{
         if(!err){
           console.log('POST SUCCESS', result)
@@ -639,6 +666,7 @@ app.put('/data', (req, res)=>{
 
 app.post('/data/addGroupRequest', (req, res)=>{
   console.log('POST req.body',req.body);
+  let randomId = Math.floor((Math.random() * 100000) + 1);
   let objectDate = new Date();
 
 
@@ -657,8 +685,8 @@ app.post('/data/addGroupRequest', (req, res)=>{
   let nameRefined = req.body.nama.replaceAll("'","''");
   let detailsRefined = req.body.details.replaceAll("'","''");
 
-  let insertQuery = `insert into groupprayerrequests(nama, details, createdat, updatedat, status, timesprayed, submittedbyuserid, groupid) 
-                     values('${nameRefined}', '${detailsRefined}', '${DateToSend}', '${DateToSend}', '${req.body.status}', 0, '${req.body.submittedbyuserid}',  '${req.body.groupid}' )`
+  let insertQuery = `insert into groupprayerrequests(id, nama, details, createdat, updatedat, status, timesprayed, submittedbyuserid, groupid) 
+                     values(${randomId},'${nameRefined}', '${detailsRefined}', '${DateToSend}', '${DateToSend}', '${req.body.status}', 0, '${req.body.submittedbyuserid}',  '${req.body.groupid}' )`
     client.query(insertQuery, (err, result)=>{
         if(!err){
           console.log('POST SUCCESS', result)
@@ -884,12 +912,17 @@ app.put('/data/updateGroupPrayerRequest', (req, res)=>{
   
 })
 
+// Serve static files
+// app.use(express.static('build'));
+
+const PORT = process.env.PORT || 3210;
 ///for my phone
-app.listen(3210, ()=>{
-  console.log('Server @port 3210 gan!')
+app.listen(PORT, ()=>{
+  // console.log('env PORT: ',process.env)
+  console.log(`App listening on port: ${PORT}`)
 })
 
-
+module.exports = app;
 ///for expo on computer
 // app.listen(8082, ()=>{
 //   console.log('Server @port 8082 gan!')

@@ -155,7 +155,10 @@ const newPrayerRequest = (runningUser) => {
   incermentTimesPrayed = () => {
     console.log('incermentTimesPrayed id', details.id);
     console.log('timesPrayed ', timesPrayed);
-    let newtimesPrayed = timesPrayed + 1;
+    console.log('timesPrayed HERE',);
+    let tempTimes = parseInt(timesPrayed);
+    console.log('tempTimes ', tempTimes);
+    let newtimesPrayed = tempTimes+1;
     console.log('newtimesPrayed ', newtimesPrayed);
     fetch(`${BASE_URL_DEV}/data/timesprayed`, {
       method: "PUT",
@@ -165,7 +168,7 @@ const newPrayerRequest = (runningUser) => {
       },
       body: JSON.stringify({
         id: details.id,
-        timesprayed: timesPrayed +1,
+        timesprayed: newtimesPrayed,
       }),
     })
       .then((response) =>{
@@ -449,12 +452,13 @@ const newPrayerRequest = (runningUser) => {
             <Pressable style={[styles.buttonShowDetail]} 
                                     onPress={() => showDetails(item)}>
               {/* <View style={[styles.nameView]}> */}
-                  <View>
+                  <View style={[styles.timesPrayedArea]}>
                       <Text style={[styles.timesPrayedBubble]}>{item.timesprayed}
+                     
+                      </Text>
                       <View>
                         <Text style={[styles.timesPrayedBubbleText]}>Prayed</Text>
                       </View>
-                      </Text>
                       
                   </View>
                   
@@ -557,15 +561,17 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontStyle: 'italic',
   },
-
+  timesPrayedArea:{
+    // flexDirection:'column'
+  },
   timesPrayedBubbleText:{
     fontSize: 12,
     color: '#C56E33',
-    marginTop: 5,
-    marginLeft:-15,
-    // padding:10,
-    // position: 'absolute',
-    // right:5,
+    marginTop: 65,
+    // marginLeft:-15,
+    // margin:10,
+    position: 'absolute',
+    right:45,
     // top:10,
     // width:30,
     // height: 30,
@@ -578,22 +584,22 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     // alignItems: 'center',
     // borderRadius: 60,
-    textAlign:'left'
+    // textAlign:'center'
   },
   timesPrayedBubble: {
     backgroundColor: 'grey',
     // margin:3,
     fontSize: 20,
-    width:30,
+    width:80,
     height: 30,
     marginRight:10,
     // marginTop:5,
     marginBottom: -60,
     zIndex:1,
     // position: 'relative',
-    left:'85%',
-    // justifyContent: 'center',
-    // alignItems: 'center',
+    left:'75%',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 60,
     textAlign:'center'
   },

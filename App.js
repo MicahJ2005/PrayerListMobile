@@ -399,6 +399,7 @@ export default function App() {
       })
       .catch(error => {
         console.error(error);
+        Alert.alert('Login issue. Please try again.')
       });
     }
 
@@ -441,6 +442,7 @@ export default function App() {
       })
       .catch(error => {
         console.error(error);
+        Alert.alert('Your email is not tied to a registered user. Please register as a new user!');
       });
     }
 
@@ -527,6 +529,7 @@ export default function App() {
       })
       .catch(error => {
         console.error(error);
+        Alert.alert('Your New Account is Ready!');
       });
 
     

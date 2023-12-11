@@ -159,7 +159,9 @@ const prayerGroups = (runningUser) => {
     console.log('details timesprayed', details.timesprayed);
     console.log('incermentTimesPrayed id', details.id);
     console.log('timesPrayed ', timesPrayed);
-    let newtimesPrayed = timesPrayed + 1;
+    let tempTimes = parseInt(timesPrayed);
+    console.log('tempTimes ', tempTimes);
+    let newtimesPrayed = tempTimes+1;
     setTimesPrayed(newtimesPrayed);
     console.log('newtimesPrayed ', newtimesPrayed);
     fetch(`${BASE_URL_DEV}/data/timesprayedgroup`, {
@@ -170,7 +172,7 @@ const prayerGroups = (runningUser) => {
       },
       body: JSON.stringify({
         id: details.id,
-        timesprayed: timesPrayed +1,
+        timesprayed: newtimesPrayed,
       }),
     })
       .then((response) =>{
@@ -200,6 +202,7 @@ const prayerGroups = (runningUser) => {
       })
       .catch(error => {
         console.error(error);
+        Alert.alert('Issue getting Prayer Groups');
       });
     
   }
@@ -215,6 +218,7 @@ const prayerGroups = (runningUser) => {
       })
       .catch(error => {
         console.error(error);
+        Alert.alert('Issue getting Prayer Groups');
       });
     
   }
@@ -878,11 +882,11 @@ const styles = StyleSheet.create({
   timesPrayedBubbleText:{
     fontSize: 12,
     color: '#C56E33',
-    marginTop: 5,
-    marginLeft:-15,
-    // padding:10,
-    // position: 'absolute',
-    // right:5,
+    marginTop: 15,
+    // marginLeft:-15,
+    // margin:10,
+    position: 'absolute',
+    right:-10,
     // top:10,
     // width:30,
     // height: 30,
@@ -895,22 +899,22 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     // alignItems: 'center',
     // borderRadius: 60,
-    textAlign:'left'
+    // textAlign:'center'
   },
   timesPrayedBubble: {
     backgroundColor: 'grey',
     // margin:3,
     fontSize: 20,
-    width:30,
+    width:80,
     height: 30,
     marginRight:10,
     // marginTop:5,
     marginBottom: -60,
     zIndex:1,
     // position: 'relative',
-    left:'85%',
-    // justifyContent: 'center',
-    // alignItems: 'center',
+    left:'75%',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 60,
     textAlign:'center'
   },
