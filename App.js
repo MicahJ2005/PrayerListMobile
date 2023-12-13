@@ -1645,7 +1645,7 @@ else{
                 source={logo}
               />
             </Pressable>
-            <Text style={[styles.myNavigationMenuText]}>Resources
+            <Text style={[styles.myResourceMenuText]}>Resources
               
             </Text>
           </View>
@@ -2088,6 +2088,15 @@ const styles = StyleSheet.create({
     fontSize:30,
     textAlign:'right',
     marginLeft:10,
+    marginRight:10,
+    color: '#C56E33',
+    paddingTop: 20,
+    marginBottom: 40
+  },
+  myResourceMenuText:{
+    fontSize:30,
+    textAlign:'right',
+    marginLeft:50,
     marginRight:10,
     color: '#C56E33',
     paddingTop: 20,

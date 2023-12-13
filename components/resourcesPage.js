@@ -6,6 +6,7 @@ const BibleGatewayURL = 'https://www.biblegateway.com/';
 const TheGospelCoalitionURL = 'https://www.thegospelcoalition.org/';
 
 const TheBibleProjectURL = 'https://bibleproject.com/';
+const FocusOnTheFamilyURL = 'https://www.focusonthefamily.com/';
 
 // const unsupportedURL = 'slack://open?team=123456';
 
@@ -30,6 +31,11 @@ const ResourcesPage = () => {
             <View style={styles.item} >
                 <Pressable  onPress={() => Linking.openURL(TheBibleProjectURL)}>
                     <Text style={styles.itemText} >Bible Project</Text>
+                </Pressable>
+            </View>
+            <View style={styles.item} >
+                <Pressable  onPress={() => Linking.openURL(FocusOnTheFamilyURL)}>
+                    <Text style={styles.itemText} >Focus On The Family</Text>
                 </Pressable>
             </View>
         </ScrollView>
@@ -61,7 +67,7 @@ const styles = StyleSheet.create({
           shadowRadius: 10,
       },
       itemText:{
-        color:'white',
+        color:'#BCA37F',
         fontSize:30,
         textAlign:'center'
       }
