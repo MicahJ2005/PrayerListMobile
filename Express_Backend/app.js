@@ -7,6 +7,8 @@ app.use(cors());
 const {Client} = require('pg');
 const axios = require('axios'); 
 require('dotenv').config();
+
+// const router = express.Router();
 // const dbConfig = require("../connectdb/config/db.config.js");
 
 // const Sequelize = require("sequelize");
@@ -30,31 +32,31 @@ require('dotenv').config();
 // // db.blog = require("./blog.model.js")(sequelize, Sequelize);
 
 // module.exports = db; 
-// const client = new Client({
-//   host: "localhost",
-//   user: "postgres",
-//   port: 5432,
-//   password: "JjMj2011",
-//   database: "dojo"
-// })
-// client.connect();
+const client = new Client({
+  host: "localhost",
+  user: "postgres",
+  port: 5432,
+  password: "JjMj2011",
+  database: "dojo"
+})
+client.connect();
 
-const DATABASE_URL2 = process.env;
-console.log('DATABASE_URL2: ' , DATABASE_URL2);
-const DATABASE_URL = "postgresql://micah:VqI83odLC98QwcCQAiHgug@devo-app-cluster-12913.7tt.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full";
-const client = new Client(DATABASE_URL);
+// const DATABASE_URL2 = process.env;
+// console.log('DATABASE_URL2: ' , DATABASE_URL2);
+// const DATABASE_URL = "postgresql://micah:VqI83odLC98QwcCQAiHgug@devo-app-cluster-12913.7tt.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full";
+// const client = new Client(DATABASE_URL);
 
-(async () => {
-  await client.connect();
-  try {
-    const results = await client.query("SELECT NOW()");
-    console.log('Successully connected to Database at: ',results);
-  } catch (err) {
-    console.error("error connecting to database:", err);
-  } finally {
-    // client.end();
-  }
-})();
+// (async () => {
+//   await client.connect();
+//   try {
+//     const results = await client.query("SELECT NOW()");
+//     console.log('Successully connected to Database at: ',results);
+//   } catch (err) {
+//     console.error("error connecting to database:", err);
+//   } finally {
+//     // client.end();
+//   }
+// })();
 
 // const Sequelize = require("sequelize");
 
@@ -913,7 +915,7 @@ app.put('/data/updateGroupPrayerRequest', (req, res)=>{
 })
 
 // Serve static files
-// app.use(express.static('build'));
+app.use(express.static('build'));
 
 const PORT = process.env.PORT || 3210;
 ///for my phone
@@ -922,7 +924,7 @@ app.listen(PORT, ()=>{
   console.log(`App listening on port: ${PORT}`)
 })
 
-module.exports = app;
+// module.exports = app;
 ///for expo on computer
 // app.listen(8082, ()=>{
 //   console.log('Server @port 8082 gan!')

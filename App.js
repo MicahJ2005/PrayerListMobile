@@ -1,4 +1,8 @@
+// import { registerRootComponent } from 'expo';
 import {View, Alert, Text, Image, ScrollView, Modal, Pressable, StyleSheet, SafeAreaView, StatusBar, ActivityIndicator, KeyboardAvoidingView, Button} from 'react-native';
+// import { createRoot } from 'react-dom/client';
+
+
 import NewPrayerRequest from './components/newPrayerRequest';
 import PersonalDevotionPage from './components/personalDevotionPage';
 import FamilyDevotionPage from './components/familyDevotionPage';
@@ -14,10 +18,17 @@ import logo from './assets/logo-no-background.png';
 import blackAndWhiteLogo from './assets/devos4me-high-resolution-logo-white-transparent.png';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { SelectList } from 'react-native-dropdown-select-list';
-import {BASE_URL_DEV} from '@env';
+import {BASE_URL_DEV, CLIENT_CR_DATABASE_URL} from '@env';
 import axios from 'axios';
 import {TextInput} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import * as Network from 'expo-network';
+
+// import { Amplify } from "aws-amplify";
+// // import amplifyconfig from './amplifyconfiguration.json';
+// import config from './src/aws-exports';
+// Amplify.configure(config);
+// import { withAuthenticator } from 'aws-amplify-react-native'
 
 const data = [
   {key:'Depression', value:'Depression'},
@@ -52,7 +63,7 @@ export default function App() {
   const [registerEmailAddress, setRegisterEmailAddress] = useState('');
   const [registerFirstName, setRegisterFirstName] = useState('');
   const [registerLastName, setRegisterLastName] = useState('');
-  const [registerBirthdate, setRegisterBirthdate] = useState('09-10-2021');
+  const [registerBirthdate, setRegisterBirthdate] = useState('');
   const [registerPhone, setRegisterPhone] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [registerSecurityQuestion, setRegisterSecurityQuestion] = useState('');
@@ -62,8 +73,61 @@ export default function App() {
   const [securityAnswerValidation, setSecurityAnswerValidation] = useState('');
   const [currentSecurityAnswer, setCurrentSecurityAnswer] = useState('');
   const [currentSecurityQuestion, setCurrentSecurityQuestion] = useState('');
+  const [ipAddress, setIpAddress] = useState('');
+  const [nodeENV, setNodeENV] = useState('');
   
 
+  // const getIpAddress = async () => {
+  //   const ip = await Network.getIpAddressAsync();
+  //   console.log('getIpAddress: ',ip);
+  //   setIpAddress(ip);
+  //   console.log('env', process.env.NODE_ENV);
+  //   setNodeENV(process.env.NODE_ENV);
+  // }
+
+  // async function retryTxn(n, max, client, operation, callback) {
+  //   const backoffInterval = 100; // millis
+  //   const maxTries = 5;
+  //   let tries = 0;
+  
+  //   while (true) {
+  //     await client.query('BEGIN;');
+  
+  //     tries++;
+  
+  //     try {
+  //       const result = await operation(client, callback);
+  //       await client.query('COMMIT;');
+  //       return result;
+  //     } catch (err) {
+  //       await client.query('ROLLBACK;');
+  
+  //       if (err.code !== '40001' || tries == maxTries) {
+  //         throw err;
+  //       } else {
+  //         console.log('Transaction failed. Retrying.');
+  //         console.log(err.message);
+  //         await new Promise(r => setTimeout(r, tries * backoffInterval));
+  //       }
+  //     }
+  //   }
+  // }
+  
+  // // This function is called within the first transaction. It inserts some initial values into the "accounts" table.
+  //   async function initTable(client, callback) {
+  //     let i = 0;
+  //     while (i < accountValues.length) {
+  //       accountValues[i] = await uuidv4();
+  //       i++;
+  //     }
+  //     const insertStatement =
+  //     "INSERT INTO accounts (id, balance) VALUES ($1, 1000), ($2, 250), ($3, 0);";
+  //     await client.query(insertStatement, accountValues, callback);
+
+  //     const selectBalanceStatement = "SELECT id, balance FROM accounts;";
+  //     await client.query(selectBalanceStatement, callback);
+  //   }
+  
   // const [facialRecognitionAvailable, setFacialRecognitionAvailable] = React.useState(false);
   // const [fingerprintAvailable, setFingerprintAvailable] = React.useState(false);
   // const [irisAvailable, setIrisAvailable] = React.useState(false);
@@ -83,10 +147,60 @@ export default function App() {
   //   unifiedErrors: false, // use unified error messages (default false)
   //   passcodeFallback: false, // iOS - allows the device to fall back to using the passcode, if faceid/touch is not available. this does not mean that if touchid/faceid fails the first few times it will revert to passcode, rather that if the former are not enrolled, then it will use the passcode.
   // };
+
+    // Run the transactions in the connection pool
+// (async () => {
+//   console.log(CLIENT_CR_DATABASE_URL)
+//   const connectionString = process.env.DATABASE_URL;
+//   const pool = new Pool({
+//     connectionString,
+//     application_name: "$ docs_simplecrud_node-postgres",
+//   });
+
+//   // Connect to database
+//   const client = await pool.connect();
+
+//   // Callback
+//   function cb(err, res) {
+//     if (err) throw err;
+
+//     if (res.rows.length > 0) {
+//       console.log("New account balances:");
+//       res.rows.forEach((row) => {
+//         console.log(row);
+//       });
+//     }
+//   }
+
+//   // Initialize table in transaction retry wrapper
+//   console.log("Initializing accounts table...");
+//   await retryTxn(0, 15, client, initTable, cb);
+
+//   // Transfer funds in transaction retry wrapper
+//   console.log("Transferring funds...");
+//   await retryTxn(0, 15, client, transferFunds, cb);
+
+//   // Delete a row in transaction retry wrapper
+//   console.log("Deleting a row...");
+//   await retryTxn(0, 15, client, deleteAccounts, cb);
+
+//   // Exit program
+//   process.exit();
+// })().catch((err) => console.log(err.stack));
+  
   
   useEffect(() => {
     console.log('page: ', page);
+    // if(process.env.NODE_ENV === 'development'){
+    //   setIpAddress('10.0.0.13')
+    // }
+    // else{
+    //   getIpAddress();
+    // }
     
+    // const response = fetch(`${BASE_URL_DEV}`)
+    // const jsonDevotion = response.json();  
+    // console.log('jsonDevotion', jsonDevotion);
     // (async () => {
     //   const compatible = await LocalAuthentication.hasHardwareAsync();
     //   console.log('compatible: ', compatible);
@@ -383,7 +497,8 @@ export default function App() {
       
     // let username = 'micahj2005@hotmail.com';
     // let password = '1234';
-
+    // console.log('env', process.env);
+    console.log('BASE_URL_DEV', BASE_URL_DEV);
     const response = await fetch(`${BASE_URL_DEV}/data/signIn?username=${username}&password=${password}`)
       .then(response => response.json())
       .then(json => {
@@ -492,51 +607,61 @@ export default function App() {
     console.log('register PW', registerPassword);
     console.log('register Security Q', registerSecurityQuestion);
     console.log('register Security A', registerSecurityAnswer);
-    const response = await fetch(`${BASE_URL_DEV}/data/validateemail?username=${registerEmailAddress}`)
-      .then(response => response.json())
-      .then(json => {
-        console.log('user response', json[0].count);
-        if(json[0].count > 0){
-          // setEmailAddressValidated(true);
-          Alert.alert('This email address is already registered!');
+
+    if(registerEmailAddress != '' && 
+        registerFirstName != '' &&
+        registerLastName != '' &&
+        registerBirthdate != '' &&
+        registerPhone != '' &&
+        registerPassword != '' &&
+        registerSecurityQuestion != '' &&
+        registerSecurityAnswer != ''
+        ){
+          const response = await fetch(`${BASE_URL_DEV}/data/validateemail?username=${registerEmailAddress}`)
+          .then(response => response.json())
+          .then(json => {
+            console.log('user response', json[0].count);
+            if(json[0].count > 0){
+              // setEmailAddressValidated(true);
+              Alert.alert('This email address is already registered!');
+            }
+            else{
+              fetch(`${BASE_URL_DEV}/data/createnewaccount`, {
+                method: "POST",
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  registerEmailAddress: registerEmailAddress,
+                  registerFirstName: registerFirstName,
+                  registerLastName: registerLastName,
+                  registerBirthdate: registerBirthdate,
+                  registerPhone: registerPhone,
+                  registerPassword: registerPassword,
+                  registerSecurityQuestion: registerSecurityQuestion,
+                  registerSecurityAnswer: registerSecurityAnswer
+                }),
+              })
+              .then((response) =>{
+                console.log('response', response.json());
+            //   loadData();
+                  Alert.alert('Your New Account is Ready!');
+                  logout();
+            })
+              
+            }
+          })
+          .catch(error => {
+            console.error(error);
+            Alert.alert('Issue creating new account!');
+          });
+
         }
         else{
-          fetch(`${BASE_URL_DEV}/data/createnewaccount`, {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              registerEmailAddress: registerEmailAddress,
-              registerFirstName: registerFirstName,
-              registerLastName: registerLastName,
-              registerBirthdate: registerBirthdate,
-              registerPhone: registerPhone,
-              registerPassword: registerPassword,
-              registerSecurityQuestion: registerSecurityQuestion,
-              registerSecurityAnswer: registerSecurityAnswer
-            }),
-          })
-          .then((response) =>{
-            console.log('response', response.json());
-        //   loadData();
-              Alert.alert('Your New Account is Ready!');
-              logout();
-        })
-          
+          console.log('All field are required!');
+          Alert.alert('All field are required!');
         }
-      })
-      .catch(error => {
-        console.error(error);
-        Alert.alert('Your New Account is Ready!');
-      });
-
-    
-  // }else{
-  //   console.log(' Passwords Don\'t match!');
-  //   Alert.alert('Passwords Don\'t Match!');
-  // }
   }
 
   const openCalendar = () => {
@@ -571,6 +696,24 @@ export default function App() {
     console.log('textBoxUnSelected')
   }
 
+  // const awsPost = async () => {
+  //   try {
+  //     const restOperation = post({
+  //       apiName: 'prayerAppApi',
+  //       path: '/data',
+  //       options: {
+  //         body: {
+  //           message: 'Mow the lawn'
+  //         }
+  //       }
+  //     });
+  //     await restOperation.response;
+  //     console.log('POST call succeeded');
+  //     console.log('response: ', response);
+  //   } catch (e) {
+  //     console.log('POST call failed: ', e);
+  //   }
+  // }
 
   if(loading){
     return(
@@ -605,6 +748,7 @@ else{
           {/* <KeyboardAvoidingView behavior='padding'
                               style={styles.container}> */}
           <View style={styles.homeContentView2}>
+          {/* <Text style={styles.nameInputText}>Network Ip: {ipAddress}</Text> */}
           <Text style={styles.nameInputText}>User Email</Text>
               <TextInput
                   style={{
@@ -653,6 +797,9 @@ else{
               <Pressable style={styles.myPrayerListPressable} onPress={() => signIn()}>
               <Text style={styles.myPrayerListPressableText}>Login</Text>
             </Pressable>
+            {/* <Pressable style={styles.myPrayerListPressable} onPress={() => awsPost()}>
+              <Text style={styles.myPrayerListPressableText}>AWS POST</Text>
+            </Pressable> */}
           </View>
           {/* </KeyboardAvoidingView> */}
           <View style={styles.loginPageLoginButtons}>
@@ -736,9 +883,12 @@ else{
                       />
                       
                       <Pressable style={{
-                              borderColor: '#113946',
+                              borderBottomColor: '#113946',
+                              borderTopColor: 'white',
+                              borderLeftColor: 'white',
+                              borderRightColor: 'white',
                               borderWidth: 4,
-                              borderRadius: 30,
+                              // borderRadius: 30,
                               width:'80%',
                               height: 50,
                               marginLeft:'10%',
@@ -789,9 +939,10 @@ else{
                             marginLeft:'10%',
                             marginBottom: 10,
                         }}
-                          value={new Date('01-01-2000')}
+                          value={new Date()}
                           mode='date'
                           placeholder="select date"
+                          minimumDate={new Date(1950, 0, 1)}
                         // format="DD/MM/YYYY"
                         // minDate="01-01-1900"
                         // maxDate="01-01-2000"
@@ -1508,7 +1659,7 @@ else{
     else if(page === 'about'){
 
       return(
-        <ScrollView style={styles.scrollView}>
+        <View style={styles.scrollView}>
             <View style={[styles.homeHeaderIcons]}>
               <Pressable onPress={() => navigateHome()} >
                   <MaterialIcons style={[styles.homeIcon]} name="home" size={30} color="black" />
@@ -1524,7 +1675,7 @@ else{
             />
           </Pressable>
           
-          <View style={styles.homeContentView}>
+          {/* <View style={styles.homeContentView}>
             <Text >
               <Text style={styles.homeText2}>
                   Devos4Me is designed with you in mind. God desires you to know Him personally. May each day's devotional be a time where God meets you where you are, as you walk this life together
@@ -1532,9 +1683,9 @@ else{
             
             </Text>
           
-          </View>
-        
-        </ScrollView>
+          </View> */}
+        <AboutPage runningUser={runningUser}></AboutPage>
+        </View>
       )
     }
   }
@@ -2007,7 +2158,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#113946',
     // flexDirection:'row',
     height: 50,
-    padding:5,
+    // padding:5,
     width:'100%'
   },
   homeIcon: {
@@ -2093,7 +2244,7 @@ const styles = StyleSheet.create({
     color: '#BCA37F'
   },
   forgotPasswordScreen:{
-    marginTop:30,
+    // marginTop:30,
     backgroundColor:'#BCA37F',
     height:'100%',
     // marginBottom: 30,
@@ -2199,8 +2350,8 @@ const styles = StyleSheet.create({
     // flex: 3,
   },
   registerPageHeader:{
-    marginTop:30,
+    // marginTop:30,
   }
 });
 
-
+// registerRootComponent(App);
