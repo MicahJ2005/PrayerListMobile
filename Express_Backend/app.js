@@ -7,6 +7,8 @@ app.use(cors());
 const {Client} = require('pg');
 const axios = require('axios'); 
 require('dotenv').config();
+// const path = require('path');
+// app.use(express.static(path.join(__dirname, '/public')))
 
 // const router = express.Router();
 // const dbConfig = require("../connectdb/config/db.config.js");
@@ -32,38 +34,54 @@ require('dotenv').config();
 // // db.blog = require("./blog.model.js")(sequelize, Sequelize);
 
 // module.exports = db; 
-const client = new Client({
-  host: "localhost",
-  user: "postgres",
-  port: 5432,
-  password: "JjMj2011",
-  database: "dojo"
-})
-client.connect();
+// const client = new Client({
+//   host: "localhost",
+//   user: "postgres",
+//   port: 5432,
+//   password: "JjMj2011",
+//   database: "dojo"
+// })
+// client.connect();
 
 // const DATABASE_URL2 = process.env;
 // console.log('DATABASE_URL2: ' , DATABASE_URL2);
-// const DATABASE_URL = "postgresql://micah:VqI83odLC98QwcCQAiHgug@devo-app-cluster-12913.7tt.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full";
-// const client = new Client(DATABASE_URL);
+const DATABASE_URL = "postgresql://micah:VqI83odLC98QwcCQAiHgug@devo-app-cluster-12913.7tt.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full";
+const client = new Client(DATABASE_URL);
 
-// (async () => {
-//   await client.connect();
-//   try {
-//     const results = await client.query("SELECT NOW()");
-//     console.log('Successully connected to Database at: ',results);
-//   } catch (err) {
-//     console.error("error connecting to database:", err);
-//   } finally {
-//     // client.end();
-//   }
-// })();
+(async () => {
+  await client.connect();
+  try {
+    const results = await client.query("SELECT NOW()");
+    console.log('Successully connected to Database at: ',results);
+  } catch (err) {
+    console.error("error connecting to database:", err);
+  } finally {
+    // client.end();
+  }
+})();
 
 // const Sequelize = require("sequelize");
+
+app.get('/data/test', (req, res)=>{
+  console.log('Test to backend req',req );
+  console.log('Test to backend');
+  res.send('Validate Backend Success');
+  // client.query(`SELECT * FROM users;`, (err, result)=>{
+  //     if(!err){
+  //       console.log('result.rows', result.rows);
+  //         res.send(result.rows);
+  //     }
+  //     if(err){
+  //       console.log('err', err);
+  //   }
+  // });
+  client.end;
+})
 
 app.get('/data/signIn', (req, res)=>{
   console.log('req.query.username ',req.query.username);
   console.log('req.query.password',req.query.password);
-  client.query(`SELECT * FROM users WHERE username = '${req.query.username}' AND password = '${req.query.password}' AND active = true`, (err, result)=>{
+  client.query(`SELECT * FROM users WHERE username = '${req.query.username}' AND password = '${req.query.password}' AND active = true;`, (err, result)=>{
       if(!err){
         console.log('result.rows', result.rows);
           res.send(result.rows);
@@ -915,11 +933,12 @@ app.put('/data/updateGroupPrayerRequest', (req, res)=>{
 })
 
 // Serve static files
-app.use(express.static('build'));
+const path = require('path')
+app.use('/data', express.static(path.join(__dirname, 'public')))
 
 const PORT = process.env.PORT || 3210;
 ///for my phone
-app.listen(PORT, ()=>{
+app.listen(3210, ()=>{
   // console.log('env PORT: ',process.env)
   console.log(`App listening on port: ${PORT}`)
 })

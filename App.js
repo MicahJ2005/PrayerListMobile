@@ -1,4 +1,4 @@
-// import { registerRootComponent } from 'expo';
+// import 'expo-dev-client';
 import {View, Alert, Text, Image, ScrollView, Modal, Pressable, StyleSheet, SafeAreaView, StatusBar, ActivityIndicator, KeyboardAvoidingView, Button} from 'react-native';
 // import { createRoot } from 'react-dom/client';
 
@@ -23,6 +23,28 @@ import axios from 'axios';
 import {TextInput} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Network from 'expo-network';
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, doc, setDoc, getDocs, query, where, getDoc  } from "firebase/firestore";
+
+
+const firebaseConfig  = {
+    apiKey: "AIzaSyAJ2R_7MfExmdZRq4DrExlyNZkCv9pKJ7A",
+    authDomain: "devo4me.firebaseapp.com",
+    projectId: "devo4me",
+    storageBucket: "devo4me.appspot.com",
+    messagingSenderId: "1052504611022",
+    appId: "1:1052504611022:web:268875f9b8b667e683989f",
+    measurementId: "G-YM3JBXD5DR"
+}
+
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+
+// Initialize Cloud Firestore and get a reference to the service
+const db = getFirestore(app);
+// import db from './db/firebase.js'
 
 // import { Amplify } from "aws-amplify";
 // // import amplifyconfig from './amplifyconfiguration.json';
@@ -51,6 +73,7 @@ export default function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [runningUser, setRunningUser] = useState('');
+  const [runningUserId, setRunningUserId] = useState('');
   const [loading, setLoading] = useState(false);
   const [devotionTopicText, setDevotionTopicText] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
@@ -75,14 +98,24 @@ export default function App() {
   const [currentSecurityQuestion, setCurrentSecurityQuestion] = useState('');
   const [ipAddress, setIpAddress] = useState('');
   const [nodeENV, setNodeENV] = useState('');
-  
+  const [host, setHost] = useState('');
+  const [backendResponse, setBackendResponse] = useState('');
+  const [tasks, setTasks] = useState([])
 
   // const getIpAddress = async () => {
   //   const ip = await Network.getIpAddressAsync();
   //   console.log('getIpAddress: ',ip);
-  //   setIpAddress(ip);
+  //   // setIpAddress(ip);
   //   console.log('env', process.env.NODE_ENV);
   //   setNodeENV(process.env.NODE_ENV);
+  //   if(process.env.NODE_ENV === 'development'){
+  //     setIpAddress('10.0.0.13:3210');
+  //     setHost('http://');
+  //   }
+  //   else{
+  //     setIpAddress(ip);
+  //     setHost('https://');
+  //   }
   // }
 
   // async function retryTxn(n, max, client, operation, callback) {
@@ -187,15 +220,42 @@ export default function App() {
 //   // Exit program
 //   process.exit();
 // })().catch((err) => console.log(err.stack));
-  
+  const getFireBase = async () =>{
+    console.log('In Firebase')
+    const querySnapshot = await getDocs(collection(db, "users"));
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      console.log(doc.id, " => ", doc.data());
+    });
+  }
   
   useEffect(() => {
     console.log('page: ', page);
+    getFireBase();
+
+    // querySnapshot.map((doc) => {
+    //   // doc.data() is never undefined for query doc snapshots
+    //   console.log(doc.id, " => ", doc.data());
+    // });
+    // citiesRef?.map
+      // .get()
+      // .then(result => result.docs)
+      // .then(docs => docs.map(doc => ({
+      //     id: doc.id, 
+      //     username: doc.username
+      //   })
+      //   )
+      //   )
+      // .then(users => setRunningUser(users))
+    // getIpAddress();
+    // testBackendConnect();
     // if(process.env.NODE_ENV === 'development'){
-    //   setIpAddress('10.0.0.13')
+      // setIpAddress('10.0.0.13')
+    //   setNodeENV('development');
     // }
     // else{
     //   getIpAddress();
+    //   setNodeENV('production');
     // }
     
     // const response = fetch(`${BASE_URL_DEV}`)
@@ -221,7 +281,43 @@ export default function App() {
     //     // verifySignatureWithServer(signature, payload)
     //   }
     // })
+
   }, [])
+
+  const testBackendConnect = async () => {
+    console.log('IN BASE_URL_DEV f', {ipAddress});
+    // console.log('runningUser ', runningUser);
+    // setLoading(true);
+    // const response = await fetch(`http://10.0.0.13:3210/data/test`)
+    // const backendResp = await response.json();  
+    // console.log('Test Backend Response', response);
+    // setBackendResponse(response)
+    // console.log('jsonDevotion size', jsonDevotion.length);
+    // if(jsonDevotion.length > 0){
+    //   setPage('devotion');
+    //   setLoading(false);
+    //   setDevoSelectorVisible(false);
+    // }
+    // else{
+    //   setLoading(false);
+    //   setPage('home');
+    //   setDevoSelectorVisible(true);
+    // }
+    // axios.get('http://10.0.0.13:3210/data/test')
+    //   .then(function (res) {
+    //     // handle success
+    //     console.log('Data:', res.data);
+    //     setBackendResponse(res.data)
+    //   })
+    //   .catch(function (error) {
+    //     // handle error
+    //     console.log(error);
+    //     setBackendResponse(error)
+    //   })
+    //   .finally(function () {
+    //     // always executed
+    //   });
+  }
 
   // const renderSecureContent = () => setRenderContent(true);
 
@@ -341,7 +437,7 @@ export default function App() {
     console.log('IN openDevoTypeSelector ');
     console.log('runningUser ', runningUser);
     setLoading(true);
-    const response = await fetch(`${BASE_URL_DEV}/data/checktodaysdevo?userid=${runningUser[0].id}`)
+    const response = await fetch(`http://${ipAddress}:3210/data/checktodaysdevo?userid=${runningUser[0].id}`)
     const jsonDevotion = await response.json();  
     console.log('jsonDevotion', jsonDevotion);
     console.log('jsonDevotion size', jsonDevotion.length);
@@ -363,7 +459,7 @@ export default function App() {
     console.log('IN openDevoTypeSelector ');
     console.log('runningUser ', runningUser);
     setLoading(true);
-    const response = await fetch(`${BASE_URL_DEV}/data/checktodaysfamilydevo?userid=${runningUser[0].id}`)
+    const response = await fetch(`http://${ipAddress}:3210/data/checktodaysfamilydevo?userid=${runningUser[0].id}`)
     const jsonDevotion = await response.json();  
     console.log('jsonDevotion', jsonDevotion);
     console.log('jsonDevotion size', jsonDevotion.length);
@@ -494,28 +590,73 @@ export default function App() {
     ////FOR TESTING
     setUsername(username);
     setPassword(password);
-      
+    // const usersRef = collection(db, "users");
+
+    /////FOR FIREBASE
+    const q = query(collection(db, "users"), where("username", "==", username), where("password", "==", password) , where("active", "==", true));
+    console.log('q check: ', q);
+    const querySnapshot = await getDocs(q);
+    console.log('querySnapshot check: ', querySnapshot.size);
+    if(querySnapshot.size > 0){
+      querySnapshot.forEach((doc) => {
+        console.log('USER signed in: ', doc.id, " => ", doc.data());
+        setRunningUser(doc.data());
+        setRunningUserId(doc.id);
+        // setRunningUser(json);
+        setPage('home');
+      });
+    }else{
+      Alert.alert('Login issue. Please try again.')
+      setPage('login');
+    }
+    
+    ///END FIREBASE
+
     // let username = 'micahj2005@hotmail.com';
     // let password = '1234';
     // console.log('env', process.env);
-    console.log('BASE_URL_DEV', BASE_URL_DEV);
-    const response = await fetch(`${BASE_URL_DEV}/data/signIn?username=${username}&password=${password}`)
-      .then(response => response.json())
-      .then(json => {
-        console.log('user response', json)
-        if(json.length > 0){
-          setRunningUser(json);
-          setPage('home');
-        }
-        else{
-          Alert.alert('Login issue. Please try again.')
-          setPage('login');
-        }
-      })
-      .catch(error => {
-        console.error(error);
-        Alert.alert('Login issue. Please try again.')
-      });
+    console.log('BASE_URL_DEV', {ipAddress});
+    // const response = await fetch(`http://10.0.0.13:3210/data/signIn?username=${username}&password=${password}`)
+    //   .then(response => response.json())
+    //   .then(json => {
+    //     console.log('user response', json);
+    //     // setBackendResponse(json);
+    //     if(json.length > 0){
+    //       setRunningUser(json);
+    //       setPage('home');
+    //     }
+    //     else{
+    //       Alert.alert('Login issue. Please try again.')
+    //       setPage('login');
+    //     }
+    //   })
+    //   .catch(error => {
+    //     console.error(error);
+    //     Alert.alert(`Login issue. Please try again. ${error}`);
+    //   });
+      // console.log('host: ',host);
+      // console.log('ipAddress: ',ipAddress);
+      // axios.get(`${host}${ipAddress}/data/signIn?username=${username}&password=${password}`)
+      // .then(function (res) {
+      //   // handle success
+      //   console.log('Data:', res.data);
+      //   if(res.data.length > 0){
+      //     setRunningUser(res.data);
+      //     setPage('home');
+      //   }
+      //   else{
+      //     Alert.alert('Login issue. Please try again.')
+      //     setPage('login');
+      //   }
+      // })
+      // .catch(function (error) {
+      //   // handle error
+      //   console.log(error);
+      //   Alert.alert('Login issue. Please try again.')
+      // })
+      // .finally(function () {
+      //   // always executed
+      // });
     }
 
     const logout = () => {
@@ -541,13 +682,32 @@ export default function App() {
     const validateEmail = async () => {
       console.log('IN Validate Email Click')
       console.log('IN Validate Email address', emailAddress);
-      const response = await fetch(`${BASE_URL_DEV}/data/validateemail?username=${emailAddress}`)
-      .then(response => response.json())
-      .then(json => {
-        console.log('user response', json[0].id);
-        if(json[0].id != null){
-          setCurrentSecurityQuestion(json[0].securityquestion);
-          setCurrentSecurityAnswer(json[0].securityanswer)
+      // const response = await fetch(`http://${ipAddress}:3210/data/validateemail?username=${emailAddress}`)
+      // .then(response => response.json())
+      // .then(json => {
+      //   console.log('user response', json[0].id);
+      //   if(json[0].id != null){
+      //     setCurrentSecurityQuestion(json[0].securityquestion);
+      //     setCurrentSecurityAnswer(json[0].securityanswer)
+      //     setEmailAddressValidated(true);
+      //   }
+      //   else{
+      //     setEmailAddressValidated(false);
+      //     Alert.alert('Your email is not tied to a registered user. Please register as a new user!');
+      //   }
+      // })
+      // .catch(error => {
+      //   console.error(error);
+      //   Alert.alert('Your email is not tied to a registered user. Please register as a new user!');
+      // });
+
+      axios.get(`http://${ipAddress}:3210/data/validateemail?username=${emailAddress}`)
+      .then(function (res) {
+        // handle success
+        console.log('Data:', res.data);
+        if(res.data[0].id != null){
+          setCurrentSecurityQuestion(res.data[0].securityquestion);
+          setCurrentSecurityAnswer(res.data[0].securityanswer)
           setEmailAddressValidated(true);
         }
         else{
@@ -555,10 +715,11 @@ export default function App() {
           Alert.alert('Your email is not tied to a registered user. Please register as a new user!');
         }
       })
-      .catch(error => {
-        console.error(error);
+      .catch(function (error) {
+        // handle error
+        console.log(error);
         Alert.alert('Your email is not tied to a registered user. Please register as a new user!');
-      });
+      })
     }
 
   const setNewPassword = async () => {
@@ -571,7 +732,7 @@ export default function App() {
 
       if(newPassword1 == newPassword2){
         console.log('Matching Passwords!');
-        await fetch(`${BASE_URL_DEV}/data/setnewpassword`, {
+        await fetch(`http://${ipAddress}:3210/data/setnewpassword`, {
           method: "PUT",
           headers: {
             Accept: "application/json",
@@ -588,6 +749,25 @@ export default function App() {
             Alert.alert('Password Successfully Changed!');
             logout();
       })
+      // axios.put(`http://${ipAddress}:3210/data/setnewpassword`)
+      // .then(function (res) {
+      //   // handle success
+      //   console.log('Data:', res.data);
+      //   if(res.data[0].id != null){
+      //     setCurrentSecurityQuestion(res.data[0].securityquestion);
+      //     setCurrentSecurityAnswer(res.data[0].securityanswer)
+      //     setEmailAddressValidated(true);
+      //   }
+      //   else{
+      //     setEmailAddressValidated(false);
+      //     Alert.alert('Your email is not tied to a registered user. Please register as a new user!');
+      //   }
+      // })
+      // .catch(function (error) {
+      //   // handle error
+      //   console.log(error);
+      //   Alert.alert('Your email is not tied to a registered user. Please register as a new user!');
+      // })
       }else{
         console.log(' Passwords Don\'t match!');
         Alert.alert('Passwords Don\'t Match!');
@@ -596,6 +776,8 @@ export default function App() {
     else{
       Alert.alert('Security Answer Incorrect!');
     }
+
+   
   }
 
   const createNewAccount = async () => {
@@ -617,7 +799,7 @@ export default function App() {
         registerSecurityQuestion != '' &&
         registerSecurityAnswer != ''
         ){
-          const response = await fetch(`${BASE_URL_DEV}/data/validateemail?username=${registerEmailAddress}`)
+          const response = await fetch(`http://${ipAddress}:3210/data/validateemail?username=${registerEmailAddress}`)
           .then(response => response.json())
           .then(json => {
             console.log('user response', json[0].count);
@@ -626,7 +808,7 @@ export default function App() {
               Alert.alert('This email address is already registered!');
             }
             else{
-              fetch(`${BASE_URL_DEV}/data/createnewaccount`, {
+              fetch(`http://${ipAddress}:3210/data/createnewaccount`, {
                 method: "POST",
                 headers: {
                   Accept: "application/json",
@@ -735,7 +917,7 @@ else{
   if(page === 'login'){
       return (
         
-        <ScrollView style={styles.scrollViewLogin}>
+        <View style={styles.scrollViewLogin}>
           <View style={[styles.homeHeaderIcons]}>
             
           </View>
@@ -748,7 +930,15 @@ else{
           {/* <KeyboardAvoidingView behavior='padding'
                               style={styles.container}> */}
           <View style={styles.homeContentView2}>
-          {/* <Text style={styles.nameInputText}>Network Ip: {ipAddress}</Text> */}
+          {/* <Text style={styles.nameInputText}>Network Ip: {ipAddress}</Text>
+          <Text style={styles.nameInputText}>Node ENV: {nodeENV}</Text>
+          <Text style={styles.nameInputText}>setBackendResponse: {backendResponse}</Text> */}
+          {/* runningUser?.map(user => 
+          <View>
+            <Text>{username.Id}</Text>
+            <Text>{username.username}</Text>
+          </View>
+          ) */}
           <Text style={styles.nameInputText}>User Email</Text>
               <TextInput
                   style={{
@@ -810,7 +1000,7 @@ else{
               <Text style={styles.registerPressableText}>New Account</Text>
             </Pressable>
           </View> 
-        </ScrollView>
+        </View>
         
       );
     
@@ -1218,7 +1408,7 @@ else{
           </Pressable>
           
           <View style={styles.homeContentView}>
-            <Text style={{fontSize:30, marginBottom:30, fontStyle:'italic', color:'#113946'}}>Welcome {runningUser[0].firstname} </Text>
+            <Text style={{fontSize:30, marginBottom:30, fontStyle:'italic', color:'#113946'}}>Welcome {runningUser.firstname} </Text>
             <Text >
               <Text style={styles.homeText}>
                 And this is eternal life, that they know You, the only true God, and Jesus Christ whom you have sent. John 17:3
@@ -1227,7 +1417,7 @@ else{
               {'\n'}
               {'\n'}
               <Text style={styles.homeText2}>
-                {runningUser[0].firstname}, may God richly bless you as you grow in your walk with Him
+                {runningUser.firstname}, may God richly bless you as you grow in your walk with Him
               </Text>
               {'\n'}
             </Text>
@@ -2155,6 +2345,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   homeHeaderIcons:{
+    marginTop:30,
     // display: 'inline',
     backgroundColor: '#113946',
     // flexDirection:'row',
